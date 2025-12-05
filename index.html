@@ -1016,25 +1016,35 @@
     let db = null;
     let currentUser = null;
 
-    // ---------- FIREBASE CONFIG ----------
-    // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
+    // ---------- FIREBASE CONFIG (V8 STYLE) ----------
 const firebaseConfig = {
-  apiKey: "AIzaSyBSD8IOAUvlTay6VyBvNyb5016Updd2JC4",
-  authDomain: "bishop-budget-email.firebaseapp.com",
-  projectId: "bishop-budget-email",
-  storageBucket: "bishop-budget-email.firebasestorage.app",
-  messagingSenderId: "266593126604",
-  appId: "1:266593126604:web:e3d859881170f5eb881a69"
+  apiKey: "AIzaSyBSD8IOAUvlTay6VyBvNyb5016Updd2JC4",
+  authDomain: "bishop-budget-email.firebaseapp.com",
+  projectId: "bishop-budget-email",
+  storageBucket: "bishop-budget-email.firebasestorage.app",
+  messagingSenderId: "266593126604",
+  appId: "1:266593126604:web:e3d859881170f5eb881a69"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+function initFirebase() {
+  // Make sure we only initialise once
+  if (firebase.apps && firebase.apps.length === 0) {
+    firebase.initializeApp(firebaseConfig);
+  } else if (!firebase.apps) {
+    // Old fallback, but with 8.10.1 you should have firebase.apps
+    firebase.initializeApp(firebaseConfig);
+  }
+ auth = firebase.auth();
+  db = firebase.firestore();
 
+  auth.onAuthStateChanged(user => {
+    currentUser = user;
+    updateAuthUi();
+    if (user) {
+      loadCloudState();
+    }
+  });
+}
     function initFirebase() {
       firebase.initializeApp(firebaseConfig);
       auth = firebase.auth();
