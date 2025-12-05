@@ -35,6 +35,7 @@
       max-width: 950px;
       padding: 1rem;
     }
+
     header {
       margin-bottom: 1rem;
       position: relative;
@@ -51,6 +52,7 @@
       font-size: 0.9rem;
       color: #9ca3af;
     }
+
     .top-icon {
       position: absolute;
       top: 6px;
@@ -72,6 +74,7 @@
         height: 56px;
       }
     }
+
     .auth-row {
       display: flex;
       align-items: center;
@@ -81,16 +84,32 @@
       font-size: 0.8rem;
       flex-wrap: wrap;
     }
-    .auth-buttons {
-      margin-right: 0;
+    .auth-status {
+      min-width: 140px;
     }
+    .auth-buttons {
+      display: flex;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .auth-buttons input {
+      padding: 0.25rem 0.4rem;
+      border-radius: 0.4rem;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      font-size: 0.75rem;
+      max-width: 140px;
+    }
+
     .btn {
       display: inline-block;
-      padding: 0.35rem 0.85rem;
+      padding: 0.3rem 0.65rem;
       border-radius: 999px;
       border: none;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 500;
       transition: transform 0.08s ease, box-shadow 0.08s ease;
       white-space: nowrap;
@@ -125,6 +144,7 @@
         grid-template-columns: 1fr;
       }
     }
+
     .card {
       background: radial-gradient(circle at top left, #1f2937, #020617);
       border-radius: 1rem;
@@ -172,6 +192,7 @@
       font-size: 0.8rem;
       color: #9ca3af;
     }
+
     .pill-row {
       display: flex;
       flex-wrap: wrap;
@@ -550,6 +571,7 @@
       font-size: 0.75rem;
       color: #c7d2fe;
     }
+
     .section-title-row {
       display: flex;
       justify-content: space-between;
@@ -560,6 +582,7 @@
       font-size: 0.75rem;
       color: #6b7280;
     }
+
     .pills-secondary {
       display: flex;
       flex-wrap: wrap;
@@ -674,10 +697,14 @@
         </div>
         <h1>22 Bishop Road Budget</h1>
         <p>Track your income, direct debits and<br>spending month by month.</p>
+
         <div class="auth-row">
-          <span id="authStatus">Not signed in</span>
+          <span id="authStatus" class="auth-status">Not signed in</span>
           <div class="auth-buttons">
-            <button id="signInButton" class="btn btn-secondary">Sign in with Google</button>
+            <input id="emailInput" type="email" placeholder="Email" autocomplete="username" />
+            <input id="passwordInput" type="password" placeholder="Password" autocomplete="current-password" />
+            <button id="logInButton" class="btn btn-secondary">Log in</button>
+            <button id="signUpButton" class="btn btn-secondary">Sign up</button>
             <button id="signOutButton" class="btn btn-secondary" style="display:none;">Sign out</button>
           </div>
         </div>
@@ -743,7 +770,7 @@
                   </label>
                 </div>
                 <div class="hint">
-                  Net = what's left after everything, Gross = income vs bills + spending separately.
+                  Net = what's left after everything, gross = income vs bills + spending separately.
                 </div>
               </div>
             </div>
@@ -868,7 +895,7 @@
             </div>
 
             <div class="footer-note">
-              Data is stored in your browser and synced via your Google account so you can use it across your devices.
+              Data is stored in your browser and synced via your account so you can use it across your devices.
             </div>
           </div>
         </div>
@@ -976,10 +1003,10 @@
 
   <script>
     // ---------- LOCAL STORAGE KEYS ----------
-   const STORAGE_TX = "br_sync_v2_transactions";
-const STORAGE_DD = "br_sync_v2_directDebits";
-const STORAGE_YM = "br_sync_v2_selectedYM";
-    // ---------- GLOBAL STATE ----------
+    const STORAGE_TX = "br_email_v1_transactions";
+    const STORAGE_DD = "br_email_v1_directDebits";
+    const STORAGE_YM = "br_email_v1_selectedYM";
+
     let transactions = []; // {id, date, description, amount, type}
     // directDebits: {id, name, baseAmount, day, category, active, perMonthAmounts: { [ym]: number }}
     let directDebits = [];
@@ -990,40 +1017,28 @@ const STORAGE_YM = "br_sync_v2_selectedYM";
     let currentUser = null;
 
     // ---------- FIREBASE CONFIG ----------
-    // Replace with your actual config from Firebase (Project Settings → General → Web app).
-    const firebaseConfig = {
-  apiKey: "AIzaSyDYKSnqtj5X2tPmAfKl6zBN6__3jtDDjHs",
-  authDomain: "bishop-budget.firebaseapp.com",
-  projectId: "bishop-budget",
-  storageBucket: "bishop-budget.firebasestorage.app",
-  messagingSenderId: "143539448776",
-  appId: "1:143539448776:web:9bd563d458216147416efd"
+    // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBSD8IOAUvlTay6VyBvNyb5016Updd2JC4",
+  authDomain: "bishop-budget-email.firebaseapp.com",
+  projectId: "bishop-budget-email",
+  storageBucket: "bishop-budget-email.firebasestorage.app",
+  messagingSenderId: "266593126604",
+  appId: "1:266593126604:web:e3d859881170f5eb881a69"
 };
 
-    // ---------- INITIALISATION ----------
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
     function initFirebase() {
       firebase.initializeApp(firebaseConfig);
       auth = firebase.auth();
       db = firebase.firestore();
-
-      // Explicitly use LOCAL persistence
-      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
-        console.warn("Could not set persistence", err);
-      });
-      // Handle any completed redirect sign-in (used for the home-screen app)
-  auth.getRedirectResult()
-    .then(result => {
-      if (result && result.user) {
-        console.log("Redirect login complete", result.user);
-        // auth.onAuthStateChanged will fire as well and update the UI.
-      }
-    })
-    .catch(err => {
-      if (err && err.code) {
-        console.error("Redirect error", err);
-        alert("Sign-in failed (redirect): " + err.code + " - " + err.message);
-      }
-    });
 
       auth.onAuthStateChanged(user => {
         currentUser = user;
@@ -1036,17 +1051,14 @@ const STORAGE_YM = "br_sync_v2_selectedYM";
 
     function updateAuthUi() {
       const status = document.getElementById("authStatus");
-      const signInBtn = document.getElementById("signInButton");
       const signOutBtn = document.getElementById("signOutButton");
-      if (!status || !signInBtn || !signOutBtn) return;
+      if (!status || !signOutBtn) return;
 
       if (currentUser) {
-        status.textContent = `Signed in as ${currentUser.displayName || currentUser.email}`;
-        signInBtn.style.display = "none";
+        status.textContent = `Signed in as ${currentUser.email}`;
         signOutBtn.style.display = "inline-block";
       } else {
         status.textContent = "Not signed in";
-        signInBtn.style.display = "inline-block";
         signOutBtn.style.display = "none";
       }
     }
@@ -1153,7 +1165,6 @@ const STORAGE_YM = "br_sync_v2_selectedYM";
         .filter(tx => tx.type === "spend")
         .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
 
-      // DDs: use month-specific amount if set, else baseAmount
       const ddForMonth = directDebits.filter(dd => dd.active);
       const ddTotal = ddForMonth.reduce((sum, dd) => {
         const perMonth = dd.perMonthAmounts || {};
@@ -1590,50 +1601,49 @@ const STORAGE_YM = "br_sync_v2_selectedYM";
         resetDdForm();
       });
 
-      // View mode radio buttons
       document.querySelectorAll('input[name="viewMode"]').forEach(el => {
         el.addEventListener("change", () => render());
       });
     }
 
-    function isIOS() {
-      return /iPhone|iPad|iPod/i.test(navigator.userAgent || "");
-    }
-
-    function isStandalonePWA() {
-      return (
-        window.matchMedia("(display-mode: standalone)").matches ||
-        window.navigator.standalone === true
-      );
-    }
-
     function setupAuthButtons() {
-      const signInButton = document.getElementById("signInButton");
+      const emailInput = document.getElementById("emailInput");
+      const passwordInput = document.getElementById("passwordInput");
+      const logInButton = document.getElementById("logInButton");
+      const signUpButton = document.getElementById("signUpButton");
       const signOutButton = document.getElementById("signOutButton");
 
-      if (signInButton) {
-    signInButton.addEventListener("click", () => {
-      if (!auth) {
-        alert("Firebase not ready yet, try again.");
-        return;
+      if (logInButton) {
+        logInButton.addEventListener("click", () => {
+          const email = emailInput.value.trim();
+          const password = passwordInput.value;
+          if (!email || !password) {
+            alert("Enter email and password first.");
+            return;
+          }
+          auth.signInWithEmailAndPassword(email, password)
+            .catch(err => {
+              console.error("Login error", err);
+              alert("Login failed: " + err.code + " - " + err.message);
+            });
+        });
       }
-      const provider = new firebase.auth.GoogleAuthProvider();
 
-      // Use redirect ONLY in the standalone home-screen app.
-      // Everywhere else (Mac, iPhone Safari) use popup.
-      if (isStandalonePWA()) {
-        auth.signInWithRedirect(provider).catch(err => {
-          console.error("Redirect sign-in error", err);
-          alert("Sign-in failed: " + err.code + " - " + err.message);
-        });
-      } else {
-        auth.signInWithPopup(provider).catch(err => {
-          console.error("Popup sign-in error", err);
-          alert("Sign-in failed: " + err.code + " - " + err.message);
+      if (signUpButton) {
+        signUpButton.addEventListener("click", () => {
+          const email = emailInput.value.trim();
+          const password = passwordInput.value;
+          if (!email || !password) {
+            alert("Enter email and password first.");
+            return;
+          }
+          auth.createUserWithEmailAndPassword(email, password)
+            .catch(err => {
+              console.error("Signup error", err);
+              alert("Sign-up failed: " + err.code + " - " + err.message);
+            });
         });
       }
-    });
-  }
 
       if (signOutButton) {
         signOutButton.addEventListener("click", () => {
@@ -1650,7 +1660,7 @@ const STORAGE_YM = "br_sync_v2_selectedYM";
     render();
     initFirebase();
 
-    // Disable pinch-to-zoom on iOS
+    // Lock pinch-zoom on iOS
     document.addEventListener("gesturestart", e => e.preventDefault());
     document.addEventListener("gesturechange", e => e.preventDefault());
     document.addEventListener("gestureend", e => e.preventDefault());
