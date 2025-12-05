@@ -1026,25 +1026,7 @@ const firebaseConfig = {
   appId: "1:266593126604:web:e3d859881170f5eb881a69"
 };
 
-function initFirebase() {
-  // Make sure we only initialise once
-  if (firebase.apps && firebase.apps.length === 0) {
-    firebase.initializeApp(firebaseConfig);
-  } else if (!firebase.apps) {
-    // Old fallback, but with 8.10.1 you should have firebase.apps
-    firebase.initializeApp(firebaseConfig);
-  }
- auth = firebase.auth();
-  db = firebase.firestore();
 
-  auth.onAuthStateChanged(user => {
-    currentUser = user;
-    updateAuthUi();
-    if (user) {
-      loadCloudState();
-    }
-  });
-}
     function initFirebase() {
       firebase.initializeApp(firebaseConfig);
       auth = firebase.auth();
