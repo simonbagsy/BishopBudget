@@ -28,7 +28,7 @@
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-sarea-inset-left);
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
     .app {
       width: 100%;
@@ -723,7 +723,7 @@
 
             <div class="sub-row">
               <div class="ym-select-group">
-                <label for="yearMonth">Month</label>
+                <label>Month</label>
                 <div class="month-nav">
                   <button id="prevMonth" aria-label="Previous month">&#x25C0;</button>
                   <span id="monthLabel">Dec 25</span>
@@ -743,8 +743,7 @@
                   </label>
                 </div>
                 <div class="hint">
-                  Net = what's left after everything,
-                  Gross = income vs bills + spending separately.
+                  Net = what's left after everything, Gross = income vs bills + spending separately.
                 </div>
               </div>
             </div>
@@ -976,7 +975,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
   <script>
-    // ---------- LOCAL STATE KEYS ----------
+    // ---------- LOCAL STORAGE KEYS ----------
     const STORAGE_TX = "br_sync_transactions";
     const STORAGE_DD = "br_sync_directDebits";
     const STORAGE_YM = "br_sync_selectedYM";
@@ -990,9 +989,9 @@
     let auth = null;
     let db = null;
     let currentUser = null;
-    let hasLoadedCloudOnce = false;
 
     // ---------- FIREBASE CONFIG ----------
+    // Replace with your actual config from Firebase (Project Settings → General → Web app).
     const firebaseConfig = {
   apiKey: "AIzaSyDYKSnqtj5X2tPmAfKl6zBN6__3jtDDjHs",
   authDomain: "bishop-budget.firebaseapp.com",
@@ -1008,19 +1007,15 @@
       auth = firebase.auth();
       db = firebase.firestore();
 
-      // Handle redirect results (for signInWithRedirect)
-      auth.getRedirectResult().catch(err => {
-        if (err && err.code) {
-          console.error("Redirect error", err);
-          alert("Sign-in failed (redirect): " + err.code + " - " + err.message);
-        }
+      // Explicitly use LOCAL persistence
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
+        console.warn("Could not set persistence", err);
       });
 
       auth.onAuthStateChanged(user => {
         currentUser = user;
         updateAuthUi();
-        if (user && !hasLoadedCloudOnce) {
-          hasLoadedCloudOnce = true;
+        if (user) {
           loadCloudState();
         }
       });
@@ -1164,8 +1159,7 @@
         afterDDs,
         afterAll,
         incomeUsed,
-        monthTx,
-        ddForMonth
+        monthTx
       };
     }
 
@@ -1589,6 +1583,17 @@
       });
     }
 
+    function isIOS() {
+      return /iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+    }
+
+    function isStandalonePWA() {
+      return (
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true
+      );
+    }
+
     function setupAuthButtons() {
       const signInButton = document.getElementById("signInButton");
       const signOutButton = document.getElementById("signOutButton");
@@ -1600,11 +1605,19 @@
             return;
           }
           const provider = new firebase.auth.GoogleAuthProvider();
-          // Use redirect everywhere – works on Mac, Safari, and home-screen app
-          auth.signInWithRedirect(provider).catch(err => {
-            console.error("Redirect sign-in error", err);
-            alert("Sign-in failed: " + err.code + " - " + err.message);
-          });
+
+          // Use popup on desktop, redirect on iOS or standalone home-screen
+          if (isIOS() || isStandalonePWA()) {
+            auth.signInWithRedirect(provider).catch(err => {
+              console.error("Redirect sign-in error", err);
+              alert("Sign-in failed: " + err.code + " - " + err.message);
+            });
+          } else {
+            auth.signInWithPopup(provider).catch(err => {
+              console.error("Popup sign-in error", err);
+              alert("Sign-in failed: " + err.code + " - " + err.message);
+            });
+          }
         });
       }
 
