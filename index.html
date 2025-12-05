@@ -1011,6 +1011,20 @@
       auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
         console.warn("Could not set persistence", err);
       });
+      // Handle any completed redirect sign-in (used for the home-screen app)
+  auth.getRedirectResult()
+    .then(result => {
+      if (result && result.user) {
+        console.log("Redirect login complete", result.user);
+        // auth.onAuthStateChanged will fire as well and update the UI.
+      }
+    })
+    .catch(err => {
+      if (err && err.code) {
+        console.error("Redirect error", err);
+        alert("Sign-in failed (redirect): " + err.code + " - " + err.message);
+      }
+    });
 
       auth.onAuthStateChanged(user => {
         currentUser = user;
@@ -1599,27 +1613,28 @@
       const signOutButton = document.getElementById("signOutButton");
 
       if (signInButton) {
-        signInButton.addEventListener("click", () => {
-          if (!auth) {
-            alert("Firebase not ready yet, try again.");
-            return;
-          }
-          const provider = new firebase.auth.GoogleAuthProvider();
+    signInButton.addEventListener("click", () => {
+      if (!auth) {
+        alert("Firebase not ready yet, try again.");
+        return;
+      }
+      const provider = new firebase.auth.GoogleAuthProvider();
 
-          // Use popup on desktop, redirect on iOS or standalone home-screen
-          if (isIOS() || isStandalonePWA()) {
-            auth.signInWithRedirect(provider).catch(err => {
-              console.error("Redirect sign-in error", err);
-              alert("Sign-in failed: " + err.code + " - " + err.message);
-            });
-          } else {
-            auth.signInWithPopup(provider).catch(err => {
-              console.error("Popup sign-in error", err);
-              alert("Sign-in failed: " + err.code + " - " + err.message);
-            });
-          }
+      // Use redirect ONLY in the standalone home-screen app.
+      // Everywhere else (Mac, iPhone Safari) use popup.
+      if (isStandalonePWA()) {
+        auth.signInWithRedirect(provider).catch(err => {
+          console.error("Redirect sign-in error", err);
+          alert("Sign-in failed: " + err.code + " - " + err.message);
+        });
+      } else {
+        auth.signInWithPopup(provider).catch(err => {
+          console.error("Popup sign-in error", err);
+          alert("Sign-in failed: " + err.code + " - " + err.message);
         });
       }
+    });
+  }
 
       if (signOutButton) {
         signOutButton.addEventListener("click", () => {
