@@ -976,10 +976,9 @@
 
   <script>
     // ---------- LOCAL STORAGE KEYS ----------
-    const STORAGE_TX = "br_sync_transactions";
-    const STORAGE_DD = "br_sync_directDebits";
-    const STORAGE_YM = "br_sync_selectedYM";
-
+   const STORAGE_TX = "br_sync_v2_transactions";
+const STORAGE_DD = "br_sync_v2_directDebits";
+const STORAGE_YM = "br_sync_v2_selectedYM";
     // ---------- GLOBAL STATE ----------
     let transactions = []; // {id, date, description, amount, type}
     // directDebits: {id, name, baseAmount, day, category, active, perMonthAmounts: { [ym]: number }}
