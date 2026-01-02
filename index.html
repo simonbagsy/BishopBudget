@@ -3,1797 +3,1350 @@
 <head>
   <meta charset="UTF-8" />
   <title>22 Bishop Road Budget</title>
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
-  />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="theme-color" content="#0b1120" />
-
-  <!-- PWA icons / manifest (optional, keep as you have them) -->
-  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
-  <link rel="manifest" href="manifest.json" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
+    :root {
+      --bg-deep: #020617;
+      --bg-main: #070b14;
+      --bg-mid: #1f2933;
+
+      --card: #0f1729;
+      --card-soft: #101827;
+      --pill: #151b30;
+
+      --text-primary: #e5e7eb;
+      --text-soft: #9ca3af;
+      --text-muted: #6b7280;
+
+      --blue-start: #123fe8;
+      --blue-soft: #5fa5fb;
+      --blue-end: #0fd6e9;
+
+      --green: #4ade80;
+      --green-soft: #bbf7d0;
+
+      --red: #f87171;
+      --amber: #f97316;
+    }
+
     * {
       box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     body {
       margin: 0;
-      padding: 0;
-      background: #0b1120;
-      color: #e5e7eb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #020617 0%, #020617 40%, #020617 100%);
+      color: var(--text-primary);
     }
 
     .app-shell {
       min-height: 100vh;
       display: flex;
+      align-items: stretch;
       justify-content: center;
-      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      padding: 16px;
     }
 
-    .app {
+    .app-container {
       width: 100%;
-      max-width: 950px;
-      padding: 1rem;
+      max-width: 960px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, var(--bg-deep), var(--bg-main));
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
     }
 
-    header {
-      margin-bottom: 1rem;
-      position: relative;
-      padding-right: 80px;
-    }
-
-    header h1 {
-      margin: 0 0 0.25rem;
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #f9fafb;
-    }
-
-    header p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #9ca3af;
-    }
-
-    .top-icon {
-      position: absolute;
-      top: 6px;
-      right: 16px;
-      z-index: 900;
-    }
-
-    .top-icon img {
-      width: 72px;
-      height: 72px;
-      border-radius: 10px;
-      object-fit: cover;
-    }
-
-    @media (max-width: 600px) {
-      header {
-        padding-right: 64px;
-      }
-      .top-icon img {
-        width: 56px;
-        height: 56px;
+    @media (min-width: 700px) {
+      .app-container {
+        padding: 24px;
       }
     }
 
-    .auth-row {
-  margin-top: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.auth-left {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
-.auth-input-row {
-  display: flex;
-  flex-direction: row;
-  gap: 0.75rem; /* a little tighter */
-  align-items: flex-end;
-  margin-left: 0.25rem; /* nudges the pair left */
-}
-
-.auth-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.auth-field input {
-  width: 160px;
-}
-
-.auth-buttons {
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-}
-
-.auth-status {
-  font-size: 0.8rem;
-  color: #9ca3af;
-}
-
-    .auth-buttons {
-      display: flex;
-      gap: 0.3rem;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+    .section {
+      background: var(--card-soft);
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 12px;
     }
 
-    .auth-buttons input {
-      padding: 0.25rem 0.4rem;
-      border-radius: 0.4rem;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-      font-size: 0.75rem;
-      max-width: 140px;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 0.3rem 0.65rem;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      font-size: 0.75rem;
-      font-weight: 500;
-      transition: transform 0.08s ease, box-shadow 0.08s ease;
-      white-space: nowrap;
-    }
-
-    .btn-primary {
-      background: linear-gradient(to right, #1d4ed8, #0ea5e9);
-      color: #e5e7eb;
-      box-shadow: 0 14px 35px rgba(37, 99, 235, 0.8);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 18px 40px rgba(37, 99, 235, 0.9);
-    }
-
-    .btn-secondary {
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.9);
-    }
-
-    .btn-secondary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 32px rgba(15, 23, 42, 1);
-    }
-
-    .top-row {
-      display: grid;
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2.4fr);
-      gap: 1rem;
-    }
-
-    @media (max-width: 800px) {
-      .top-row {
-        grid-template-columns: 1fr;
+    @media (min-width: 700px) {
+      .section {
+        padding: 16px 18px;
+        margin-bottom: 16px;
       }
     }
 
-    .card {
-      background: radial-gradient(circle at top left, #1f2937, #020617);
-      border-radius: 1rem;
-      padding: 0.9rem 0.9rem 1rem;
-      border: 1px solid rgba(148, 163, 184, 0.18);
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.8);
-      position: relative;
-      overflow: hidden;
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-primary);
     }
 
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at 10% 0%, rgba(59, 130, 246, 0.25), transparent 55%),
-        radial-gradient(circle at 90% 0%, rgba(45, 212, 191, 0.22), transparent 60%);
-      opacity: 0.85;
-      pointer-events: none;
-      mix-blend-mode: screen;
-    }
-
-    .card-inner {
-      position: relative;
-      z-index: 1;
-    }
-
-    .card h2 {
-      margin: 0 0 0.45rem;
-      font-size: 1.05rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      color: #f9fafb;
-    }
-
-    .card h2 .tag {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.12rem 0.45rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      color: #cbd5f5;
-      background: rgba(15, 23, 42, 0.8);
-    }
-
-    .card p {
-      margin: 0;
+    .section-subtitle {
       font-size: 0.8rem;
-      color: #9ca3af;
+      color: var(--text-soft);
+      margin-bottom: 8px;
     }
 
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.45rem;
-      margin-top: 0.6rem;
-      margin-bottom: 0.4rem;
-    }
-
-    .pill {
-      flex: 1 1 45%;
-      min-width: 140px;
-      border-radius: 999px;
-      padding: 0.45rem 0.6rem;
+    .header-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(to right, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.85));
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.8);
+      gap: 12px;
+      margin-bottom: 8px;
     }
 
-    .pill-label {
-      font-size: 0.75rem;
-      color: #9ca3af;
+    .header-text h1 {
+      font-size: 1.25rem;
+      margin: 0;
+      color: var(--text-primary);
     }
 
-    .pill-value {
+    .header-text p {
+      font-size: 0.8rem;
+      margin: 2px 0 0;
+      color: var(--text-soft);
+    }
+
+    .header-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 18px;
+      background: radial-gradient(circle at top left, var(--blue-end), var(--blue-start));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+      flex-shrink: 0;
+    }
+
+    .header-icon span {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    .month-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .month-row span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .month-label {
       font-size: 0.9rem;
       font-weight: 600;
+      color: #c7d2fe;
+    }
+
+    .month-controls {
+      margin-left: auto;
+      display: flex;
+      gap: 4px;
+    }
+
+    .pill-btn {
+      background: var(--pill);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      padding: 4px;
+      cursor: pointer;
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      font-size: 0.7rem;
+    }
+
+    .pill-btn:hover {
+      border-color: #60a5fa;
       color: #e5e7eb;
     }
 
-    .pill-value.positive { color: #4ade80; }
-    .pill-value.negative { color: #fb7185; }
-
-    .sub-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.55rem;
-      align-items: center;
-      margin-top: 0.6rem;
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 6px;
     }
 
-    .ym-select-group {
-      display: flex;
-      gap: 0.4rem;
-      align-items: center;
+    .mini-card {
+      background: var(--pill);
+      border-radius: 14px;
+      padding: 8px;
+      border: 1px solid rgba(30, 64, 175, 0.8);
     }
 
-    label {
-      font-size: 0.75rem;
-      color: #9ca3af;
+    .mini-card-title {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-soft);
     }
 
-    select,
-    input[type="number"],
-    input[type="text"],
-    input[type="date"] {
-      width: 100%;
-      padding: 0.4rem 0.5rem;
-      border-radius: 0.5rem;
-      border: 1px solid rgba(148, 163, 184, 0.7);
+    .mini-card-subtitle {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .mini-card-value {
+      margin-top: 4px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .whatif-box {
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 12px;
       background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-      font-size: 0.8rem;
     }
 
-    select:focus,
-    input:focus {
-      outline: 2px solid rgba(59, 130, 246, 0.8);
-      outline-offset: 1px;
-      border-color: rgba(59, 130, 246, 0.9);
+    .whatif-label {
+      font-size: 0.75rem;
+      color: var(--text-soft);
+      margin-bottom: 4px;
     }
 
-    input[type="date"] {
-      max-width: 100%;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-
-    input[type="date"]::-webkit-date-and-time-value {
-      text-align: left;
-    }
-
-    .donut-panel {
+    .whatif-meta {
       display: flex;
-      gap: 0.75rem;
-      align-items: center;
       justify-content: space-between;
-      margin-top: 0.75rem;
+      font-size: 0.7rem;
+      margin-top: 2px;
+      color: var(--text-muted);
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .donut-and-text {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+      align-items: flex-start;
       flex-wrap: wrap;
     }
 
     .donut-wrapper {
-      position: relative;
-      width: 130px;
-      height: 130px;
-      flex-shrink: 0;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 16px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .donut-svg {
-      width: 130px;
-      height: 130px;
-      transform: rotate(-90deg);
-      filter: drop-shadow(0 12px 30px rgba(15, 23, 42, 0.8));
+      width: 120px;
+      height: 120px;
     }
 
-    .donut-bg {
-      stroke: rgba(30, 64, 175, 0.7);
-      stroke-width: 11;
-      fill: none;
-    }
-
-    .donut-fg {
-      stroke: url(#gradDonut);
-      stroke-width: 11;
-      fill: none;
-      stroke-linecap: round;
-      transition: stroke-dashoffset 0.35s ease-out;
-    }
-
-    .donut-center-label {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.1rem;
-      text-align: center;
-    }
-
-    .donut-center-label span:first-child {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: #f9fafb;
-      line-height: 1.1;
-    }
-
-    .donut-center-label span:last-child {
-      font-size: 0.55rem;
-      color: #9ca3af;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      line-height: 1.1;
-    }
-
-    .donut-text {
-      flex: 1;
-      min-width: 150px;
-      font-size: 0.8rem;
-      color: #e5e7eb;
-    }
-
-    .donut-text strong {
-      display: block;
-      margin-bottom: 0.25rem;
-      font-size: 0.85rem;
-      color: #f9fafb;
-    }
-
-    .section-row {
-      margin-top: 1rem;
-      display: grid;
-      grid-template-columns: minmax(0, 1.8fr) minmax(0, 2.2fr);
-      gap: 1rem;
-    }
-
-    @media (max-width: 800px) {
-      .section-row {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .section-card {
-      background: radial-gradient(circle at top left, #020617, #020617);
-      border-radius: 1rem;
-      padding: 0.9rem;
-      border: 1px solid rgba(31, 41, 55, 0.8);
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .section-card h2 {
-      margin: 0 0 0.5rem;
-      font-size: 1rem;
-      color: #f9fafb;
-    }
-
-    .section-card p {
-      margin: 0 0 0.5rem;
-      font-size: 0.8rem;
-      color: #9ca3af;
-    }
-
-    .section-card hr {
-      border: none;
-      border-top: 1px solid #1f2937;
-      margin: 0.7rem 0 0.6rem;
-    }
-
-    form {
-      display: grid;
-      gap: 0.55rem;
-      margin-bottom: 0.4rem;
-    }
-
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-    }
-
-    .field-row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.5rem;
-    }
-
-    @media (max-width: 600px) {
-      .field-row {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 0.4rem;
-      font-size: 0.8rem;
-    }
-
-    th,
-    td {
-      padding: 0.4rem 0.45rem;
-      border-bottom: 1px solid #1f2937;
-      text-align: left;
-      vertical-align: top;
-    }
-
-    th {
+    .donut-center-text {
+      dominant-baseline: middle;
+      text-anchor: middle;
+      fill: var(--text-primary);
+      font-size: 16px;
       font-weight: 600;
-      font-size: 0.75rem;
-      color: #9ca3af;
     }
 
-    tr:hover td {
+    .donut-center-sub {
+      dominant-baseline: middle;
+      text-anchor: middle;
+      fill: var(--text-soft);
+      font-size: 9px;
+    }
+
+    .donut-caption {
+      font-size: 0.7rem;
+      text-align: center;
+      margin-top: 4px;
+      color: var(--text-soft);
+    }
+
+    .donut-text-block {
+      flex: 1;
+      min-width: 180px;
+      font-size: 0.8rem;
+    }
+
+    .status-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .status-title.green {
+      color: var(--green-soft);
+    }
+
+    .status-title.red {
+      color: var(--red);
+    }
+
+    .status-title.amber {
+      color: var(--amber);
+    }
+
+    .status-body {
+      color: var(--text-soft);
+      line-height: 1.4;
+    }
+
+    .graph-box {
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 12px;
       background: rgba(15, 23, 42, 0.9);
     }
 
-    .tx-type {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #9ca3af;
-    }
-
-    .tx-actions {
-      white-space: nowrap;
-      text-align: right;
-    }
-
-    .link-button {
-      border: none;
-      background: none;
-      color: #60a5fa;
-      cursor: pointer;
-      padding: 0;
+    .graph-label {
       font-size: 0.75rem;
+      color: var(--text-soft);
+      margin-bottom: 4px;
     }
 
-    .link-button + .link-button {
-      margin-left: 0.4rem;
+    .graph-svg {
+      width: 100%;
+      height: 80px;
+    }
+
+    .axis-line {
+      stroke: rgba(148, 163, 184, 0.5);
+      stroke-width: 0.8;
+    }
+
+    .graph-line {
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .form-group {
+      margin-bottom: 6px;
+      font-size: 0.8rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--text-soft);
+    }
+
+    .input,
+    select {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(99, 102, 241, 0.7);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-primary);
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      outline: none;
+    }
+
+    .input::placeholder {
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    .input:focus,
+    select:focus {
+      border-color: var(--blue-soft);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue-start), var(--blue-end));
+      color: white;
+      border-color: transparent;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-soft);
+      border-color: rgba(148, 163, 184, 0.6);
+    }
+
+    .btn-small {
+      padding: 3px 8px;
+      font-size: 0.7rem;
+    }
+
+    .btn-danger {
+      border-color: rgba(248, 113, 113, 0.7);
+      color: var(--red);
+    }
+
+    .list-container {
+      margin-top: 6px;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 12px;
+      padding: 4px;
+      max-height: 260px; /* nice tall window */
+      overflow-y: auto;
+    }
+
+    .list-header {
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+      padding: 0 4px;
+    }
+
+    .list-empty {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      padding: 4px 6px;
+    }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 6px 6px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #111827;
+      margin-bottom: 4px;
+      font-size: 0.78rem;
+    }
+
+    .list-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .list-title {
+      color: var(--text-primary);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .list-sub {
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      margin-top: 1px;
+    }
+
+    .list-amount {
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-align: right;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      padding: 0.1rem 0.4rem;
       border-radius: 999px;
+      padding: 2px 6px;
       font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      border: 1px solid rgba(55, 65, 81, 1);
-      color: #9ca3af;
-      background: rgba(15, 23, 42, 1);
     }
 
-    .badge.on {
-      border-color: rgba(22, 163, 74, 0.8);
-      color: #bbf7d0;
-      background: rgba(22, 101, 52, 0.3);
+    .badge-green {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--green-soft);
     }
 
-    .badge.off {
-      border-color: rgba(127, 29, 29, 0.8);
-      color: #fecaca;
-      background: rgba(127, 29, 29, 0.4);
+    .badge-red {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red);
     }
 
-    .muted {
-      color: #6b7280;
-      font-size: 0.75rem;
+    .summary-lines {
+      font-size: 0.78rem;
+      margin-top: 4px;
     }
 
     .summary-row {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.45rem;
-      margin-top: 0.4rem;
+      justify-content: space-between;
+      margin-bottom: 2px;
     }
 
-    .summary-pill {
-      padding: 0.25rem 0.5rem;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(55, 65, 81, 1);
-      font-size: 0.75rem;
-      color: #9ca3af;
+    .summary-label {
+      color: var(--text-soft);
     }
 
-    .summary-pill strong {
-      color: #e5e7eb;
-      margin-left: 0.15rem;
+    .summary-value {
+      color: var(--text-primary);
     }
 
-    .footer-note {
-      margin-top: 0.6rem;
-      font-size: 0.7rem;
-      color: #4b5563;
-    }
-
-    .kpi-row {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-      font-size: 0.75rem;
-    }
-
-    @media (max-width: 600px) {
-      .kpi-row {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .kpi {
-      padding: 0.4rem 0.45rem;
-      border-radius: 0.45rem;
-      border: 1px solid #1f2937;
-      background: rgba(15, 23, 42, 1);
-    }
-
-    .kpi-label {
-      font-size: 0.7rem;
-      color: #9ca3af;
-    }
-
-    .kpi-value {
-      font-size: 0.9rem;
-      color: #e5e7eb;
+    .summary-total {
+      margin-top: 4px;
+      padding-top: 4px;
+      border-top: 1px solid rgba(15, 23, 42, 0.9);
       font-weight: 600;
     }
 
-    .kpi-value.good { color: #4ade80; }
-    .kpi-value.warn { color: #fb923c; }
-    .kpi-value.bad { color: #fb7185; }
-
-    .direct-debit-list {
-      margin-top: 0.4rem;
-      font-size: 0.8rem;
-    }
-
-    .direct-debit-row {
+    .export-row {
       display: flex;
-      justify-content: space-between;
-      padding: 0.35rem 0.4rem;
-      border-radius: 0.45rem;
-      border: 1px solid #1f2937;
-      background: rgba(15, 23, 42, 1);
-      margin-bottom: 0.25rem;
-      align-items: center;
+      justify-content: flex-end;
+      margin-top: 6px;
     }
 
-    .direct-debit-main {
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-    }
-
-    .direct-debit-name {
-      font-weight: 500;
-      color: #e5e7eb;
-    }
-
-    .direct-debit-meta {
-      font-size: 0.7rem;
-      color: #9ca3af;
-    }
-
-    .direct-debit-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      align-items: flex-end;
-    }
-
-    .direct-debit-actions .btn {
-      font-size: 0.7rem;
-      padding: 0.2rem 0.55rem;
-    }
-
-    .direct-debit-actions .amount {
-      font-weight: 600;
-    }
-
-    .direct-debit-empty {
-      font-size: 0.8rem;
-      color: #6b7280;
-      margin-top: 0.3rem;
-    }
-
-    .divider {
-      border: none;
-      border-top: 1px solid #1f2937;
-      margin: 0.75rem 0;
-    }
-
-    .banner {
-      margin-top: 0.7rem;
-      padding: 0.5rem 0.6rem;
-      border-radius: 0.6rem;
-      border: 1px solid rgba(59, 130, 246, 0.4);
-      background: linear-gradient(to right, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.88));
-      font-size: 0.75rem;
-      color: #c7d2fe;
-    }
-
-    .section-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .section-title-row small {
-      font-size: 0.75rem;
-      color: #6b7280;
-    }
-
-    .pills-secondary {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-      margin-top: 0.4rem;
-    }
-
-    .pills-secondary span {
-      font-size: 0.7rem;
-      padding: 0.2rem 0.4rem;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid #1f2937;
-      color: #9ca3af;
-    }
-
-    .radio-row,
-    .radio-row-inline {
-      display: flex;
-      gap: 0.4rem;
-      flex-wrap: wrap;
-      font-size: 0.75rem;
-      color: #9ca3af;
-    }
-
-    .radio-row label,
-    .radio-row-inline label {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-      cursor: pointer;
-    }
-
-    .radio-row input,
-    .radio-row-inline input {
-      width: auto;
-    }
-
-    .hint {
-      font-size: 0.7rem;
-      color: #6b7280;
-      margin-top: 0.15rem;
-    }
-
-    .table-wrapper {
-      margin-top: 0.4rem;
-      border-radius: 0.75rem;
-      border: 1px solid #1f2937;
-      overflow: hidden;
-      background: rgba(15, 23, 42, 0.95);
-    }
-
-    .table-header {
-      padding: 0.4rem 0.45rem;
-      border-bottom: 1px solid #1f2937;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .table-header h3 {
-      margin: 0;
-      font-size: 0.85rem;
-      color: #e5e7eb;
-    }
-
-    .table-header span {
-      font-size: 0.75rem;
-      color: #9ca3af;
-    }
-
-    .table-body {
-      max-height: 240px;
-      overflow: auto;
-    }
-
-    .table-body table {
-      margin: 0;
-    }
-
-    .table-empty {
-      font-size: 0.8rem;
-      color: #6b7280;
-      padding: 0.5rem 0.6rem;
-    }
-
-    .month-nav {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      overflow: hidden;
-      background: rgba(15, 23, 42, 0.9);
-      box-shadow: 0 12px 32px rgba(15, 23, 42, 1);
-    }
-
-    .month-nav button {
-      border: none;
-      background: none;
-      color: #e5e7eb;
-      padding: 0.25rem 0.55rem;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-
-    .month-nav span {
-      padding: 0 0.6rem;
-      font-size: 0.8rem;
-      color: #e5e7eb;
-      border-inline: 1px solid rgba(55, 65, 81, 1);
-    }
-
-    .month-nav button:hover {
-      background: rgba(31, 41, 55, 1);
-    }
   </style>
 </head>
 <body>
-  <div class="app-shell">
-    <div class="app">
-      <header>
-        <div class="top-icon">
-          <img src="icon-192.png" alt="App Icon" />
+<div class="app-shell">
+  <div class="app-container">
+
+    <!-- HEADER -->
+    <section class="section">
+      <div class="header-row">
+        <div class="header-text">
+          <h1>22 Bishop Road Budget</h1>
+          <p>Clear monthly view of income, direct debits and spending.</p>
         </div>
-        <h1>22 Bishop Road Budget</h1>
-        <p>Track your income, direct debits and<br>spending month by month.</p>
-
-        <div class="auth-row">
-  <div class="auth-left">
-    <div class="auth-input-row">
-      <div class="auth-field">
-        <label for="emailInput">Email</label>
-        <input id="emailInput" type="email" autocomplete="username" />
+        <div class="header-icon">
+          <span>22&nbsp;BR</span>
+        </div>
       </div>
 
-      <div class="auth-field">
-        <label for="passwordInput">Password</label>
-        <input id="passwordInput" type="password" autocomplete="current-password" />
+      <div class="month-row">
+        <span>Month:</span>
+        <span class="month-label" id="monthLabel">---</span>
+        <div class="month-controls">
+          <button class="pill-btn" id="prevMonthBtn">&#x2039;</button>
+          <button class="pill-btn" id="nextMonthBtn">&#x203A;</button>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="auth-buttons">
-      <button id="logInButton" class="btn btn-primary">Log in</button>
-      <button id="signUpButton" class="btn btn-secondary">Sign up</button>
-      <button id="signOutButton" class="btn btn-secondary" style="display:none;">Sign out</button>
-    </div>
+    <!-- DASHBOARD SNAPSHOT -->
+    <section class="section">
+      <div class="section-title">Dashboard Snapshot</div>
 
-    <div id="authStatus" class="auth-status">Not signed in</div>
+      <div class="cards-grid">
+        <div class="mini-card">
+          <div class="mini-card-title">Monthly income</div>
+          <div class="mini-card-subtitle">For this month</div>
+          <div class="mini-card-value" id="incomeValue">£0.00</div>
+        </div>
+
+        <div class="mini-card">
+          <div class="mini-card-title">Direct Debits &amp; bills</div>
+          <div class="mini-card-subtitle">Mortgage, utilities, tax</div>
+          <div class="mini-card-value" id="ddValue">£0.00</div>
+        </div>
+
+        <div class="mini-card">
+          <div class="mini-card-title">Other spending</div>
+          <div class="mini-card-subtitle">Food, fuel, nights out</div>
+          <div class="mini-card-value" id="spendValue">£0.00</div>
+        </div>
+
+        <div class="mini-card" id="leftCard">
+          <div class="mini-card-title">Left after spending</div>
+          <div class="mini-card-subtitle">If you stopped today</div>
+          <div class="mini-card-value" id="leftValue">£0.00</div>
+        </div>
+      </div>
+
+      <div class="whatif-box">
+        <div class="whatif-label">What if this month changed by…</div>
+        <input type="range" id="whatIfSlider" min="-1000" max="1000" step="10" value="0">
+        <div class="whatif-meta">
+          <span id="whatIfChange">Change: £0.00</span>
+          <span id="whatIfAfter">After change: £0.00</span>
+          <button class="btn btn-ghost btn-small" id="resetWhatIfBtn">Reset</button>
+        </div>
+      </div>
+
+      <div class="donut-and-text">
+        <div class="donut-wrapper">
+          <svg class="donut-svg" viewBox="0 0 120 120">
+            <!-- background circle -->
+            <circle
+              cx="60" cy="60" r="40"
+              stroke="rgba(15,23,42,0.9)"
+              stroke-width="16"
+              fill="none"
+            ></circle>
+            <!-- foreground circle -->
+            <circle
+              id="donutArc"
+              cx="60" cy="60" r="40"
+              stroke="url(#donutGradient)"
+              stroke-width="16"
+              fill="none"
+              stroke-linecap="round"
+              transform="rotate(-90 60 60)"
+              stroke-dasharray="251.2"
+              stroke-dashoffset="251.2"
+            ></circle>
+
+            <defs>
+              <linearGradient id="donutGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#5fa5fb"></stop>
+                <stop offset="50%" stop-color="#4ade80"></stop>
+                <stop offset="100%" stop-color="#0fd6e9"></stop>
+              </linearGradient>
+            </defs>
+
+            <text x="60" y="54" class="donut-center-text" id="donutPercentText">0%</text>
+            <text x="60" y="70" class="donut-center-sub">income left</text>
+          </svg>
+        </div>
+
+        <div class="donut-text-block">
+          <div id="statusTitle" class="status-title">Waiting for income</div>
+          <div id="statusBody" class="status-body">
+            Add your salary for this month to see how much is left after direct debits and spending.
+          </div>
+
+          <div class="graph-box">
+            <div class="graph-label">Daily balance this month</div>
+            <svg class="graph-svg" viewBox="0 0 100 50">
+              <line x1="0" y1="40" x2="100" y2="40" class="axis-line"></line>
+              <polyline id="graphLine" class="graph-line" stroke="#4ade80" points=""></polyline>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADD TRANSACTION -->
+    <section class="section">
+      <div class="section-title">Add transaction (one-off)</div>
+
+      <div class="form-group">
+        <label for="txDate">Date</label>
+        <input type="date" id="txDate" class="input">
+      </div>
+
+      <div class="form-group">
+        <label for="txType">Type</label>
+        <select id="txType" class="input">
+          <option value="income">Income</option>
+          <option value="spend">Spending</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="txDescription">Description</label>
+        <input type="text" id="txDescription" class="input" placeholder="e.g. RN salary, Tesco shop">
+      </div>
+
+      <div class="form-group">
+        <label for="txAmount">Amount</label>
+        <input type="number" id="txAmount" class="input" placeholder="0.00" step="0.01">
+      </div>
+
+      <button class="btn btn-primary" id="addTxBtn">Add transaction</button>
+
+      <div class="list-container" style="margin-top:8px;">
+        <div class="list-header">Transactions this month</div>
+        <div id="txList"></div>
+      </div>
+    </section>
+
+    <!-- DIRECT DEBITS -->
+    <section class="section">
+      <div class="section-title">Direct debits &amp; regular bills</div>
+
+      <div class="form-group">
+        <label for="ddName">Name</label>
+        <input type="text" id="ddName" class="input" placeholder="e.g. Mortgage, Council tax">
+      </div>
+
+      <div class="form-group">
+        <label for="ddAmount">Amount (per month)</label>
+        <input type="number" id="ddAmount" class="input" placeholder="0.00" step="0.01">
+      </div>
+
+      <div class="form-group">
+        <label for="ddDay">Day of month (1–31)</label>
+        <input type="number" id="ddDay" class="input" placeholder="1" min="1" max="31">
+      </div>
+
+      <div class="form-group">
+        <label for="ddCategory">Category (optional)</label>
+        <input type="text" id="ddCategory" class="input" placeholder="e.g. Housing, Utilities">
+      </div>
+
+      <div class="form-group toggle-row">
+        <input type="checkbox" id="ddActive" checked>
+        <label for="ddActive">Active</label>
+      </div>
+
+      <button class="btn btn-ghost" id="addDdBtn">Add direct debit</button>
+
+      <div class="list-container" style="margin-top:8px;">
+        <div class="list-header">All direct debits (by day)</div>
+        <div id="ddList"></div>
+      </div>
+    </section>
+
+    <!-- MONTH SUMMARY + EXPORT -->
+    <section class="section">
+      <div class="section-title">Month summary</div>
+
+      <div class="summary-lines">
+        <div class="summary-row">
+          <span class="summary-label">Started with</span>
+          <span class="summary-value" id="sumIncome">£0.00</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Committed to direct debits</span>
+          <span class="summary-value" id="sumDD">£0.00</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Spent this month</span>
+          <span class="summary-value" id="sumSpend">£0.00</span>
+        </div>
+        <div class="summary-row summary-total">
+          <span class="summary-label">Left after everything</span>
+          <span class="summary-value" id="sumLeft">£0.00</span>
+        </div>
+      </div>
+
+      <div class="export-row">
+        <button class="btn btn-ghost" id="exportBtn">
+          Export data (CSV)
+        </button>
+      </div>
+    </section>
+
   </div>
 </div>
-      </header>
 
-      <div class="top-row">
-        <div class="card">
-          <div class="card-inner">
-            <div class="section-title-row">
-              <h2>
-                Dashboard Snapshot
-                <span class="tag">current month</span>
-              </h2>
-              <small>Tap through months to see how things change over time.</small>
-            </div>
+<script>
+  // ---------- Helpers ----------
+  function formatMoney(value) {
+    const num = Number(value) || 0;
+    return num.toLocaleString("en-GB", {
+      style: "currency",
+      currency: "GBP",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
 
-            <div class="pill-row">
-              <div class="pill">
-                <div>
-                  <div class="pill-label">Monthly Income</div>
-                  <div class="pill-value" id="incomeDisplay">£0</div>
-                </div>
-              </div>
-              <div class="pill">
-                <div>
-                  <div class="pill-label">Direct Debits &amp; bills</div>
-                  <div class="pill-value" id="ddDisplay">£0</div>
-                </div>
-              </div>
-              <div class="pill">
-                <div>
-                  <div class="pill-label">Other Spending</div>
-                  <div class="pill-value" id="spendDisplay">£0</div>
-                </div>
-              </div>
-              <div class="pill">
-                <div>
-                  <div class="pill-label">Left after everything</div>
-                  <div class="pill-value positive" id="leftDisplay">£0</div>
-                </div>
-              </div>
-            </div>
+  function formatDateShort(dateStr) {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d)) return "";
+    return d.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "2-digit"
+    });
+  }
 
-            <div class="sub-row">
-              <div class="ym-select-group">
-                <label>Month</label>
-                <div class="month-nav">
-                  <button id="prevMonth" aria-label="Previous month">&#x25C0;</button>
-                  <span id="monthLabel">Dec 25</span>
-                  <button id="nextMonth" aria-label="Next month">&#x25B6;</button>
-                </div>
-              </div>
-              <div>
-                <label>Mode</label>
-                <div class="radio-row-inline">
-                  <label>
-                    <input type="radio" name="viewMode" value="net" checked />
-                    Net view
-                  </label>
-                  <label>
-                    <input type="radio" name="viewMode" value="gross" />
-                    Show income &amp; outgoings separately
-                  </label>
-                </div>
-                <div class="hint">
-                  Net = what's left after everything, gross = income vs bills + spending separately.
-                </div>
-              </div>
-            </div>
+  function monthKey(date) {
+    return date.toLocaleDateString("en-GB", {
+      month: "short",
+      year: "2-digit"
+    });
+  }
 
-            <div class="donut-panel">
-              <div class="donut-wrapper">
-                <svg class="donut-svg" viewBox="0 0 100 100">
-                  <defs>
-                    <linearGradient id="gradDonut" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stop-color="#22c55e" />
-                      <stop offset="50%" stop-color="#3b82f6" />
-                      <stop offset="100%" stop-color="#a855f7" />
-                    </linearGradient>
-                  </defs>
-                  <circle class="donut-bg" cx="50" cy="50" r="38"></circle>
-                  <circle class="donut-fg" cx="50" cy="50" r="38" stroke-dasharray="238.76" stroke-dashoffset="238.76"></circle>
-                </svg>
-                <div class="donut-center-label">
-                  <span id="donutPercent">0%</span>
-                  <span>income left</span>
-                </div>
-              </div>
-              <div class="donut-text">
-                <strong id="donutStatusLabel">Waiting for Income</strong>
-                <span id="donutMoneyLabel">
-                  Add your salary as income in this month to see what's left.
-                </span>
-              </div>
-            </div>
+  function firstOfMonth(date) {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+  }
 
-            <hr />
+  function daysInMonth(date) {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  }
 
-            <h2>Add transaction <span class="tag">one off</span></h2>
-            <p>Use this for salary, overtime, food shops, nights out &amp; anything that isn't a regular direct debit.</p>
+  function clamp(val, min, max) {
+    return Math.max(min, Math.min(max, val));
+  }
 
-            <form id="txForm">
-              <input type="hidden" id="txId" />
-              <div class="field-row">
-                <div class="field-group">
-                  <label for="txDate">Date</label>
-                  <input type="date" id="txDate" required />
-                </div>
-                <div class="field-group">
-                  <label for="txType">Type</label>
-                  <select id="txType">
-                    <option value="income">Income</option>
-                    <option value="spend">Spending</option>
-                  </select>
-                </div>
-              </div>
-              <div class="field-row">
-                <div class="field-group">
-                  <label for="txDescription">Description</label>
-                  <input type="text" id="txDescription" placeholder="e.g. RN salary, Tesco shop, fuel" required />
-                </div>
-                <div class="field-group">
-                  <label for="txAmount">Amount</label>
-                  <input type="number" id="txAmount" step="0.01" min="0" placeholder="0.00" required />
-                </div>
-              </div>
-              <div>
-                <button type="submit" class="btn btn-primary" id="txSubmitButton">Add transaction</button>
-              </div>
-            </form>
+  function uuid() {
+    return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+  }
 
-            <div class="table-wrapper">
-              <div class="table-header">
-                <div>
-                  <h3>Transactions in this month</h3>
-                  <span id="txSummaryLabel">No transactions yet</span>
-                </div>
-              </div>
-              <div class="table-body" id="txTableBody">
-                <div class="table-empty">No transactions yet. Add income and spending above.</div>
-              </div>
-            </div>
-          </div>
-        </div>
+  // ---------- State ----------
+  const STORAGE_KEY_TX = "bishopBudget_transactions_v1";
+  const STORAGE_KEY_DD = "bishopBudget_directDebits_v1";
 
-        <div class="card">
-          <div class="card-inner">
-            <h2>At-a-glance budget health</h2>
-            <p>See how your month looks when you line up income, direct debits and everything else.</p>
+  let transactions = [];
+  let directDebits = [];
+  let selectedMonth = firstOfMonth(new Date());
+  let whatIfOffset = 0;
 
-            <div class="kpi-row">
-              <div class="kpi">
-                <div class="kpi-label">Left after direct debits</div>
-                <div class="kpi-value good" id="kpiAfterDD">£0</div>
-              </div>
-              <div class="kpi">
-                <div class="kpi-label">Left after DDs &amp; spending</div>
-                <div class="kpi-value good" id="kpiAfterAll">£0</div>
-              </div>
-              <div class="kpi">
-                <div class="kpi-label">Income used</div>
-                <div class="kpi-value" id="kpiUsed">0%</div>
-              </div>
-            </div>
+  // ---------- Persistence ----------
+  function loadData() {
+    try {
+      const txRaw = localStorage.getItem(STORAGE_KEY_TX);
+      const ddRaw = localStorage.getItem(STORAGE_KEY_DD);
+      transactions = txRaw ? JSON.parse(txRaw) : [];
+      directDebits = ddRaw ? JSON.parse(ddRaw) : [];
+    } catch (e) {
+      console.error("Failed to load data", e);
+      transactions = [];
+      directDebits = [];
+    }
+  }
 
-            <div class="summary-row">
-              <div class="summary-pill">
-                Income this month:
-                <strong id="summaryIncome">£0</strong>
-              </div>
-              <div class="summary-pill">
-                Direct debits this month:
-                <strong id="summaryDD">£0</strong>
-              </div>
-              <div class="summary-pill">
-                Other spending:
-                <strong id="summarySpend">£0</strong>
-              </div>
-              <div class="summary-pill">
-                Total left:
-                <strong id="summaryLeft">£0</strong>
-              </div>
-            </div>
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY_TX, JSON.stringify(transactions));
+    localStorage.setItem(STORAGE_KEY_DD, JSON.stringify(directDebits));
+  }
 
-            <div class="banner">
-              <strong>Tip:</strong>
-              <span>Once you've set up your direct debits, you should rarely need to touch them. Focus on keeping your everyday spending under control month by month.</span>
-            </div>
+  // ---------- Derived calculations ----------
+  function sameMonth(dateStr, monthDate) {
+    if (!dateStr) return false;
+    const d = new Date(dateStr);
+    return d.getFullYear() === monthDate.getFullYear() &&
+           d.getMonth() === monthDate.getMonth();
+  }
 
-            <div class="footer-note">
-              Data is stored in your browser and synced via your account so you can use it across your devices.
-            </div>
-          </div>
-        </div>
-      </div>
+  function getMonthTransactions() {
+    return transactions.filter(tx => sameMonth(tx.date, selectedMonth));
+  }
 
-      <div class="section-row">
-        <div class="section-card">
-          <div class="section-title-row">
-            <h2>Direct debits &amp; regular bills</h2>
-            <small>Set these up once. The app will pull them into the right months automatically.</small>
-          </div>
+  function getIncomeTotal() {
+    return getMonthTransactions()
+      .filter(tx => tx.type === "income")
+      .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
+  }
 
-          <p>Use this section for rent, mortgages, utilities, subscriptions and anything that leaves your account regularly.</p>
+  function getSpendTotal() {
+    return getMonthTransactions()
+      .filter(tx => tx.type === "spend")
+      .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
+  }
 
-          <form id="ddForm">
-            <input type="hidden" id="ddId" />
-            <div class="field-row">
-              <div class="field-group">
-                <label for="ddName">Name</label>
-                <input type="text" id="ddName" placeholder="e.g. Mortgage, Council tax, Netflix" required />
-              </div>
-              <div class="field-group">
-                <label for="ddAmount">Amount (for this month)</label>
-                <input type="number" id="ddAmount" step="0.01" min="0" placeholder="0.00" required />
-              </div>
-            </div>
-            <div class="field-row">
-              <div class="field-group">
-                <label for="ddDay">Day of month</label>
-                <input type="number" id="ddDay" min="1" max="31" placeholder="e.g. 1, 15, 28" required />
-                <div class="hint">If something comes out on the last day of the month, just set this to 28–31 to taste.</div>
-              </div>
-              <div class="field-group">
-                <label for="ddCategory">Category</label>
-                <input type="text" id="ddCategory" placeholder="e.g. Housing, Utilities, TV, Insurance" />
-              </div>
-            </div>
+  function getDDTotal() {
+    return directDebits
+      .filter(dd => dd.active)
+      .reduce((sum, dd) => sum + Number(dd.amount || 0), 0);
+  }
 
-            <div class="field-group">
-              <label>Status</label>
-              <div class="radio-row">
-                <label>
-                  <input type="radio" name="ddActive" value="true" checked />
-                  Active (still running)
-                </label>
-                <label>
-                  <input type="radio" name="ddActive" value="false" />
-                  Paused / cancelled
-                </label>
-              </div>
-              <div class="hint">Paused items stay in your history but don't count against your monthly totals.</div>
-            </div>
+  function getDailyBalances() {
+    const days = daysInMonth(selectedMonth);
+    const monthTx = getMonthTransactions();
+    const income = getIncomeTotal();
+    const activeDDs = directDebits.filter(dd => dd.active);
 
-            <div>
-              <button type="submit" class="btn btn-primary" id="ddSubmitButton">Add direct debit</button>
-              <button type="button" class="btn btn-secondary" id="ddCancelEdit" style="display:none;">Cancel edit</button>
-            </div>
-          </form>
+    const balances = [];
+    for (let day = 1; day <= days; day++) {
+      let ddUpToDay = 0;
+      activeDDs.forEach(dd => {
+        if (dd.day <= day) {
+          ddUpToDay += Number(dd.amount || 0);
+        }
+      });
 
-          <div class="direct-debit-list" id="ddList">
-            <div class="direct-debit-empty">No direct debits yet. Start by adding the big things like rent, mortgage, council tax and utilities.</div>
-          </div>
+      let spendUpToDay = 0;
+      monthTx.forEach(tx => {
+        if (tx.type === "spend") {
+          const d = new Date(tx.date);
+          if (d.getDate() <= day) {
+            spendUpToDay += Number(tx.amount || 0);
+          }
+        }
+      });
 
-          <div class="pills-secondary">
-            <span>Mortgage / rent</span>
-            <span>Water / council tax</span>
-            <span>Mobile / internet</span>
-            <span>Subscriptions &amp; TV</span>
-            <span>Insurance</span>
-          </div>
-        </div>
+      let bal = income - ddUpToDay - spendUpToDay - (whatIfOffset * (day / days));
+      balances.push(bal);
+    }
+    return balances;
+  }
 
-        <div class="section-card">
-          <div class="section-title-row">
-            <h2>Spending breakdown</h2>
-            <small>See where the rest of your money goes once DDs and bills are out.</small>
-          </div>
+  // ---------- UI rendering ----------
+  function renderMonthLabel() {
+    const label = document.getElementById("monthLabel");
+    label.textContent = monthKey(selectedMonth);
+  }
 
-          <p>Every card or cash spend you log in the left-hand panel shows up here, grouped into income vs spending.</p>
+  function renderDashboard() {
+    const income = getIncomeTotal();
+    const spend = getSpendTotal();
+    const dd = getDDTotal();
 
-          <div class="table-wrapper">
-            <div class="table-header">
-              <div>
-                <h3>Spending in this month</h3>
-                <span id="spendSummaryLabel">Nothing recorded yet.</span>
-              </div>
-            </div>
-            <div class="table-body" id="spendTableBody">
-              <div class="table-empty">Log some spending transactions and they will appear here broken down by description.</div>
-            </div>
-          </div>
+    const afterDDs = income - dd;
+    const afterAll = income - dd - spend;
+    const afterAllWhatIf = afterAll - whatIfOffset;
 
-          <hr class="divider" />
+    document.getElementById("incomeValue").textContent = formatMoney(income);
+    document.getElementById("spendValue").textContent = formatMoney(spend);
+    document.getElementById("ddValue").textContent = formatMoney(dd);
+    document.getElementById("leftValue").textContent = formatMoney(afterAllWhatIf);
 
-          <p class="muted">This view is deliberately simple. It isn't trying to replace a full banking app, just give you a clear picture of: what comes in, what must go out, and what you have left to live on.</p>
-        </div>
-      </div>
-    </div>
-  </div>
+    // Colour for left card
+    const leftCard = document.getElementById("leftCard");
+    if (afterAllWhatIf > 0) {
+      leftCard.style.borderColor = "rgba(34,197,94,0.7)";
+    } else if (afterAllWhatIf === 0) {
+      leftCard.style.borderColor = "rgba(249,115,22,0.7)";
+    } else {
+      leftCard.style.borderColor = "rgba(248,113,113,0.7)";
+    }
 
-  <!-- Firebase v8 scripts -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    // What-if text
+    const whatIfChangeEl = document.getElementById("whatIfChange");
+    const whatIfAfterEl = document.getElementById("whatIfAfter");
+    const absChange = Math.abs(whatIfOffset);
+    const sign = whatIfOffset === 0 ? "" : (whatIfOffset > 0 ? "+" : "−");
+    whatIfChangeEl.textContent = "Change: " + sign + formatMoney(absChange);
+    whatIfAfterEl.textContent = "After change: " + formatMoney(afterAllWhatIf);
 
-  <script>
-    // ---------- LOCAL STORAGE KEYS ----------
-    const STORAGE_TX = "br_email_v1_transactions";
-    const STORAGE_DD = "br_email_v1_directDebits";
-    const STORAGE_YM = "br_email_v1_selectedYM";
+    // Donut
+    let percentLeft = 0;
+    if (income > 0) {
+      const left = income - dd - spend;
+      percentLeft = clamp((left / income) * 100, 0, 100);
+    }
+    const circumference = 2 * Math.PI * 40;
+    const offset = circumference * (1 - percentLeft / 100);
+    const donutArc = document.getElementById("donutArc");
+    donutArc.style.strokeDasharray = circumference.toString();
+    donutArc.style.strokeDashoffset = offset.toString();
+    document.getElementById("donutPercentText").textContent =
+      Math.round(percentLeft) + "%";
 
-    let transactions = []; // {id, date, description, amount, type}
-    // directDebits: {id, name, baseAmount, day, category, active, perMonthAmounts: { [ym]: number }}
-    let directDebits = [];
-    let selectedYM = getInitialYearMonth();
+    // Status text
+    const statusTitle = document.getElementById("statusTitle");
+    const statusBody = document.getElementById("statusBody");
 
-    let auth = null;
-    let db = null;
-    let currentUser = null;
+    if (income <= 0) {
+      statusTitle.textContent = "Waiting for income";
+      statusTitle.className = "status-title";
+      statusBody.textContent =
+        "Add your salary for this month to see how much is left after direct debits and spending.";
+    } else {
+      const left = afterAll;
+      if (left > 0) {
+        statusTitle.textContent = "You’re in the green";
+        statusTitle.className = "status-title green";
+        statusBody.textContent =
+          formatMoney(left) + " left after this month’s direct debits and spending.";
+      } else if (left === 0) {
+        statusTitle.textContent = "Every pound is allocated";
+        statusTitle.className = "status-title amber";
+        statusBody.textContent = "You’ve used 100% of this month’s income.";
+      } else {
+        statusTitle.textContent = "Spending over income";
+        statusTitle.className = "status-title red";
+        statusBody.textContent =
+          "Over by " + formatMoney(Math.abs(left)) + " this month.";
+      }
+    }
 
-    // ---------- FIREBASE CONFIG (V8 STYLE) ----------
-    const firebaseConfig = {
-      apiKey: "AIzaSyBSD8IOAUvlTay6VyBvNyb5016Updd2JC4",
-      authDomain: "bishop-budget-email.firebaseapp.com",
-      projectId: "bishop-budget-email",
-      storageBucket: "bishop-budget-email.firebasestorage.app",
-      messagingSenderId: "266593126604",
-      appId: "1:266593126604:web:e3d859881170f5eb881a69"
+    // Graph
+    renderGraph();
+
+    // Summary
+    document.getElementById("sumIncome").textContent = formatMoney(income);
+    document.getElementById("sumDD").textContent = formatMoney(dd);
+    document.getElementById("sumSpend").textContent = formatMoney(spend);
+    document.getElementById("sumLeft").textContent = formatMoney(afterAll);
+  }
+
+  function renderGraph() {
+    const balances = getDailyBalances();
+    const svgLine = document.getElementById("graphLine");
+
+    if (!balances.length) {
+      svgLine.setAttribute("points", "");
+      return;
+    }
+
+    let minVal = Math.min(...balances, 0);
+    let maxVal = Math.max(...balances, 0);
+    if (minVal === maxVal) {
+      maxVal = minVal + 1;
+    }
+    const range = maxVal - minVal;
+
+    const points = balances.map((val, index) => {
+      const x = balances.length > 1
+        ? (index / (balances.length - 1)) * 100
+        : 50;
+      const norm = (val - minVal) / range;
+      const y = 5 + (1 - norm) * 40;
+      return `${x.toFixed(2)},${y.toFixed(2)}`;
+    });
+
+    svgLine.setAttribute("points", points.join(" "));
+  }
+
+  function renderTransactions() {
+    const container = document.getElementById("txList");
+    container.innerHTML = "";
+
+    const monthTx = getMonthTransactions();
+    if (!monthTx.length) {
+      const empty = document.createElement("div");
+      empty.className = "list-empty";
+      empty.textContent = "No transactions yet. Add income and spending above.";
+      container.appendChild(empty);
+      return;
+    }
+
+    monthTx
+      .slice()
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .forEach(tx => {
+        const item = document.createElement("div");
+        item.className = "list-item";
+
+        const main = document.createElement("div");
+        main.className = "list-main";
+
+        const title = document.createElement("div");
+        title.className = "list-title";
+        title.textContent = tx.description || "(No description)";
+
+        const sub = document.createElement("div");
+        sub.className = "list-sub";
+        sub.textContent =
+          `${formatDateShort(tx.date)} · ${tx.type === "income" ? "Income" : "Spending"}`;
+
+        main.appendChild(title);
+        main.appendChild(sub);
+
+        const amount = document.createElement("div");
+        amount.className = "list-amount";
+        amount.textContent = formatMoney(tx.amount);
+        amount.style.color = tx.type === "income" ? "var(--green)" : "var(--red)";
+
+        const actions = document.createElement("div");
+
+        const editBtn = document.createElement("button");
+        editBtn.className = "btn btn-ghost btn-small";
+        editBtn.textContent = "Edit";
+        editBtn.onclick = () => editTransaction(tx.id);
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "btn btn-danger btn-small";
+        delBtn.textContent = "Delete";
+        delBtn.onclick = () => deleteTransaction(tx.id);
+
+        actions.appendChild(editBtn);
+        actions.appendChild(delBtn);
+
+        item.appendChild(main);
+        item.appendChild(amount);
+        item.appendChild(actions);
+
+        container.appendChild(item);
+      });
+  }
+
+  function renderDirectDebits() {
+    const container = document.getElementById("ddList");
+    container.innerHTML = "";
+
+    if (!directDebits.length) {
+      const empty = document.createElement("div");
+      empty.className = "list-empty";
+      empty.textContent = "No direct debits yet. Start with mortgage, council tax and utilities.";
+      container.appendChild(empty);
+      return;
+    }
+
+    const sorted = directDebits.slice().sort((a, b) => (a.day || 0) - (b.day || 0));
+
+    sorted.forEach(dd => {
+      const item = document.createElement("div");
+      item.className = "list-item";
+
+      const main = document.createElement("div");
+      main.className = "list-main";
+
+      const title = document.createElement("div");
+      title.className = "list-title";
+      title.textContent = dd.name || "(No name)";
+
+      const cat = dd.category ? ` · ${dd.category}` : "";
+      const sub = document.createElement("div");
+      sub.className = "list-sub";
+      sub.textContent =
+        `${formatMoney(dd.amount)} · day ${dd.day}${cat}`;
+
+      main.appendChild(title);
+      main.appendChild(sub);
+
+      const status = document.createElement("div");
+      status.className = "badge " + (dd.active ? "badge-green" : "badge-red");
+      status.textContent = dd.active ? "Active" : "Paused";
+
+      const actions = document.createElement("div");
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "btn btn-ghost btn-small";
+      editBtn.textContent = "Edit";
+      editBtn.onclick = () => editDirectDebit(dd.id);
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "btn btn-danger btn-small";
+      delBtn.textContent = "Delete";
+      delBtn.onclick = () => deleteDirectDebit(dd.id);
+
+      actions.appendChild(status);
+      actions.appendChild(editBtn);
+      actions.appendChild(delBtn);
+
+      item.appendChild(main);
+      item.appendChild(actions);
+
+      container.appendChild(item);
+    });
+  }
+
+  function renderAll() {
+    renderMonthLabel();
+    renderDashboard();
+    renderTransactions();
+    renderDirectDebits();
+  }
+
+  // ---------- Actions ----------
+  function changeMonth(offset) {
+    selectedMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + offset, 1);
+    whatIfOffset = 0;
+    document.getElementById("whatIfSlider").value = "0";
+    renderAll();
+  }
+
+  function addTransaction() {
+    const dateEl = document.getElementById("txDate");
+    const typeEl = document.getElementById("txType");
+    const descEl = document.getElementById("txDescription");
+    const amountEl = document.getElementById("txAmount");
+
+    const date = dateEl.value;
+    const type = typeEl.value;
+    const desc = descEl.value.trim();
+    const amount = parseFloat(amountEl.value);
+
+    if (!date || isNaN(amount) || !desc) {
+      alert("Please enter date, description and amount.");
+      return;
+    }
+
+    const tx = {
+      id: uuid(),
+      date,
+      type,
+      description: desc,
+      amount
     };
+    transactions.push(tx);
+    saveData();
 
-    function initFirebase() {
-      firebase.initializeApp(firebaseConfig);
-      auth = firebase.auth();
-      db = firebase.firestore();
+    // reset inputs
+    descEl.value = "";
+    amountEl.value = "";
+    dateEl.value = "";
+    typeEl.value = "income";
 
-      auth.onAuthStateChanged(user => {
-        currentUser = user;
-        updateAuthUi();
-        if (user) {
-          loadCloudState();
-        }
-      });
+    renderAll();
+  }
+
+  function editTransaction(id) {
+    const tx = transactions.find(t => t.id === id);
+    if (!tx) return;
+
+    const newDesc = prompt("Description:", tx.description || "");
+    if (newDesc === null) return;
+
+    const newAmtStr = prompt("Amount:", tx.amount != null ? tx.amount : "");
+    if (newAmtStr === null) return;
+    const newAmt = parseFloat(newAmtStr);
+    if (isNaN(newAmt)) {
+      alert("Invalid amount.");
+      return;
     }
 
-    function updateAuthUi() {
-      const status = document.getElementById("authStatus");
-      const signOutBtn = document.getElementById("signOutButton");
-      if (!status || !signOutBtn) return;
+    tx.description = newDesc.trim() || tx.description;
+    tx.amount = newAmt;
+    saveData();
+    renderAll();
+  }
 
-      if (currentUser) {
-        status.textContent = `Signed in as ${currentUser.email}`;
-        signOutBtn.style.display = "inline-block";
-      } else {
-        status.textContent = "Not signed in";
-        signOutBtn.style.display = "none";
-      }
+  function deleteTransaction(id) {
+    if (!confirm("Delete this transaction?")) return;
+    transactions = transactions.filter(t => t.id !== id);
+    saveData();
+    renderAll();
+  }
+
+  function addDirectDebit() {
+    const nameEl = document.getElementById("ddName");
+    const amountEl = document.getElementById("ddAmount");
+    const dayEl = document.getElementById("ddDay");
+    const catEl = document.getElementById("ddCategory");
+    const activeEl = document.getElementById("ddActive");
+
+    const name = nameEl.value.trim();
+    const amount = parseFloat(amountEl.value);
+    const day = parseInt(dayEl.value, 10);
+    const category = catEl.value.trim();
+    const active = !!activeEl.checked;
+
+    if (!name || isNaN(amount) || isNaN(day) || day < 1 || day > 31) {
+      alert("Please enter name, valid amount and day (1–31).");
+      return;
     }
 
-    function loadCloudState() {
-      if (!currentUser || !db) return;
-      const docRef = db.collection("budgets").doc(currentUser.uid);
-      docRef.get().then(doc => {
-        if (doc.exists) {
-          const data = doc.data() || {};
-          transactions = data.transactions || [];
-          directDebits = data.directDebits || [];
-          selectedYM = data.selectedYM || selectedYM;
-          saveState(false);
-          saveSelectedYM(false);
-          render();
-        } else {
-          syncToCloud();
-        }
-      }).catch(err => console.error("Error loading cloud data", err));
+    const dd = {
+      id: uuid(),
+      name,
+      amount,
+      day,
+      category,
+      active
+    };
+    directDebits.push(dd);
+    saveData();
+
+    nameEl.value = "";
+    amountEl.value = "";
+    dayEl.value = "";
+    catEl.value = "";
+    activeEl.checked = true;
+
+    renderAll();
+  }
+
+  function editDirectDebit(id) {
+    const dd = directDebits.find(d => d.id === id);
+    if (!dd) return;
+
+    const newName = prompt("Name:", dd.name || "");
+    if (newName === null) return;
+
+    const newAmtStr = prompt("Amount:", dd.amount != null ? dd.amount : "");
+    if (newAmtStr === null) return;
+    const newAmt = parseFloat(newAmtStr);
+    if (isNaN(newAmt)) {
+      alert("Invalid amount.");
+      return;
     }
 
-    function syncToCloud() {
-      if (!currentUser || !db) return;
-      const docRef = db.collection("budgets").doc(currentUser.uid);
-      docRef.set(
-        {
-          transactions,
-          directDebits,
-          selectedYM,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        },
-        { merge: true }
-      ).catch(err => console.error("Error saving to cloud", err));
+    const newDayStr = prompt("Day of month (1–31):", dd.day != null ? dd.day : "");
+    if (newDayStr === null) return;
+    const newDay = parseInt(newDayStr, 10);
+    if (isNaN(newDay) || newDay < 1 || newDay > 31) {
+      alert("Invalid day.");
+      return;
     }
 
-    // ---------- DATE / MONEY HELPERS ----------
-    function getInitialYearMonth() {
-      const saved = localStorage.getItem(STORAGE_YM);
-      if (saved) return saved;
-      return getCurrentYearMonth();
-    }
-
-    function getCurrentYearMonth() {
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, "0");
-      return `${y}-${m}`;
-    }
-
-    function formatYM(ym) {
-      const [y, m] = ym.split("-");
-      const date = new Date(Number(y), Number(m) - 1, 1);
-      return date.toLocaleString("en-GB", { month: "short", year: "2-digit" });
-    }
-
-    function parseDateToYM(dateStr) {
-      if (!dateStr) return getCurrentYearMonth();
-      const d = new Date(dateStr);
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      return `${y}-${m}`;
-    }
-
-    function formatMoney(v) {
-      const n = Number(v) || 0;
-      return "£" + n.toLocaleString("en-GB", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-    }
-
-    // ---------- LOCAL STORAGE ----------
-    function loadState() {
-      const storedTx = localStorage.getItem(STORAGE_TX);
-      const storedDD = localStorage.getItem(STORAGE_DD);
-      const storedYM = localStorage.getItem(STORAGE_YM);
-
-      transactions = storedTx ? JSON.parse(storedTx) : [];
-      directDebits = storedDD ? JSON.parse(storedDD) : [];
-      if (storedYM) selectedYM = storedYM;
-    }
-
-    function saveState(shouldSync = true) {
-      localStorage.setItem(STORAGE_TX, JSON.stringify(transactions));
-      localStorage.setItem(STORAGE_DD, JSON.stringify(directDebits));
-      if (shouldSync) syncToCloud();
-    }
-
-    function saveSelectedYM(shouldSync = true) {
-      localStorage.setItem(STORAGE_YM, selectedYM);
-      if (shouldSync) syncToCloud();
-    }
-
-    // ---------- MONTH VIEW / CALCS ----------
-    function getMonthViewData(ym) {
-      const monthTx = transactions.filter(tx => parseDateToYM(tx.date) === ym);
-
-      const income = monthTx
-        .filter(tx => tx.type === "income")
-        .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
-
-      const spend = monthTx
-        .filter(tx => tx.type === "spend")
-        .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
-
-      const ddForMonth = directDebits.filter(dd => dd.active);
-      const ddTotal = ddForMonth.reduce((sum, dd) => {
-        const perMonth = dd.perMonthAmounts || {};
-        const amountForYm = perMonth[ym] != null ? Number(perMonth[ym]) : Number(dd.baseAmount || 0);
-        return sum + amountForYm;
-      }, 0);
-
-      const afterDDs = income - ddTotal;
-      const afterAll = income - ddTotal - spend;
-      const incomeUsed = income > 0 ? ((ddTotal + spend) / income) * 100 : 0;
-
-      return {
-        income,
-        spend,
-        ddTotal,
-        afterDDs,
-        afterAll,
-        incomeUsed,
-        monthTx
-      };
-    }
-
-    function updateDonut(percentLeft, income, totalOut, viewMode) {
-      const fg = document.querySelector(".donut-fg");
-      const circumference = 2 * Math.PI * 38;
-      const clamped = Math.max(0, Math.min(100, percentLeft));
-      const dashOffset = circumference - (clamped / 100) * circumference;
-      fg.style.strokeDasharray = circumference.toFixed(2);
-      fg.style.strokeDashoffset = dashOffset.toFixed(2);
-
-      const donutPercentEl = document.getElementById("donutPercent");
-      donutPercentEl.textContent = `${Math.round(clamped)}%`;
-
-      const statusLabel = document.getElementById("donutStatusLabel");
-      const moneyLabel = document.getElementById("donutMoneyLabel");
-
-      if (income <= 0) {
-        statusLabel.textContent = "Waiting for income";
-        moneyLabel.textContent = "Add your salary as income in this month to see what's left.";
-        return;
-      }
-
-      const leftAfterAll = income - totalOut;
-
-      if (viewMode === "net") {
-        if (leftAfterAll > 0) {
-          statusLabel.textContent = "You're in the green this month";
-          moneyLabel.textContent = `${formatMoney(leftAfterAll)} left after direct debits and spending.`;
-        } else if (leftAfterAll === 0) {
-          statusLabel.textContent = "Every penny accounted for";
-          moneyLabel.textContent = "You've used 100% of your income this month.";
-        } else {
-          statusLabel.textContent = "Spending more than you bring in";
-          moneyLabel.textContent = `You're over by ${formatMoney(Math.abs(leftAfterAll))} this month.`;
-        }
-      } else {
-        statusLabel.textContent = "Income vs outgoings";
-        moneyLabel.textContent = `${formatMoney(totalOut)} going out vs ${formatMoney(income)} coming in.`;
-      }
-    }
-
-    function render() {
-      const monthLabelEl = document.getElementById("monthLabel");
-      monthLabelEl.textContent = formatYM(selectedYM);
-
-      const { income, spend, ddTotal, afterDDs, afterAll, incomeUsed, monthTx } =
-        getMonthViewData(selectedYM);
-
-      document.getElementById("incomeDisplay").textContent = formatMoney(income);
-      document.getElementById("ddDisplay").textContent = formatMoney(ddTotal);
-      document.getElementById("spendDisplay").textContent = formatMoney(spend);
-
-      const leftDisplay = document.getElementById("leftDisplay");
-      leftDisplay.textContent = formatMoney(afterAll);
-      leftDisplay.classList.toggle("positive", afterAll >= 0);
-      leftDisplay.classList.toggle("negative", afterAll < 0);
-
-      const kpiAfterDD = document.getElementById("kpiAfterDD");
-      const kpiAfterAll = document.getElementById("kpiAfterAll");
-      const kpiUsed = document.getElementById("kpiUsed");
-
-      kpiAfterDD.textContent = formatMoney(afterDDs);
-      kpiAfterAll.textContent = formatMoney(afterAll);
-      kpiUsed.textContent = `${Math.round(Math.min(999, Math.max(0, incomeUsed)))}%`;
-
-      kpiAfterAll.classList.remove("good", "warn", "bad");
-      if (afterAll >= income * 0.2) {
-        kpiAfterAll.classList.add("good");
-      } else if (afterAll >= 0) {
-        kpiAfterAll.classList.add("warn");
-      } else {
-        kpiAfterAll.classList.add("bad");
-      }
-
-      document.getElementById("summaryIncome").textContent = formatMoney(income);
-      document.getElementById("summaryDD").textContent = formatMoney(ddTotal);
-      document.getElementById("summarySpend").textContent = formatMoney(spend);
-      document.getElementById("summaryLeft").textContent = formatMoney(afterAll);
-
-      const viewMode = document.querySelector('input[name="viewMode"]:checked')?.value || "net";
-      const totalOutForDonut = ddTotal + spend;
-      const percentLeft = income > 0 ? ((income - totalOutForDonut) / income) * 100 : 0;
-      updateDonut(percentLeft, income, totalOutForDonut, viewMode);
-
-      // Transactions table
-      const txSummaryLabel = document.getElementById("txSummaryLabel");
-      const txTableBody = document.getElementById("txTableBody");
-      if (monthTx.length === 0) {
-        txSummaryLabel.textContent = "No transactions yet";
-        txTableBody.innerHTML =
-          '<div class="table-empty">No transactions yet. Add income and spending above.</div>';
-      } else {
-        const count = monthTx.length;
-        const totalValue = monthTx.reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
-        txSummaryLabel.textContent =
-          `${count} transaction${count !== 1 ? "s" : ""} totalling ${formatMoney(totalValue)}.`;
-
-        const rows = monthTx
-          .slice()
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
-          .map(tx => {
-            const typeLabel = tx.type === "income" ? "Income" : "Spending";
-            const typeClass = tx.type === "income" ? "positive" : "negative";
-            return `
-              <tr>
-                <td>${new Date(tx.date).toLocaleDateString("en-GB")}</td>
-                <td>
-                  <div>${tx.description || ""}</div>
-                  <div class="tx-type">${typeLabel}</div>
-                </td>
-                <td class="${typeClass}">${formatMoney(tx.amount)}</td>
-                <td class="tx-actions">
-                  <button class="link-button" onclick="editTransaction('${tx.id}')">Edit</button>
-                  <button class="link-button" onclick="deleteTransaction('${tx.id}')">Delete</button>
-                </td>
-              </tr>
-            `;
-          })
-          .join("");
-
-        txTableBody.innerHTML = `
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Amount</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>${rows}</tbody>
-          </table>
-        `;
-      }
-
-      // Spending breakdown
-      const spendSummaryLabel = document.getElementById("spendSummaryLabel");
-      const spendTableBody = document.getElementById("spendTableBody");
-
-      const spendItems = monthTx.filter(tx => tx.type === "spend");
-      if (spendItems.length === 0) {
-        spendSummaryLabel.textContent = "Nothing recorded yet.";
-        spendTableBody.innerHTML =
-          '<div class="table-empty">Log some spending transactions and they will appear here broken down by description.</div>';
-      } else {
-        const grouped = {};
-        spendItems.forEach(tx => {
-          const key = tx.description || "Other";
-          if (!grouped[key]) grouped[key] = 0;
-          grouped[key] += Number(tx.amount || 0);
-        });
-
-        const entries = Object.entries(grouped).sort((a, b) => b[1] - a[1]);
-        const totalSpend = spendItems.reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
-
-        spendSummaryLabel.textContent =
-          `${spendItems.length} spending transaction${spendItems.length !== 1 ? "s" : ""} across ` +
-          `${entries.length} description${entries.length !== 1 ? "s" : ""}.`;
-
-        const rows = entries
-          .map(([desc, amount]) => {
-            const pct = totalSpend > 0 ? (amount / totalSpend) * 100 : 0;
-            return `
-              <tr>
-                <td>${desc}</td>
-                <td>${formatMoney(amount)}</td>
-                <td>${pct.toFixed(1)}%</td>
-              </tr>
-            `;
-          })
-          .join("");
-
-        spendTableBody.innerHTML = `
-          <table>
-            <thead>
-              <tr>
-                <th>Description</th>
-                <th>Amount</th>
-                <th>% of spend</th>
-              </tr>
-            </thead>
-            <tbody>${rows}</tbody>
-          </table>
-        `;
-      }
-
-      // Direct debits
-      const ddList = document.getElementById("ddList");
-      if (directDebits.length === 0) {
-        ddList.innerHTML =
-          '<div class="direct-debit-empty">No direct debits yet. Start by adding the big things like rent, mortgage, council tax and utilities.</div>';
-      } else {
-        const rows = directDebits
-          .slice()
-          .sort((a, b) => (a.day || 0) - (b.day || 0))
-          .map(dd => {
-            const perMonth = dd.perMonthAmounts || {};
-            const amtForMonth =
-              perMonth[selectedYM] != null ? Number(perMonth[selectedYM]) : Number(dd.baseAmount || 0);
-            const badgeClass = dd.active ? "badge on" : "badge off";
-            const badgeText = dd.active ? "Active" : "Paused";
-            return `
-              <div class="direct-debit-row">
-                <div class="direct-debit-main">
-                  <div class="direct-debit-name">${dd.name || ""}</div>
-                  <div class="direct-debit-meta">
-                    ${formatMoney(amtForMonth)} on day ${dd.day || ""}${
-                      dd.category ? " · " + dd.category : ""
-                    }
-                  </div>
-                  <div class="direct-debit-meta">
-                    <span class="${badgeClass}">${badgeText}</span>
-                  </div>
-                </div>
-                <div class="direct-debit-actions">
-                  <div class="amount">${formatMoney(amtForMonth)}</div>
-                  <div>
-                    <button class="btn btn-secondary" onclick="editDirectDebit('${dd.id}')">Edit</button>
-                    <button class="btn btn-secondary" onclick="deleteDirectDebit('${dd.id}')">Delete</button>
-                  </div>
-                </div>
-              </div>
-            `;
-          })
-          .join("");
-
-        ddList.innerHTML = rows;
-      }
-    }
-
-    // ---------- TRANSACTIONS CRUD ----------
-    function editTransaction(id) {
-      const tx = transactions.find(t => t.id === id);
-      if (!tx) return;
-      document.getElementById("txId").value = tx.id;
-      document.getElementById("txDate").value = tx.date;
-      document.getElementById("txDescription").value = tx.description || "";
-      document.getElementById("txAmount").value = tx.amount || "";
-      document.getElementById("txType").value = tx.type || "income";
-      document.getElementById("txSubmitButton").textContent = "Save changes";
-    }
-
-    function deleteTransaction(id) {
-      if (!confirm("Delete this transaction?")) return;
-      transactions = transactions.filter(t => t.id !== id);
-      saveState();
-      render();
-    }
-
-    function resetTxForm() {
-      document.getElementById("txId").value = "";
-      const today = new Date().toISOString().slice(0, 10);
-      document.getElementById("txDate").value = today;
-      document.getElementById("txDescription").value = "";
-      document.getElementById("txAmount").value = "";
-      document.getElementById("txType").value = "income";
-      document.getElementById("txSubmitButton").textContent = "Add transaction";
-    }
-
-    // ---------- DIRECT DEBITS CRUD ----------
-    function resetDdForm() {
-      document.getElementById("ddId").value = "";
-      document.getElementById("ddName").value = "";
-      document.getElementById("ddAmount").value = "";
-      document.getElementById("ddDay").value = "";
-      document.getElementById("ddCategory").value = "";
-      document.querySelectorAll('input[name="ddActive"]').forEach(r => {
-        r.checked = r.value === "true";
-      });
-      document.getElementById("ddSubmitButton").textContent = "Add direct debit";
-      document.getElementById("ddCancelEdit").style.display = "none";
-    }
-
-    function editDirectDebit(id) {
-      const dd = directDebits.find(d => d.id === id);
-      if (!dd) return;
-      const perMonth = dd.perMonthAmounts || {};
-      const amtForMonth =
-        perMonth[selectedYM] != null ? Number(perMonth[selectedYM]) : Number(dd.baseAmount || 0);
-
-      document.getElementById("ddId").value = dd.id;
-      document.getElementById("ddName").value = dd.name || "";
-      document.getElementById("ddAmount").value = amtForMonth || "";
-      document.getElementById("ddDay").value = dd.day || "";
-      document.getElementById("ddCategory").value = dd.category || "";
-      document.querySelectorAll('input[name="ddActive"]').forEach(r => {
-        r.checked = r.value === (dd.active ? "true" : "false");
-      });
-
-      document.getElementById("ddSubmitButton").textContent = "Save changes";
-      document.getElementById("ddCancelEdit").style.display = "inline-block";
-    }
-
-    function deleteDirectDebit(id) {
-      if (!confirm("Delete this direct debit?")) return;
-      directDebits = directDebits.filter(dd => dd.id !== id);
-      saveState();
-      render();
-    }
-
-    // ---------- UI SETUP ----------
-    function buildMonthNavigation() {
-      const ymNow = getCurrentYearMonth();
-      const [currentYear, currentMonth] = ymNow.split("-").map(Number);
-
-      const months = [];
-      for (let offset = -12; offset <= 12; offset++) {
-        const date = new Date(currentYear, currentMonth - 1 + offset, 1);
-        const y = date.getFullYear();
-        const m = String(date.getMonth() + 1).padStart(2, "0");
-        months.push(`${y}-${m}`);
-      }
-
-      const prevBtn = document.getElementById("prevMonth");
-      const nextBtn = document.getElementById("nextMonth");
-
-      if (prevBtn) {
-        prevBtn.onclick = () => {
-          const index = months.indexOf(selectedYM);
-          if (index > 0) {
-            selectedYM = months[index - 1];
-            saveSelectedYM();
-            render();
-          }
-        };
-      }
-
-      if (nextBtn) {
-        nextBtn.onclick = () => {
-          const index = months.indexOf(selectedYM);
-          if (index < months.length - 1) {
-            selectedYM = months[index + 1];
-            saveSelectedYM();
-            render();
-          }
-        };
-      }
-
-      const monthLabelEl = document.getElementById("monthLabel");
-      if (monthLabelEl) monthLabelEl.textContent = formatYM(selectedYM);
-    }
-
-    function setupForms() {
-      const txForm = document.getElementById("txForm");
-      const ddForm = document.getElementById("ddForm");
-      const ddCancelEdit = document.getElementById("ddCancelEdit");
-
-      const today = new Date().toISOString().slice(0, 10);
-      document.getElementById("txDate").value = today;
-
-      txForm.addEventListener("submit", e => {
-        e.preventDefault();
-        const id = document.getElementById("txId").value;
-        const tx = {
-          id: id || Date.now().toString(),
-          date: document.getElementById("txDate").value,
-          description: document.getElementById("txDescription").value.trim(),
-          amount: Number(document.getElementById("txAmount").value),
-          type: document.getElementById("txType").value
-        };
-        if (!tx.date || !tx.description || isNaN(tx.amount)) return;
-
-        if (id) {
-          const index = transactions.findIndex(t => t.id === id);
-          if (index !== -1) transactions[index] = tx;
-        } else {
-          transactions.push(tx);
-        }
-        saveState();
-        resetTxForm();
-        render();
-      });
-
-      ddForm.addEventListener("submit", e => {
-        e.preventDefault();
-        const id = document.getElementById("ddId").value;
-        const amount = Number(document.getElementById("ddAmount").value);
-        const ddBase = {
-          id: id || Date.now().toString(),
-          name: document.getElementById("ddName").value.trim(),
-          baseAmount: amount,
-          day: Number(document.getElementById("ddDay").value),
-          category: document.getElementById("ddCategory").value.trim(),
-          active: document.querySelector('input[name="ddActive"]:checked')?.value === "true",
-          perMonthAmounts: {}
-        };
-
-        if (!ddBase.name || isNaN(ddBase.baseAmount) || isNaN(ddBase.day)) return;
-
-        if (id) {
-          const existingIndex = directDebits.findIndex(d => d.id === id);
-          if (existingIndex !== -1) {
-            const existing = directDebits[existingIndex];
-            const perMonth = existing.perMonthAmounts || {};
-            perMonth[selectedYM] = amount;
-            directDebits[existingIndex] = {
-              ...existing,
-              ...ddBase,
-              perMonthAmounts: perMonth
-            };
-          }
-        } else {
-          const perMonth = {};
-          perMonth[selectedYM] = amount;
-          ddBase.perMonthAmounts = perMonth;
-          directDebits.push(ddBase);
-        }
-
-        saveState();
-        resetDdForm();
-        render();
-      });
-
-      ddCancelEdit.addEventListener("click", () => {
-        resetDdForm();
-      });
-
-      document.querySelectorAll('input[name="viewMode"]').forEach(el => {
-        el.addEventListener("change", () => render());
-      });
-    }
-
-    function setupAuthButtons() {
-      const emailInput = document.getElementById("emailInput");
-      const passwordInput = document.getElementById("passwordInput");
-      const logInButton = document.getElementById("logInButton");
-      const signUpButton = document.getElementById("signUpButton");
-      const signOutButton = document.getElementById("signOutButton");
-
-      if (logInButton) {
-        logInButton.addEventListener("click", () => {
-          const email = emailInput.value.trim();
-          const password = passwordInput.value;
-          if (!email || !password) {
-            alert("Enter email and password first.");
-            return;
-          }
-          auth.signInWithEmailAndPassword(email, password)
-            .catch(err => {
-              console.error("Login error", err);
-              alert("Login failed: " + err.code + " - " + err.message);
-            });
-        });
-      }
-
-      if (signUpButton) {
-        signUpButton.addEventListener("click", () => {
-          const email = emailInput.value.trim();
-          const password = passwordInput.value;
-          if (!email || !password) {
-            alert("Enter email and password first.");
-            return;
-          }
-          auth.createUserWithEmailAndPassword(email, password)
-            .catch(err => {
-              console.error("Signup error", err);
-              alert("Sign-up failed: " + err.code + " - " + err.message);
-            });
-        });
-      }
-
-      if (signOutButton) {
-        signOutButton.addEventListener("click", () => {
-          if (auth) auth.signOut();
-        });
-      }
-    }
-
-    // ---------- INIT ----------
-    loadState();
-    buildMonthNavigation();
-    setupForms();
-    setupAuthButtons();
-    render();
-    initFirebase();
-
-    // Lock pinch-zoom on iOS
-    document.addEventListener("gesturestart", e => e.preventDefault());
-    document.addEventListener("gesturechange", e => e.preventDefault());
-    document.addEventListener("gestureend", e => e.preventDefault());
-  </script>
+    const activeStr = prompt("Active? (yes/no):", dd.active ? "yes" : "no");
+    if (activeStr === null) return;
+    const active = activeStr.toLowerCase().startsWith("y");
+
+    dd.name = newName.trim() || dd.name;
+    dd.amount = newAmt;
+    dd.day = newDay;
+    dd.active = active;
+
+    saveData();
+    renderAll();
+  }
+
+  function deleteDirectDebit(id) {
+    if (!confirm("Delete this direct debit?")) return;
+    directDebits = directDebits.filter(d => d.id !== id);
+    saveData();
+    renderAll();
+  }
+
+  function handleWhatIfChange() {
+    const slider = document.getElementById("whatIfSlider");
+    whatIfOffset = parseFloat(slider.value) || 0;
+    renderDashboard();
+  }
+
+  function resetWhatIf() {
+    whatIfOffset = 0;
+    document.getElementById("whatIfSlider").value = "0";
+    renderDashboard();
+  }
+
+  function exportCSV() {
+    const monthTx = getMonthTransactions();
+
+    let csv = "";
+    csv += "SECTION,TYPE,DATE,DESCRIPTION,AMOUNT\n";
+    monthTx.forEach(tx => {
+      const safeDesc = (tx.description || "").replace(/"/g, '""');
+      csv += `"Transaction","${tx.type}","${formatDateShort(tx.date)}","${safeDesc}",${tx.amount}\n`;
+    });
+
+    csv += "\nSECTION,NAME,AMOUNT,DAY_OF_MONTH,CATEGORY,ACTIVE\n";
+    directDebits.forEach(dd => {
+      const safeName = (dd.name || "").replace(/"/g, '""');
+      const safeCat = (dd.category || "").replace(/"/g, '""');
+      csv += `"DirectDebit","${safeName}",${dd.amount},${dd.day},"${safeCat}",${dd.active ? "Yes" : "No"}\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    const mk = monthKey(selectedMonth).replace(/\s/g, "-");
+    a.href = url;
+    a.download = `BishopBudget-${mk}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+  }
+
+  // ---------- Wiring ----------
+  function init() {
+    loadData();
+
+    // Default date for new transaction: today
+    document.getElementById("txDate").valueAsDate = new Date();
+
+    document.getElementById("prevMonthBtn").addEventListener("click", () => changeMonth(-1));
+    document.getElementById("nextMonthBtn").addEventListener("click", () => changeMonth(1));
+
+    document.getElementById("addTxBtn").addEventListener("click", addTransaction);
+    document.getElementById("addDdBtn").addEventListener("click", addDirectDebit);
+
+    document.getElementById("whatIfSlider").addEventListener("input", handleWhatIfChange);
+    document.getElementById("resetWhatIfBtn").addEventListener("click", resetWhatIf);
+
+    document.getElementById("exportBtn").addEventListener("click", exportCSV);
+
+    renderAll();
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+</script>
 </body>
 </html>
