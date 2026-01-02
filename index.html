@@ -38,6 +38,8 @@
 
       --red: #f87171;
       --amber: #f97316;
+
+      --header-highlight: #c7d2fe;
     }
 
     * { box-sizing: border-box; }
@@ -169,7 +171,7 @@
     .month-label {
       font-size: 0.9rem;
       font-weight: 600;
-      color: #c7d2fe;
+      color: var(--header-highlight);
     }
 
     .month-controls {
@@ -964,7 +966,7 @@
       <button class="btn btn-ghost" id="addDdBtn">Add direct debit</button>
 
       <div class="list-container" style="margin-top:8px;">
-        <div class="list-header">All direct debits (by day)</div>
+        <div class="list-header">All direct debits (effective this month)</div>
         <div id="ddList"></div>
       </div>
     </section>
@@ -1111,11 +1113,14 @@
 <script>
   let transactions = [];
   let directDebits = [];
+  let ddOverrides = [];  // month-specific overrides (edit/delete for single month)
+
   let selectedMonth = firstOfMonth(new Date());
   let whatIfOffset = 0;
 
   const STORAGE_KEY_TX = "bb_transactions";
   const STORAGE_KEY_DD = "bb_directDebits";
+  const STORAGE_KEY_DD_OVR = "bb_directDebitOverrides";
   const STORAGE_KEY_MONTH = "bb_selectedMonth";
 
   function formatMoney(value) {
@@ -1162,6 +1167,10 @@
     return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
   }
 
+  function monthISO(date) {
+    return firstOfMonth(date).toISOString().slice(0, 10);
+  }
+
   function normaliseDateForStorage(raw) {
     if (!raw) return null;
     const trimmed = raw.replace(/"/g, "").trim();
@@ -1197,6 +1206,7 @@
   function saveToStorage() {
     localStorage.setItem(STORAGE_KEY_TX, JSON.stringify(transactions));
     localStorage.setItem(STORAGE_KEY_DD, JSON.stringify(directDebits));
+    localStorage.setItem(STORAGE_KEY_DD_OVR, JSON.stringify(ddOverrides));
     localStorage.setItem(STORAGE_KEY_MONTH, selectedMonth.toISOString());
   }
 
@@ -1204,6 +1214,7 @@
     try {
       const txRaw = localStorage.getItem(STORAGE_KEY_TX);
       const ddRaw = localStorage.getItem(STORAGE_KEY_DD);
+      const ovrRaw = localStorage.getItem(STORAGE_KEY_DD_OVR);
       const monthRaw = localStorage.getItem(STORAGE_KEY_MONTH);
 
       if (txRaw) {
@@ -1213,6 +1224,10 @@
       if (ddRaw) {
         const data = JSON.parse(ddRaw);
         if (Array.isArray(data)) directDebits = data;
+      }
+      if (ovrRaw) {
+        const data = JSON.parse(ovrRaw);
+        if (Array.isArray(data)) ddOverrides = data;
       }
       if (monthRaw) {
         const d = new Date(monthRaw);
@@ -1234,19 +1249,46 @@
     });
   }
 
+  // Effective direct debits for a given month (series + overrides)
+  function effectiveDirectDebitsFor(date) {
+    const mISO = monthISO(date);
+    const overridesForMonth = ddOverrides.filter(o => o.monthISO === mISO);
+    const eff = [];
+
+    directDebits.forEach(dd => {
+      const ov = overridesForMonth.find(o => o.baseId === dd.id);
+      if (ov && ov.deleted) {
+        return; // deleted for this month only
+      }
+      const effDD = {
+        baseId: dd.id,
+        id: ov ? ov.id : dd.id,
+        name: ov && ov.name != null ? ov.name : dd.name,
+        amount: ov && ov.amount != null ? ov.amount : dd.amount,
+        day: ov && ov.day != null ? ov.day : dd.day,
+        category: ov && ov.category != null ? ov.category : dd.category,
+        active: typeof (ov && ov.active) === "boolean" ? ov.active : dd.active
+      };
+      eff.push(effDD);
+    });
+
+    return eff;
+  }
+
   function computeTotalsForMonth(date) {
     const mt = monthTransactionsFor(date);
+    const effDDs = effectiveDirectDebitsFor(date);
 
     let incomeTotal = 0;
     let spendTotal = 0;
+    let ddTotal = 0;
 
     for (const tx of mt) {
       if (tx.type === "income") incomeTotal += tx.amount;
       else spendTotal += tx.amount;
     }
 
-    let ddTotal = 0;
-    for (const dd of directDebits) {
+    for (const dd of effDDs) {
       if (dd.active) ddTotal += dd.amount;
     }
 
@@ -1259,7 +1301,7 @@
       donutPercentLeft = clamp((left / incomeTotal) * 100, 0, 100);
     }
 
-    return { mt, incomeTotal, spendTotal, ddTotal, afterDDs, afterAll, donutPercentLeft };
+    return { mt, effDDs, incomeTotal, spendTotal, ddTotal, afterDDs, afterAll, donutPercentLeft };
   }
 
   function monthTransactions() {
@@ -1274,6 +1316,7 @@
     if (incomeTotal <= 0) return [];
     const days = daysInMonth(selectedMonth);
     const key = monthKey(selectedMonth);
+    const effDDs = effectiveDirectDebitsFor(selectedMonth);
 
     const spendsByDay = {};
     mt.forEach(tx => {
@@ -1286,7 +1329,7 @@
     });
 
     const ddByDay = {};
-    directDebits.forEach(dd => {
+    effDDs.forEach(dd => {
       if (!dd.active) return;
       const day = Math.max(1, Math.min(days, dd.day));
       ddByDay[day] = (ddByDay[day] || 0) + dd.amount;
@@ -1365,7 +1408,7 @@
     const sumSpendEl = document.getElementById("sumSpend");
     const sumLeftEl = document.getElementById("sumLeft");
 
-    const { mt, incomeTotal, spendTotal, ddTotal, afterDDs, afterAll, donutPercentLeft } = computeTotals();
+    const { mt, effDDs, incomeTotal, spendTotal, ddTotal, afterDDs, afterAll, donutPercentLeft } = computeTotals();
 
     monthLabelEl.textContent = monthKey(selectedMonth);
     incomeValueEl.textContent = formatMoney(incomeTotal);
@@ -1458,7 +1501,7 @@
     sumLeftEl.textContent = formatMoney(afterAll);
 
     renderTransactionList(mt);
-    renderDirectDebitList();
+    renderDirectDebitList(effDDs);
 
     updateDonutOverlayUI({ incomeTotal, spendTotal, ddTotal, afterAll, donutPercentLeft });
   }
@@ -1569,36 +1612,53 @@
       amt.style.color = tx.type === "income" ? "var(--green)" : "var(--red)";
       amt.textContent = formatMoney(tx.amount);
 
+      const buttons = document.createElement("div");
+      buttons.style.display = "flex";
+      buttons.style.flexDirection = "column";
+      buttons.style.gap = "4px";
+      buttons.style.alignItems = "flex-end";
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "btn btn-small btn-ghost";
+      editBtn.textContent = "Edit";
+      editBtn.addEventListener("click", () => {
+        editTransaction(tx);
+      });
+
       const delBtn = document.createElement("button");
       delBtn.className = "btn btn-small btn-danger";
       delBtn.textContent = "Delete";
       delBtn.addEventListener("click", () => {
+        if (!confirm("Delete this transaction?")) return;
         transactions = transactions.filter(t => t.id !== tx.id);
         saveToStorage();
         refreshUI();
       });
 
+      buttons.appendChild(editBtn);
+      buttons.appendChild(delBtn);
+
       item.appendChild(main);
       item.appendChild(amt);
-      item.appendChild(delBtn);
+      item.appendChild(buttons);
 
       txListEl.appendChild(item);
     }
   }
 
-  function renderDirectDebitList() {
+  function renderDirectDebitList(effDDs) {
     const ddListEl = document.getElementById("ddList");
     ddListEl.innerHTML = "";
 
-    if (!directDebits || directDebits.length === 0) {
+    if (!effDDs || effDDs.length === 0) {
       const empty = document.createElement("div");
       empty.className = "list-empty";
-      empty.textContent = "No direct debits yet. Start with mortgage, council tax and utilities.";
+      empty.textContent = "No direct debits this month.";
       ddListEl.appendChild(empty);
       return;
     }
 
-    const sorted = directDebits.slice().sort((a, b) => a.day - b.day);
+    const sorted = effDDs.slice().sort((a, b) => a.day - b.day);
 
     for (const dd of sorted) {
       const item = document.createElement("div");
@@ -1619,25 +1679,175 @@
       main.appendChild(title);
       main.appendChild(sub);
 
+      const right = document.createElement("div");
+      right.style.display = "flex";
+      right.style.flexDirection = "column";
+      right.style.alignItems = "flex-end";
+      right.style.gap = "4px";
+
       const status = document.createElement("span");
       status.className = "badge " + (dd.active ? "badge-green" : "badge-red");
       status.textContent = dd.active ? "Active" : "Paused";
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "btn btn-small btn-ghost";
+      editBtn.textContent = "Edit";
+      editBtn.addEventListener("click", () => {
+        editDirectDebitForCurrentMonth(dd);
+      });
 
       const delBtn = document.createElement("button");
       delBtn.className = "btn btn-small btn-danger";
       delBtn.textContent = "Delete";
       delBtn.addEventListener("click", () => {
-        directDebits = directDebits.filter(x => x.id !== dd.id);
-        saveToStorage();
-        refreshUI();
+        deleteDirectDebitForCurrentMonth(dd);
       });
 
+      right.appendChild(status);
+      right.appendChild(editBtn);
+      right.appendChild(delBtn);
+
       item.appendChild(main);
-      item.appendChild(status);
-      item.appendChild(delBtn);
+      item.appendChild(right);
 
       ddListEl.appendChild(item);
     }
+  }
+
+  function editTransaction(tx) {
+    let newDesc = prompt("Edit description", tx.description);
+    if (newDesc === null) return;
+    newDesc = newDesc.trim() || tx.description;
+
+    let newAmountStr = prompt("Edit amount", tx.amount.toString());
+    if (newAmountStr === null) return;
+    const newAmount = parseFloat(newAmountStr.replace(",", "."));
+    if (isNaN(newAmount)) {
+      alert("Amount must be a number.");
+      return;
+    }
+
+    let newDateStr = prompt("Edit date (YYYY-MM-DD or DD-Mmm-YY)", tx.date);
+    if (newDateStr === null) return;
+    const iso = normaliseDateForStorage(newDateStr) || tx.date;
+
+    let typePrompt = prompt("Type: income or spending", tx.type === "income" ? "income" : "spending");
+    if (typePrompt === null) return;
+    typePrompt = typePrompt.toLowerCase();
+    const newType = typePrompt.startsWith("i") ? "income" : "spend";
+
+    tx.description = newDesc;
+    tx.amount = newAmount;
+    tx.date = iso;
+    tx.type = newType;
+
+    saveToStorage();
+    refreshUI();
+  }
+
+  function editDirectDebitForCurrentMonth(effDD) {
+    const currentMonthISO = monthISO(selectedMonth);
+    const applyMonthOnly = confirm(
+      "Apply changes to THIS MONTH ONLY?\n\nOK = this month only\nCancel = entire series (all months)"
+    );
+
+    let newName = prompt("Edit name", effDD.name);
+    if (newName === null) return;
+    newName = newName.trim() || effDD.name;
+
+    let amtStr = prompt("Edit amount", effDD.amount.toString());
+    if (amtStr === null) return;
+    const amount = parseFloat(amtStr.replace(",", "."));
+    if (isNaN(amount)) {
+      alert("Amount must be a number.");
+      return;
+    }
+
+    let dayStr = prompt("Edit day of month (1–31)", effDD.day.toString());
+    if (dayStr === null) return;
+    const day = parseInt(dayStr, 10);
+    if (!(day >= 1 && day <= 31)) {
+      alert("Day of month must be between 1 and 31.");
+      return;
+    }
+
+    let category = prompt("Edit category (optional)", effDD.category || "");
+    if (category === null) return;
+    category = category.trim();
+
+    let activeAns = prompt("Active? yes or no", effDD.active ? "yes" : "no");
+    if (activeAns === null) return;
+    activeAns = activeAns.toLowerCase();
+    const active = activeAns.startsWith("y");
+
+    if (applyMonthOnly) {
+      let ov = ddOverrides.find(o => o.baseId === effDD.baseId && o.monthISO === currentMonthISO);
+      if (!ov) {
+        ov = {
+          id: uuid(),
+          baseId: effDD.baseId,
+          monthISO: currentMonthISO,
+          name: null,
+          amount: null,
+          day: null,
+          category: null,
+          active: null,
+          deleted: false
+        };
+        ddOverrides.push(ov);
+      }
+      ov.name = newName;
+      ov.amount = amount;
+      ov.day = day;
+      ov.category = category;
+      ov.active = active;
+      ov.deleted = false;
+    } else {
+      const baseIndex = directDebits.findIndex(d => d.id === effDD.baseId);
+      if (baseIndex >= 0) {
+        directDebits[baseIndex].name = newName;
+        directDebits[baseIndex].amount = amount;
+        directDebits[baseIndex].day = day;
+        directDebits[baseIndex].category = category;
+        directDebits[baseIndex].active = active;
+      }
+    }
+
+    saveToStorage();
+    refreshUI();
+  }
+
+  function deleteDirectDebitForCurrentMonth(effDD) {
+    const currentMonthISO = monthISO(selectedMonth);
+    const monthOnly = confirm(
+      "Delete this direct debit for THIS MONTH ONLY?\n\nOK = this month only\nCancel = entire series (all months)"
+    );
+
+    if (monthOnly) {
+      let ov = ddOverrides.find(o => o.baseId === effDD.baseId && o.monthISO === currentMonthISO);
+      if (!ov) {
+        ov = {
+          id: uuid(),
+          baseId: effDD.baseId,
+          monthISO: currentMonthISO,
+          name: null,
+          amount: null,
+          day: null,
+          category: null,
+          active: null,
+          deleted: true
+        };
+        ddOverrides.push(ov);
+      } else {
+        ov.deleted = true;
+      }
+    } else {
+      directDebits = directDebits.filter(d => d.id !== effDD.baseId);
+      ddOverrides = ddOverrides.filter(o => o.baseId !== effDD.baseId);
+    }
+
+    saveToStorage();
+    refreshUI();
   }
 
   function exportCSV() {
@@ -1774,7 +1984,6 @@
       refreshUI();
     });
 
-    // UPDATED: Add direct debit with visible validation errors
     document.getElementById("addDdBtn").addEventListener("click", () => {
       const nameInput = document.getElementById("ddName");
       const amountInput = document.getElementById("ddAmount");
@@ -1833,10 +2042,12 @@
       if (!confirm("Reset all saved data? This cannot be undone.")) return;
       transactions = [];
       directDebits = [];
+      ddOverrides = [];
       whatIfOffset = 0;
       document.getElementById("whatIfSlider").value = "0";
       localStorage.removeItem(STORAGE_KEY_TX);
       localStorage.removeItem(STORAGE_KEY_DD);
+      localStorage.removeItem(STORAGE_KEY_DD_OVR);
       saveToStorage();
       refreshUI();
     });
