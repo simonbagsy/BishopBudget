@@ -1753,11 +1753,12 @@
         openTransactionEditModal(tx);
       });
 
-      const right = document.createElement("div");
+            const right = document.createElement("div");
       right.style.display = "flex";
-      right.style.flexDirection = "column";
-      right.style.alignItems = "flex-end";
-      right.style.gap = "4px";
+      right.style.flexDirection = "row";   // amount and Edit side by side
+      right.style.alignItems = "center";
+      right.style.gap = "6px";
+
       right.appendChild(amt);
       right.appendChild(editBtn);
 
