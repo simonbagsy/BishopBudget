@@ -3,7 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <title>22 Bishop Road Budget</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Prevent pinch-zoom / scaling as far as iOS allows -->
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  />
+
+  <!-- Icons: make sure icon-192.png and/or icon-512.png are in the same folder -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
 
   <style>
     :root {
@@ -34,8 +44,15 @@
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
+      overscroll-behavior: none;
+      touch-action: manipulation;
+    }
+
+    body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
         "Segoe UI", sans-serif;
       background: radial-gradient(circle at top left, #020617 0%, #020617 40%, #020617 100%);
@@ -123,15 +140,15 @@
       justify-content: center;
       border: 1px solid rgba(255,255,255,0.15);
       box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+      overflow: hidden;
       flex-shrink: 0;
     }
 
-    .header-icon span {
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      color: white;
-      text-transform: uppercase;
+    .header-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .month-row {
@@ -226,10 +243,13 @@
 
     .whatif-meta {
       display: flex;
+      align-items: center;
+      gap: 6px;
       justify-content: space-between;
       font-size: 0.7rem;
       margin-top: 2px;
       color: var(--text-muted);
+      flex-wrap: wrap;
     }
 
     input[type="range"] {
@@ -387,6 +407,8 @@
       font-size: 0.8rem;
       cursor: pointer;
       margin-top: 4px;
+      background: transparent;
+      color: var(--text-soft);
     }
 
     .btn-primary {
@@ -416,7 +438,7 @@
       background: rgba(15, 23, 42, 0.9);
       border-radius: 12px;
       padding: 4px;
-      max-height: 260px; /* nice tall window */
+      max-height: 260px;
       overflow-y: auto;
     }
 
@@ -517,7 +539,9 @@
     .export-row {
       display: flex;
       justify-content: flex-end;
+      gap: 8px;
       margin-top: 6px;
+      flex-wrap: wrap;
     }
 
   </style>
@@ -534,7 +558,8 @@
           <p>Clear monthly view of income, direct debits and spending.</p>
         </div>
         <div class="header-icon">
-          <span>22&nbsp;BR</span>
+          <!-- Uses your icon image -->
+          <img src="icon-192.png" alt="App icon">
         </div>
       </div>
 
@@ -591,14 +616,12 @@
       <div class="donut-and-text">
         <div class="donut-wrapper">
           <svg class="donut-svg" viewBox="0 0 120 120">
-            <!-- background circle -->
             <circle
               cx="60" cy="60" r="40"
               stroke="rgba(15,23,42,0.9)"
               stroke-width="16"
               fill="none"
             ></circle>
-            <!-- foreground circle -->
             <circle
               id="donutArc"
               cx="60" cy="60" r="40"
@@ -713,7 +736,7 @@
       </div>
     </section>
 
-    <!-- MONTH SUMMARY + EXPORT -->
+    <!-- MONTH SUMMARY + EXPORT / IMPORT -->
     <section class="section">
       <div class="section-title">Month summary</div>
 
@@ -737,6 +760,11 @@
       </div>
 
       <div class="export-row">
+        <!-- Hidden file input for import -->
+        <input type="file" id="importInput" accept=".csv,text/csv" multiple style="display:none;">
+        <button class="btn btn-ghost" id="importBtn">
+          Import CSV
+        </button>
         <button class="btn btn-ghost" id="exportBtn">
           Export data (CSV)
         </button>
@@ -758,10 +786,10 @@
     });
   }
 
-  function formatDateShort(dateStr) {
+  function formatDateShortDisplay(dateStr) {
     if (!dateStr) return "";
     const d = new Date(dateStr);
-    if (isNaN(d)) return "";
+    if (isNaN(d)) return dateStr;
     return d.toLocaleDateString("en-GB", {
       day: "2-digit",
       month: "short",
@@ -790,6 +818,33 @@
 
   function uuid() {
     return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+  }
+
+  // Simple CSV row splitter that handles quotes
+  function splitCSVRow(row) {
+    const result = [];
+    let current = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < row.length; i++) {
+      const ch = row[i];
+
+      if (ch === '"') {
+        if (inQuotes && row[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === ',' && !inQuotes) {
+        result.push(current);
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+    result.push(current);
+    return result;
   }
 
   // ---------- State ----------
@@ -901,7 +956,6 @@
     document.getElementById("ddValue").textContent = formatMoney(dd);
     document.getElementById("leftValue").textContent = formatMoney(afterAllWhatIf);
 
-    // Colour for left card
     const leftCard = document.getElementById("leftCard");
     if (afterAllWhatIf > 0) {
       leftCard.style.borderColor = "rgba(34,197,94,0.7)";
@@ -911,7 +965,6 @@
       leftCard.style.borderColor = "rgba(248,113,113,0.7)";
     }
 
-    // What-if text
     const whatIfChangeEl = document.getElementById("whatIfChange");
     const whatIfAfterEl = document.getElementById("whatIfAfter");
     const absChange = Math.abs(whatIfOffset);
@@ -919,7 +972,6 @@
     whatIfChangeEl.textContent = "Change: " + sign + formatMoney(absChange);
     whatIfAfterEl.textContent = "After change: " + formatMoney(afterAllWhatIf);
 
-    // Donut
     let percentLeft = 0;
     if (income > 0) {
       const left = income - dd - spend;
@@ -933,7 +985,6 @@
     document.getElementById("donutPercentText").textContent =
       Math.round(percentLeft) + "%";
 
-    // Status text
     const statusTitle = document.getElementById("statusTitle");
     const statusBody = document.getElementById("statusBody");
 
@@ -961,10 +1012,8 @@
       }
     }
 
-    // Graph
     renderGraph();
 
-    // Summary
     document.getElementById("sumIncome").textContent = formatMoney(income);
     document.getElementById("sumDD").textContent = formatMoney(dd);
     document.getElementById("sumSpend").textContent = formatMoney(spend);
@@ -1029,7 +1078,7 @@
         const sub = document.createElement("div");
         sub.className = "list-sub";
         sub.textContent =
-          `${formatDateShort(tx.date)} · ${tx.type === "income" ? "Income" : "Spending"}`;
+          `${formatDateShortDisplay(tx.date)} · ${tx.type === "income" ? "Income" : "Spending"}`;
 
         main.appendChild(title);
         main.appendChild(sub);
@@ -1156,7 +1205,7 @@
 
     const tx = {
       id: uuid(),
-      date,
+      date, // store as YYYY-MM-DD
       type,
       description: desc,
       amount
@@ -1164,7 +1213,6 @@
     transactions.push(tx);
     saveData();
 
-    // reset inputs
     descEl.value = "";
     amountEl.value = "";
     dateEl.value = "";
@@ -1294,6 +1342,7 @@
     renderDashboard();
   }
 
+  // ---------- Export CSV ----------
   function exportCSV() {
     const monthTx = getMonthTransactions();
 
@@ -1301,7 +1350,8 @@
     csv += "SECTION,TYPE,DATE,DESCRIPTION,AMOUNT\n";
     monthTx.forEach(tx => {
       const safeDesc = (tx.description || "").replace(/"/g, '""');
-      csv += `"Transaction","${tx.type}","${formatDateShort(tx.date)}","${safeDesc}",${tx.amount}\n`;
+      // Export date in ISO (YYYY-MM-DD) to make re-import reliable
+      csv += `"Transaction","${tx.type}","${tx.date}","${safeDesc}",${tx.amount}\n`;
     });
 
     csv += "\nSECTION,NAME,AMOUNT,DAY_OF_MONTH,CATEGORY,ACTIVE\n";
@@ -1325,11 +1375,149 @@
     URL.revokeObjectURL(url);
   }
 
+  // ---------- Import CSV ----------
+  function importCSVFiles(fileList) {
+    if (!fileList || !fileList.length) return;
+
+    let filesRemaining = fileList.length;
+
+    for (const file of fileList) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const text = e.target.result;
+          parseAndMergeCSV(text);
+        } catch (err) {
+          console.error("Error importing", file.name, err);
+        } finally {
+          filesRemaining--;
+          if (filesRemaining === 0) {
+            saveData();
+            renderAll();
+            alert("Import complete. Check your data and month selector.");
+          }
+        }
+      };
+      reader.readAsText(file);
+    }
+  }
+
+  function parseAndMergeCSV(text) {
+    const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n").filter(l => l.trim() !== "");
+    if (lines.length < 2) return;
+
+    const header = splitCSVRow(lines[0]).map(h => h.trim().toLowerCase());
+
+    // HTML / combined export format
+    if (header[0] === "section") {
+      for (let i = 1; i < lines.length; i++) {
+        const cols = splitCSVRow(lines[i]);
+        if (!cols.length) continue;
+        const section = (cols[0] || "").replace(/"/g, "").trim();
+
+        if (section === "Transaction" || section === "transaction") {
+          // SECTION,TYPE,DATE,DESCRIPTION,AMOUNT
+          const typeRaw = (cols[1] || "").replace(/"/g, "").trim().toLowerCase();
+          const dateStr = (cols[2] || "").replace(/"/g, "").trim();
+          const desc = (cols[3] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
+          const amt = parseFloat((cols[4] || "").replace(/"/g, "").trim());
+
+          if (!dateStr || !desc || isNaN(amt)) continue;
+          const type = typeRaw === "income" ? "income" : "spend";
+
+          transactions.push({
+            id: uuid(),
+            date: dateStr,
+            type,
+            description: desc,
+            amount: amt
+          });
+        } else if (section === "DirectDebit" || section === "directdebit") {
+          // SECTION,NAME,AMOUNT,DAY_OF_MONTH,CATEGORY,ACTIVE
+          const name = (cols[1] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
+          const amt = parseFloat((cols[2] || "").replace(/"/g, "").trim());
+          const day = parseInt((cols[3] || "").replace(/"/g, "").trim(), 10);
+          const category = (cols[4] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
+          const activeRaw = (cols[5] || "").replace(/"/g, "").trim().toLowerCase();
+          const active = activeRaw === "yes" || activeRaw === "true" || activeRaw === "1";
+
+          if (!name || isNaN(amt) || isNaN(day)) continue;
+
+          directDebits.push({
+            id: uuid(),
+            name,
+            amount: amt,
+            day,
+            category,
+            active
+          });
+        }
+      }
+      return;
+    }
+
+    const headerStr = header.join(",");
+    // iOS app transactions export: Date,Type,Description,Amount
+    if (headerStr.startsWith("date,type,description,amount")) {
+      for (let i = 1; i < lines.length; i++) {
+        const cols = splitCSVRow(lines[i]);
+        if (cols.length < 4) continue;
+        const dateStr = (cols[0] || "").replace(/"/g, "").trim();
+        const typeRaw = (cols[1] || "").replace(/"/g, "").trim().toLowerCase();
+        const desc = (cols[2] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
+        const amt = parseFloat((cols[3] || "").replace(/"/g, "").trim());
+        if (!dateStr || !desc || isNaN(amt)) continue;
+
+        let type;
+        if (typeRaw === "income") type = "income";
+        else if (typeRaw === "spending" || typeRaw === "spend") type = "spend";
+        else type = "spend";
+
+        transactions.push({
+          id: uuid(),
+          date: dateStr,
+          type,
+          description: desc,
+          amount: amt
+        });
+      }
+      return;
+    }
+
+    // iOS app DD export: Name,Amount,DayOfMonth,Category,Active
+    if (headerStr.startsWith("name,amount,dayofmonth,category,active")) {
+      for (let i = 1; i < lines.length; i++) {
+        const cols = splitCSVRow(lines[i]);
+        if (cols.length < 5) continue;
+        const name = (cols[0] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
+        const amt = parseFloat((cols[1] || "").replace(/"/g, "").trim());
+        const day = parseInt((cols[2] || "").replace(/"/g, "").trim(), 10);
+        const category = (cols[3] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
+        const activeRaw = (cols[4] || "").replace(/"/g, "").trim().toLowerCase();
+        const active = activeRaw === "yes" || activeRaw === "true" || activeRaw === "1";
+
+        if (!name || isNaN(amt) || isNaN(day)) continue;
+
+        directDebits.push({
+          id: uuid(),
+          name,
+          amount: amt,
+          day,
+          category,
+          active
+        });
+      }
+      return;
+    }
+
+    // If header doesn't match any known pattern, ignore
+    console.warn("CSV format not recognised, skipping this file.");
+  }
+
   // ---------- Wiring ----------
   function init() {
     loadData();
 
-    // Default date for new transaction: today
     document.getElementById("txDate").valueAsDate = new Date();
 
     document.getElementById("prevMonthBtn").addEventListener("click", () => changeMonth(-1));
@@ -1342,6 +1530,13 @@
     document.getElementById("resetWhatIfBtn").addEventListener("click", resetWhatIf);
 
     document.getElementById("exportBtn").addEventListener("click", exportCSV);
+
+    const importInput = document.getElementById("importInput");
+    document.getElementById("importBtn").addEventListener("click", () => importInput.click());
+    importInput.addEventListener("change", (e) => {
+      importCSVFiles(e.target.files);
+      importInput.value = "";
+    });
 
     renderAll();
   }
