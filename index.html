@@ -525,6 +525,10 @@
       font-size: 0.78rem;
     }
 
+    .dd-inactive {
+      opacity: 0.55;
+    }
+
     .list-main {
       flex: 1;
       min-width: 0;
@@ -773,6 +777,68 @@
       width: 10px;
       height: 10px;
       border-radius: 999px;
+    }
+
+    /* EDIT MODALS */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 998;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 420px;
+      background: linear-gradient(135deg, #020617, #020617);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+      border: 1px solid rgba(37, 99, 235, 0.4);
+    }
+
+    .modal-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .modal-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .modal-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-soft);
+      margin-bottom: 8px;
+    }
+
+    .modal-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .modal-footer-right {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
   </style>
 </head>
@@ -1110,13 +1176,111 @@
   </div>
 </div>
 
+<!-- TRANSACTION EDIT MODAL -->
+<div class="modal-backdrop" id="txEditModal">
+  <div class="modal-card">
+    <div class="modal-title-row">
+      <div class="modal-title">Edit transaction</div>
+      <button class="btn btn-ghost btn-small" id="txEditCloseBtn">Close</button>
+    </div>
+    <div class="modal-subtitle" id="txEditMonthLabel"></div>
+
+    <div class="form-group">
+      <label for="txEditDate">Date</label>
+      <input type="date" id="txEditDate" class="input">
+    </div>
+
+    <div class="form-group">
+      <label for="txEditType">Type</label>
+      <select id="txEditType" class="input">
+        <option value="income">Income</option>
+        <option value="spending">Spending</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="txEditDescription">Description</label>
+      <input type="text" id="txEditDescription" class="input">
+    </div>
+
+    <div class="form-group">
+      <label for="txEditAmount">Amount</label>
+      <input type="number" id="txEditAmount" class="input" step="0.01">
+    </div>
+
+    <div class="modal-footer-row">
+      <button class="btn btn-danger btn-small" id="txEditDeleteBtn">Delete</button>
+      <div class="modal-footer-right">
+        <button class="btn btn-ghost btn-small" id="txEditCancelBtn">Cancel</button>
+        <button class="btn btn-primary btn-small" id="txEditSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DIRECT DEBIT EDIT MODAL -->
+<div class="modal-backdrop" id="ddEditModal">
+  <div class="modal-card">
+    <div class="modal-title-row">
+      <div class="modal-title">Edit direct debit</div>
+      <button class="btn btn-ghost btn-small" id="ddEditCloseBtn">Close</button>
+    </div>
+    <div class="modal-subtitle" id="ddEditMonthLabel"></div>
+
+    <div class="form-group">
+      <label for="ddEditName">Name</label>
+      <input type="text" id="ddEditName" class="input">
+    </div>
+
+    <div class="form-group">
+      <label for="ddEditAmount">Amount</label>
+      <input type="number" id="ddEditAmount" class="input" step="0.01">
+    </div>
+
+    <div class="form-group">
+      <label for="ddEditDay">Day of month (1–31)</label>
+      <input type="number" id="ddEditDay" class="input" min="1" max="31">
+    </div>
+
+    <div class="form-group">
+      <label for="ddEditCategory">Category (optional)</label>
+      <input type="text" id="ddEditCategory" class="input">
+    </div>
+
+    <div class="form-group toggle-row">
+      <input type="checkbox" id="ddEditActive">
+      <label for="ddEditActive">Active</label>
+    </div>
+
+    <div class="form-group">
+      <label for="ddEditScope">Apply changes to</label>
+      <select id="ddEditScope" class="input">
+        <option value="month">This month only</option>
+        <option value="series">Entire series (all months)</option>
+      </select>
+    </div>
+
+    <div class="modal-footer-row">
+      <button class="btn btn-danger btn-small" id="ddEditDeleteBtn">Delete</button>
+      <div class="modal-footer-right">
+        <button class="btn btn-ghost btn-small" id="ddEditCancelBtn">Cancel</button>
+        <button class="btn btn-primary btn-small" id="ddEditSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   let transactions = [];
   let directDebits = [];
-  let ddOverrides = [];  // month-specific overrides (edit/delete for single month)
+  let ddOverrides = [];
 
   let selectedMonth = firstOfMonth(new Date());
   let whatIfOffset = 0;
+
+  let currentEditingTxId = null;
+  let currentEditingDdBaseId = null;
+  let currentEditingMonthISO = null;
 
   const STORAGE_KEY_TX = "bb_transactions";
   const STORAGE_KEY_DD = "bb_directDebits";
@@ -1249,7 +1413,6 @@
     });
   }
 
-  // Effective direct debits for a given month (series + overrides)
   function effectiveDirectDebitsFor(date) {
     const mISO = monthISO(date);
     const overridesForMonth = ddOverrides.filter(o => o.monthISO === mISO);
@@ -1258,7 +1421,7 @@
     directDebits.forEach(dd => {
       const ov = overridesForMonth.find(o => o.baseId === dd.id);
       if (ov && ov.deleted) {
-        return; // deleted for this month only
+        return;
       }
       const effDD = {
         baseId: dd.id,
@@ -1483,7 +1646,7 @@
     if (!values || values.length === 0) {
       graphLineEl.setAttribute("points", "");
     } else {
-      const maxAbs = Math.max.apply(null, values.map(function(v){return Math.abs(v);})); 
+      const maxAbs = Math.max.apply(null, values.map(function(v){return Math.abs(v);}));
       const scale = Math.max(maxAbs, 1);
       const stepX = values.length > 1 ? 100 / (values.length - 1) : 0;
       const points = values.map(function(v, idx) {
@@ -1546,9 +1709,7 @@
       leftPct = clamp((afterAll / incomeTotal) * 100, 0, 100);
     }
 
-    const baseX = 0;
     const totalWidth = 100;
-
     let ddWidth = totalWidth * ddPct / 100;
     let spendWidth = totalWidth * spendPct / 100;
     let leftWidth = totalWidth * leftPct / 100;
@@ -1561,7 +1722,7 @@
       leftWidth *= scale;
     }
 
-    const ddX = baseX;
+    const ddX = 0;
     const spendX = ddX + ddWidth;
     const leftX = spendX + spendWidth;
 
@@ -1622,21 +1783,10 @@
       editBtn.className = "btn btn-small btn-ghost";
       editBtn.textContent = "Edit";
       editBtn.addEventListener("click", () => {
-        editTransaction(tx);
-      });
-
-      const delBtn = document.createElement("button");
-      delBtn.className = "btn btn-small btn-danger";
-      delBtn.textContent = "Delete";
-      delBtn.addEventListener("click", () => {
-        if (!confirm("Delete this transaction?")) return;
-        transactions = transactions.filter(t => t.id !== tx.id);
-        saveToStorage();
-        refreshUI();
+        openTransactionEditModal(tx);
       });
 
       buttons.appendChild(editBtn);
-      buttons.appendChild(delBtn);
 
       item.appendChild(main);
       item.appendChild(amt);
@@ -1663,6 +1813,9 @@
     for (const dd of sorted) {
       const item = document.createElement("div");
       item.className = "list-item";
+      if (!dd.active) {
+        item.classList.add("dd-inactive");
+      }
 
       const main = document.createElement("div");
       main.className = "list-main";
@@ -1693,19 +1846,11 @@
       editBtn.className = "btn btn-small btn-ghost";
       editBtn.textContent = "Edit";
       editBtn.addEventListener("click", () => {
-        editDirectDebitForCurrentMonth(dd);
-      });
-
-      const delBtn = document.createElement("button");
-      delBtn.className = "btn btn-small btn-danger";
-      delBtn.textContent = "Delete";
-      delBtn.addEventListener("click", () => {
-        deleteDirectDebitForCurrentMonth(dd);
+        openDirectDebitEditModal(dd);
       });
 
       right.appendChild(status);
       right.appendChild(editBtn);
-      right.appendChild(delBtn);
 
       item.appendChild(main);
       item.appendChild(right);
@@ -1714,140 +1859,61 @@
     }
   }
 
-  function editTransaction(tx) {
-    let newDesc = prompt("Edit description", tx.description);
-    if (newDesc === null) return;
-    newDesc = newDesc.trim() || tx.description;
+  function openTransactionEditModal(tx) {
+    currentEditingTxId = tx.id;
 
-    let newAmountStr = prompt("Edit amount", tx.amount.toString());
-    if (newAmountStr === null) return;
-    const newAmount = parseFloat(newAmountStr.replace(",", "."));
-    if (isNaN(newAmount)) {
-      alert("Amount must be a number.");
-      return;
-    }
+    const modal = document.getElementById("txEditModal");
+    const monthLabel = document.getElementById("txEditMonthLabel");
+    const dateInput = document.getElementById("txEditDate");
+    const typeInput = document.getElementById("txEditType");
+    const descInput = document.getElementById("txEditDescription");
+    const amountInput = document.getElementById("txEditAmount");
 
-    let newDateStr = prompt("Edit date (YYYY-MM-DD or DD-Mmm-YY)", tx.date);
-    if (newDateStr === null) return;
-    const iso = normaliseDateForStorage(newDateStr) || tx.date;
+    monthLabel.textContent = monthKey(selectedMonth);
+    dateInput.value = tx.date || "";
+    typeInput.value = tx.type === "income" ? "income" : "spending";
+    descInput.value = tx.description || "";
+    amountInput.value = (Number(tx.amount) || 0).toFixed(2);
 
-    let typePrompt = prompt("Type: income or spending", tx.type === "income" ? "income" : "spending");
-    if (typePrompt === null) return;
-    typePrompt = typePrompt.toLowerCase();
-    const newType = typePrompt.startsWith("i") ? "income" : "spend";
-
-    tx.description = newDesc;
-    tx.amount = newAmount;
-    tx.date = iso;
-    tx.type = newType;
-
-    saveToStorage();
-    refreshUI();
+    modal.classList.add("show");
   }
 
-  function editDirectDebitForCurrentMonth(effDD) {
-    const currentMonthISO = monthISO(selectedMonth);
-    const applyMonthOnly = confirm(
-      "Apply changes to THIS MONTH ONLY?\n\nOK = this month only\nCancel = entire series (all months)"
-    );
-
-    let newName = prompt("Edit name", effDD.name);
-    if (newName === null) return;
-    newName = newName.trim() || effDD.name;
-
-    let amtStr = prompt("Edit amount", effDD.amount.toString());
-    if (amtStr === null) return;
-    const amount = parseFloat(amtStr.replace(",", "."));
-    if (isNaN(amount)) {
-      alert("Amount must be a number.");
-      return;
-    }
-
-    let dayStr = prompt("Edit day of month (1–31)", effDD.day.toString());
-    if (dayStr === null) return;
-    const day = parseInt(dayStr, 10);
-    if (!(day >= 1 && day <= 31)) {
-      alert("Day of month must be between 1 and 31.");
-      return;
-    }
-
-    let category = prompt("Edit category (optional)", effDD.category || "");
-    if (category === null) return;
-    category = category.trim();
-
-    let activeAns = prompt("Active? yes or no", effDD.active ? "yes" : "no");
-    if (activeAns === null) return;
-    activeAns = activeAns.toLowerCase();
-    const active = activeAns.startsWith("y");
-
-    if (applyMonthOnly) {
-      let ov = ddOverrides.find(o => o.baseId === effDD.baseId && o.monthISO === currentMonthISO);
-      if (!ov) {
-        ov = {
-          id: uuid(),
-          baseId: effDD.baseId,
-          monthISO: currentMonthISO,
-          name: null,
-          amount: null,
-          day: null,
-          category: null,
-          active: null,
-          deleted: false
-        };
-        ddOverrides.push(ov);
-      }
-      ov.name = newName;
-      ov.amount = amount;
-      ov.day = day;
-      ov.category = category;
-      ov.active = active;
-      ov.deleted = false;
-    } else {
-      const baseIndex = directDebits.findIndex(d => d.id === effDD.baseId);
-      if (baseIndex >= 0) {
-        directDebits[baseIndex].name = newName;
-        directDebits[baseIndex].amount = amount;
-        directDebits[baseIndex].day = day;
-        directDebits[baseIndex].category = category;
-        directDebits[baseIndex].active = active;
-      }
-    }
-
-    saveToStorage();
-    refreshUI();
+  function closeTransactionEditModal() {
+    const modal = document.getElementById("txEditModal");
+    modal.classList.remove("show");
+    currentEditingTxId = null;
   }
 
-  function deleteDirectDebitForCurrentMonth(effDD) {
-    const currentMonthISO = monthISO(selectedMonth);
-    const monthOnly = confirm(
-      "Delete this direct debit for THIS MONTH ONLY?\n\nOK = this month only\nCancel = entire series (all months)"
-    );
+  function openDirectDebitEditModal(effDD) {
+    currentEditingDdBaseId = effDD.baseId;
+    currentEditingMonthISO = monthISO(selectedMonth);
 
-    if (monthOnly) {
-      let ov = ddOverrides.find(o => o.baseId === effDD.baseId && o.monthISO === currentMonthISO);
-      if (!ov) {
-        ov = {
-          id: uuid(),
-          baseId: effDD.baseId,
-          monthISO: currentMonthISO,
-          name: null,
-          amount: null,
-          day: null,
-          category: null,
-          active: null,
-          deleted: true
-        };
-        ddOverrides.push(ov);
-      } else {
-        ov.deleted = true;
-      }
-    } else {
-      directDebits = directDebits.filter(d => d.id !== effDD.baseId);
-      ddOverrides = ddOverrides.filter(o => o.baseId !== effDD.baseId);
-    }
+    const modal = document.getElementById("ddEditModal");
+    const monthLabel = document.getElementById("ddEditMonthLabel");
+    const nameInput = document.getElementById("ddEditName");
+    const amountInput = document.getElementById("ddEditAmount");
+    const dayInput = document.getElementById("ddEditDay");
+    const categoryInput = document.getElementById("ddEditCategory");
+    const activeInput = document.getElementById("ddEditActive");
+    const scopeInput = document.getElementById("ddEditScope");
 
-    saveToStorage();
-    refreshUI();
+    monthLabel.textContent = monthKey(selectedMonth);
+
+    nameInput.value = effDD.name || "";
+    amountInput.value = (Number(effDD.amount) || 0).toFixed(2);
+    dayInput.value = effDD.day || "";
+    categoryInput.value = effDD.category || "";
+    activeInput.checked = !!effDD.active;
+    scopeInput.value = "month";
+
+    modal.classList.add("show");
+  }
+
+  function closeDirectDebitEditModal() {
+    const modal = document.getElementById("ddEditModal");
+    modal.classList.remove("show");
+    currentEditingDdBaseId = null;
+    currentEditingMonthISO = null;
   }
 
   function exportCSV() {
@@ -1958,7 +2024,8 @@
 
     document.getElementById("addTxBtn").addEventListener("click", () => {
       const dateStr = document.getElementById("txDate").value;
-      const type = document.getElementById("txType").value === "income" ? "income" : "spend";
+      const typeValue = document.getElementById("txType").value;
+      const type = typeValue === "income" ? "income" : "spend";
       const desc = document.getElementById("txDescription").value.trim();
       const amtStr = document.getElementById("txAmount").value.trim();
 
@@ -2066,6 +2133,172 @@
 
     closeOverlayBtn.addEventListener("click", () => {
       donutOverlay.classList.remove("show");
+    });
+
+    const txModal = document.getElementById("txEditModal");
+    document.getElementById("txEditCloseBtn").addEventListener("click", closeTransactionEditModal);
+    document.getElementById("txEditCancelBtn").addEventListener("click", closeTransactionEditModal);
+    document.getElementById("txEditSaveBtn").addEventListener("click", () => {
+      if (!currentEditingTxId) return;
+
+      const dateInput = document.getElementById("txEditDate");
+      const typeInput = document.getElementById("txEditType");
+      const descInput = document.getElementById("txEditDescription");
+      const amountInput = document.getElementById("txEditAmount");
+
+      const iso = normaliseDateForStorage(dateInput.value);
+      if (!iso) {
+        alert("Please enter a valid date.");
+        return;
+      }
+
+      const desc = descInput.value.trim();
+      if (!desc) {
+        alert("Description cannot be empty.");
+        return;
+      }
+
+      const amt = parseFloat(amountInput.value.trim().replace(",", "."));
+      if (isNaN(amt)) {
+        alert("Amount must be a number.");
+        return;
+      }
+
+      const typeValue = typeInput.value;
+      const type = typeValue === "income" ? "income" : "spend";
+
+      const idx = transactions.findIndex(t => t.id === currentEditingTxId);
+      if (idx >= 0) {
+        transactions[idx].date = iso;
+        transactions[idx].description = desc;
+        transactions[idx].amount = amt;
+        transactions[idx].type = type;
+      }
+
+      saveToStorage();
+      closeTransactionEditModal();
+      refreshUI();
+    });
+
+    document.getElementById("txEditDeleteBtn").addEventListener("click", () => {
+      if (!currentEditingTxId) return;
+      if (!confirm("Delete this transaction?")) return;
+
+      transactions = transactions.filter(t => t.id !== currentEditingTxId);
+      saveToStorage();
+      closeTransactionEditModal();
+      refreshUI();
+    });
+
+    const ddModal = document.getElementById("ddEditModal");
+    document.getElementById("ddEditCloseBtn").addEventListener("click", closeDirectDebitEditModal);
+    document.getElementById("ddEditCancelBtn").addEventListener("click", closeDirectDebitEditModal);
+
+    document.getElementById("ddEditSaveBtn").addEventListener("click", () => {
+      if (!currentEditingDdBaseId || !currentEditingMonthISO) return;
+
+      const nameInput = document.getElementById("ddEditName");
+      const amountInput = document.getElementById("ddEditAmount");
+      const dayInput = document.getElementById("ddEditDay");
+      const categoryInput = document.getElementById("ddEditCategory");
+      const activeInput = document.getElementById("ddEditActive");
+      const scopeInput = document.getElementById("ddEditScope");
+
+      const name = nameInput.value.trim();
+      const amtStr = amountInput.value.trim();
+      const dayStr = dayInput.value.trim();
+      const category = categoryInput.value.trim();
+      const active = activeInput.checked;
+      const scope = scopeInput.value;
+
+      let amount = parseFloat(amtStr.replace(",", "."));
+      let day = parseInt(dayStr, 10);
+
+      if (!name) {
+        alert("Please enter a name.");
+        return;
+      }
+      if (amtStr === "" || isNaN(amount)) {
+        alert("Amount must be a number.");
+        return;
+      }
+      if (dayStr === "" || isNaN(day) || day < 1 || day > 31) {
+        alert("Day must be between 1 and 31.");
+        return;
+      }
+
+      if (scope === "month") {
+        let ov = ddOverrides.find(o => o.baseId === currentEditingDdBaseId && o.monthISO === currentEditingMonthISO);
+        if (!ov) {
+          ov = {
+            id: uuid(),
+            baseId: currentEditingDdBaseId,
+            monthISO: currentEditingMonthISO,
+            name: null,
+            amount: null,
+            day: null,
+            category: null,
+            active: null,
+            deleted: false
+          };
+          ddOverrides.push(ov);
+        }
+        ov.name = name;
+        ov.amount = amount;
+        ov.day = day;
+        ov.category = category;
+        ov.active = active;
+        ov.deleted = false;
+      } else {
+        const baseIndex = directDebits.findIndex(d => d.id === currentEditingDdBaseId);
+        if (baseIndex >= 0) {
+          directDebits[baseIndex].name = name;
+          directDebits[baseIndex].amount = amount;
+          directDebits[baseIndex].day = day;
+          directDebits[baseIndex].category = category;
+          directDebits[baseIndex].active = active;
+        }
+      }
+
+      saveToStorage();
+      closeDirectDebitEditModal();
+      refreshUI();
+    });
+
+    document.getElementById("ddEditDeleteBtn").addEventListener("click", () => {
+      if (!currentEditingDdBaseId || !currentEditingMonthISO) return;
+
+      const scopeInput = document.getElementById("ddEditScope");
+      const scope = scopeInput.value;
+
+      if (!confirm("Delete this direct debit?")) return;
+
+      if (scope === "month") {
+        let ov = ddOverrides.find(o => o.baseId === currentEditingDdBaseId && o.monthISO === currentEditingMonthISO);
+        if (!ov) {
+          ov = {
+            id: uuid(),
+            baseId: currentEditingDdBaseId,
+            monthISO: currentEditingMonthISO,
+            name: null,
+            amount: null,
+            day: null,
+            category: null,
+            active: null,
+            deleted: true
+          };
+          ddOverrides.push(ov);
+        } else {
+          ov.deleted = true;
+        }
+      } else {
+        directDebits = directDebits.filter(d => d.id !== currentEditingDdBaseId);
+        ddOverrides = ddOverrides.filter(o => o.baseId !== currentEditingDdBaseId);
+      }
+
+      saveToStorage();
+      closeDirectDebitEditModal();
+      refreshUI();
     });
   });
 </script>
