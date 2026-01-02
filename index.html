@@ -411,14 +411,6 @@
       box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
     }
 
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
-      color: var(--text-soft);
-    }
-
     .btn {
       display: inline-flex;
       align-items: center;
@@ -525,8 +517,9 @@
       font-size: 0.78rem;
     }
 
-    .dd-inactive {
-      opacity: 0.55;
+    .dd-paused {
+      border-color: rgba(248, 113, 113, 0.8);
+      box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.25);
     }
 
     .list-main {
@@ -551,24 +544,6 @@
       font-weight: 600;
       font-size: 0.78rem;
       text-align: right;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 999px;
-      padding: 2px 6px;
-      font-size: 0.65rem;
-    }
-
-    .badge-green {
-      background: rgba(34, 197, 94, 0.15);
-      color: var(--green-soft);
-    }
-
-    .badge-red {
-      background: rgba(239, 68, 68, 0.15);
-      color: var(--red);
     }
 
     .summary-lines {
@@ -1024,11 +999,6 @@
         <input type="text" id="ddCategory" class="input" placeholder="e.g. Housing, Utilities">
       </div>
 
-      <div class="form-group toggle-row">
-        <input type="checkbox" id="ddActive" checked>
-        <label for="ddActive">Active</label>
-      </div>
-
       <button class="btn btn-ghost" id="addDdBtn">Add direct debit</button>
 
       <div class="list-container" style="margin-top:8px;">
@@ -1247,9 +1217,12 @@
       <input type="text" id="ddEditCategory" class="input">
     </div>
 
-    <div class="form-group toggle-row">
-      <input type="checkbox" id="ddEditActive">
-      <label for="ddEditActive">Active</label>
+    <div class="form-group">
+      <label for="ddEditStatus">Status</label>
+      <select id="ddEditStatus" class="input">
+        <option value="active">Active</option>
+        <option value="paused">Paused</option>
+      </select>
     </div>
 
     <div class="form-group">
@@ -1773,12 +1746,6 @@
       amt.style.color = tx.type === "income" ? "var(--green)" : "var(--red)";
       amt.textContent = formatMoney(tx.amount);
 
-      const buttons = document.createElement("div");
-      buttons.style.display = "flex";
-      buttons.style.flexDirection = "column";
-      buttons.style.gap = "4px";
-      buttons.style.alignItems = "flex-end";
-
       const editBtn = document.createElement("button");
       editBtn.className = "btn btn-small btn-ghost";
       editBtn.textContent = "Edit";
@@ -1786,11 +1753,16 @@
         openTransactionEditModal(tx);
       });
 
-      buttons.appendChild(editBtn);
+      const right = document.createElement("div");
+      right.style.display = "flex";
+      right.style.flexDirection = "column";
+      right.style.alignItems = "flex-end";
+      right.style.gap = "4px";
+      right.appendChild(amt);
+      right.appendChild(editBtn);
 
       item.appendChild(main);
-      item.appendChild(amt);
-      item.appendChild(buttons);
+      item.appendChild(right);
 
       txListEl.appendChild(item);
     }
@@ -1814,7 +1786,7 @@
       const item = document.createElement("div");
       item.className = "list-item";
       if (!dd.active) {
-        item.classList.add("dd-inactive");
+        item.classList.add("dd-paused");
       }
 
       const main = document.createElement("div");
@@ -1822,12 +1794,17 @@
 
       const title = document.createElement("div");
       title.className = "list-title";
-      title.textContent = dd.name;
+      title.textContent = dd.name + (dd.active ? "" : " (paused)");
 
       const sub = document.createElement("div");
       sub.className = "list-sub";
       const catPart = dd.category ? ` · ${dd.category}` : "";
       sub.textContent = `${formatMoney(dd.amount)} · day ${dd.day}${catPart}`;
+
+      if (!dd.active) {
+        title.style.color = "var(--red)";
+        sub.style.color = "var(--red)";
+      }
 
       main.appendChild(title);
       main.appendChild(sub);
@@ -1838,10 +1815,6 @@
       right.style.alignItems = "flex-end";
       right.style.gap = "4px";
 
-      const status = document.createElement("span");
-      status.className = "badge " + (dd.active ? "badge-green" : "badge-red");
-      status.textContent = dd.active ? "Active" : "Paused";
-
       const editBtn = document.createElement("button");
       editBtn.className = "btn btn-small btn-ghost";
       editBtn.textContent = "Edit";
@@ -1849,7 +1822,6 @@
         openDirectDebitEditModal(dd);
       });
 
-      right.appendChild(status);
       right.appendChild(editBtn);
 
       item.appendChild(main);
@@ -1862,7 +1834,6 @@
   function openTransactionEditModal(tx) {
     currentEditingTxId = tx.id;
 
-    const modal = document.getElementById("txEditModal");
     const monthLabel = document.getElementById("txEditMonthLabel");
     const dateInput = document.getElementById("txEditDate");
     const typeInput = document.getElementById("txEditType");
@@ -1875,12 +1846,11 @@
     descInput.value = tx.description || "";
     amountInput.value = (Number(tx.amount) || 0).toFixed(2);
 
-    modal.classList.add("show");
+    document.getElementById("txEditModal").classList.add("show");
   }
 
   function closeTransactionEditModal() {
-    const modal = document.getElementById("txEditModal");
-    modal.classList.remove("show");
+    document.getElementById("txEditModal").classList.remove("show");
     currentEditingTxId = null;
   }
 
@@ -1888,13 +1858,12 @@
     currentEditingDdBaseId = effDD.baseId;
     currentEditingMonthISO = monthISO(selectedMonth);
 
-    const modal = document.getElementById("ddEditModal");
     const monthLabel = document.getElementById("ddEditMonthLabel");
     const nameInput = document.getElementById("ddEditName");
     const amountInput = document.getElementById("ddEditAmount");
     const dayInput = document.getElementById("ddEditDay");
     const categoryInput = document.getElementById("ddEditCategory");
-    const activeInput = document.getElementById("ddEditActive");
+    const statusInput = document.getElementById("ddEditStatus");
     const scopeInput = document.getElementById("ddEditScope");
 
     monthLabel.textContent = monthKey(selectedMonth);
@@ -1903,15 +1872,14 @@
     amountInput.value = (Number(effDD.amount) || 0).toFixed(2);
     dayInput.value = effDD.day || "";
     categoryInput.value = effDD.category || "";
-    activeInput.checked = !!effDD.active;
+    statusInput.value = effDD.active ? "active" : "paused";
     scopeInput.value = "month";
 
-    modal.classList.add("show");
+    document.getElementById("ddEditModal").classList.add("show");
   }
 
   function closeDirectDebitEditModal() {
-    const modal = document.getElementById("ddEditModal");
-    modal.classList.remove("show");
+    document.getElementById("ddEditModal").classList.remove("show");
     currentEditingDdBaseId = null;
     currentEditingMonthISO = null;
   }
@@ -2056,13 +2024,11 @@
       const amountInput = document.getElementById("ddAmount");
       const dayInput = document.getElementById("ddDay");
       const categoryInput = document.getElementById("ddCategory");
-      const activeInput = document.getElementById("ddActive");
 
       const name = nameInput.value.trim();
       const amtStr = amountInput.value.trim();
       const dayStr = dayInput.value.trim();
       const category = categoryInput.value.trim();
-      const active = activeInput.checked;
 
       let amount = parseFloat(amtStr.replace(",", "."));
       let day = parseInt(dayStr, 10);
@@ -2092,14 +2058,13 @@
         amount: amount,
         day: day,
         category: category,
-        active: active
+        active: true
       });
 
       nameInput.value = "";
       amountInput.value = "";
       dayInput.value = "";
       categoryInput.value = "";
-      activeInput.checked = true;
 
       saveToStorage();
       refreshUI();
@@ -2135,7 +2100,6 @@
       donutOverlay.classList.remove("show");
     });
 
-    const txModal = document.getElementById("txEditModal");
     document.getElementById("txEditCloseBtn").addEventListener("click", closeTransactionEditModal);
     document.getElementById("txEditCancelBtn").addEventListener("click", closeTransactionEditModal);
     document.getElementById("txEditSaveBtn").addEventListener("click", () => {
@@ -2190,7 +2154,6 @@
       refreshUI();
     });
 
-    const ddModal = document.getElementById("ddEditModal");
     document.getElementById("ddEditCloseBtn").addEventListener("click", closeDirectDebitEditModal);
     document.getElementById("ddEditCancelBtn").addEventListener("click", closeDirectDebitEditModal);
 
@@ -2201,14 +2164,14 @@
       const amountInput = document.getElementById("ddEditAmount");
       const dayInput = document.getElementById("ddEditDay");
       const categoryInput = document.getElementById("ddEditCategory");
-      const activeInput = document.getElementById("ddEditActive");
+      const statusInput = document.getElementById("ddEditStatus");
       const scopeInput = document.getElementById("ddEditScope");
 
       const name = nameInput.value.trim();
       const amtStr = amountInput.value.trim();
       const dayStr = dayInput.value.trim();
       const category = categoryInput.value.trim();
-      const active = activeInput.checked;
+      const active = statusInput.value === "active";
       const scope = scopeInput.value;
 
       let amount = parseFloat(amtStr.replace(",", "."));
