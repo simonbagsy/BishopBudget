@@ -149,12 +149,16 @@
       display: block;
     }
 
+    /* DATE / MONTH "PILL" ROW */
     .month-row {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-top: 4px;
       flex-wrap: wrap;
+      background: var(--pill);
+      border-radius: 999px;
+      padding: 6px 10px;
     }
 
     .month-row span {
@@ -175,7 +179,7 @@
     }
 
     .pill-btn {
-      background: var(--pill);
+      background: var(--card-soft);
       border-radius: 999px;
       border: 1px solid rgba(148, 163, 184, 0.3);
       padding: 4px;
@@ -254,12 +258,13 @@
       width: 100%;
     }
 
+    /* DONUT + TEXT STACKED, DONUT CENTERED */
     .donut-and-text {
       display: flex;
+      flex-direction: column;
       gap: 12px;
       margin-top: 10px;
-      align-items: flex-start;
-      flex-wrap: wrap;
+      align-items: stretch;
     }
 
     .donut-wrapper {
@@ -271,6 +276,7 @@
       justify-content: center;
       flex: 0 0 auto;
       box-shadow: 0 0 25px rgba(37, 99, 235, 0.4);
+      margin: 0 auto;
     }
 
     .donut-svg {
@@ -977,7 +983,6 @@
 
   // ---------- Opening balance (auto carry-over) ----------
   function ensureOpeningBalanceForSelectedMonth() {
-    // Previous month
     const prevMonth = firstOfMonth(new Date(
       selectedMonth.getFullYear(),
       selectedMonth.getMonth() - 1,
@@ -987,14 +992,12 @@
     const prevTotals = computeTotalsForMonth(prevMonth);
     const leftover = prevTotals.afterAll;
 
-    // If no leftover or zero, nothing to carry
     if (!leftover || leftover === 0) {
       return;
     }
 
     const selectedKey = monthKey(selectedMonth);
 
-    // Check if we already have an auto opening for this month
     const exists = transactions.some(tx => {
       if (tx.type !== "income") return false;
       if (tx.description !== "Opening balance (auto)") return false;
@@ -1005,7 +1008,6 @@
 
     if (exists) return;
 
-    // Create opening balance on the first of this month
     const iso = firstOfMonth(selectedMonth).toISOString().slice(0, 10);
 
     transactions.push({
@@ -1323,7 +1325,6 @@
     const monthLabelEl = document.getElementById("monthLabel");
     monthLabelEl.textContent = monthKey(selectedMonth);
 
-    // Ensure opening balance for initial month
     ensureOpeningBalanceForSelectedMonth();
     saveToStorage();
     refreshUI();
