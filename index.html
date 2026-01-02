@@ -149,9 +149,9 @@
       display: block;
     }
 
-    /* DATE / MONTH "PILL" ROW */
+    /* Month pill at the top */
     .month-row {
-      display: inline-flex;          /* shrink to content */
+      display: inline-flex;
       align-items: center;
       gap: 8px;
       margin-top: 4px;
@@ -257,7 +257,6 @@
       width: 100%;
     }
 
-    /* DONUT + TEXT STACKED, DONUT CENTERED */
     .donut-and-text {
       display: flex;
       flex-direction: column;
@@ -369,12 +368,27 @@
       outline: none;
     }
 
+    /* Force iOS date input to behave like the other pills */
+    input[type="date"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(99, 102, 241, 0.7);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-primary);
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
     .input::placeholder {
       color: rgba(148, 163, 184, 0.9);
     }
 
     .input:focus,
-    select:focus {
+    select:focus,
+    input[type="date"]:focus {
       border-color: var(--blue-soft);
       box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
     }
@@ -611,7 +625,6 @@
       <div class="donut-and-text">
         <div class="donut-wrapper">
           <svg class="donut-svg" viewBox="0 0 120 120">
-            <!-- background ring -->
             <circle
               cx="60" cy="60" r="40"
               stroke="rgba(15,23,42,0.95)"
@@ -619,7 +632,6 @@
               fill="none"
             ></circle>
 
-            <!-- active arc -->
             <defs>
               <linearGradient id="donutGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#5fa5fb"></stop>
@@ -645,7 +657,6 @@
               filter="url(#donutGlow)"
             ></circle>
 
-            <!-- center text -->
             <text x="60" y="53" class="donut-center-text" id="donutPercentText">0%</text>
             <text x="60" y="70" class="donut-center-sub">income left</text>
           </svg>
@@ -780,7 +791,6 @@
 </div>
 
 <script>
-  // ---------- Data ----------
   let transactions = [];
   let directDebits = [];
   let selectedMonth = firstOfMonth(new Date());
@@ -790,7 +800,6 @@
   const STORAGE_KEY_DD = "bb_directDebits";
   const STORAGE_KEY_MONTH = "bb_selectedMonth";
 
-  // ---------- Helpers ----------
   function formatMoney(value) {
     const num = Number(value) || 0;
     return num.toLocaleString("en-GB", {
@@ -867,7 +876,6 @@
     return null;
   }
 
-  // ---------- Storage ----------
   function saveToStorage() {
     localStorage.setItem(STORAGE_KEY_TX, JSON.stringify(transactions));
     localStorage.setItem(STORAGE_KEY_DD, JSON.stringify(directDebits));
@@ -899,7 +907,6 @@
     }
   }
 
-  // ---------- Computations ----------
   function monthTransactionsFor(date) {
     const key = monthKey(date);
     return transactions.filter(tx => {
@@ -963,7 +970,7 @@
     const ddByDay = {};
     directDebits.forEach(dd => {
       if (!dd.active) return;
-      const day = clamp(dd.day, 1, days);
+      const day = Math.max(1, Math.min(days, dd.day));
       ddByDay[day] = (ddByDay[day] || 0) + dd.amount;
     });
 
@@ -980,7 +987,6 @@
     return result;
   }
 
-  // ---------- Opening balance (auto carry-over) ----------
   function ensureOpeningBalanceForSelectedMonth() {
     const prevMonth = firstOfMonth(new Date(
       selectedMonth.getFullYear(),
@@ -1020,7 +1026,6 @@
     saveToStorage();
   }
 
-  // ---------- UI refresh ----------
   function refreshUI() {
     const monthLabelEl = document.getElementById("monthLabel");
     const incomeValueEl = document.getElementById("incomeValue");
@@ -1246,7 +1251,6 @@
     }
   }
 
-  // ---------- CSV export ----------
   function exportCSV() {
     const lines = [];
 
@@ -1313,7 +1317,6 @@
     URL.revokeObjectURL(url);
   }
 
-  // ---------- Event wiring ----------
   document.addEventListener("DOMContentLoaded", () => {
     loadFromStorage();
 
