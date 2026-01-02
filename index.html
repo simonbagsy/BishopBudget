@@ -2,248 +2,524 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>22 Bishop Road Budget</title>
+
+  <!-- No pinch zoom -->
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
   />
-  <title>22 Bishop Road Budget</title>
+
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
 
   <style>
     :root {
-      --bg: #070b16;
-      --bg2: #0b1224;
-      --card: #0f1a33;
-      --card-soft: #141f3c;
-      --pill: #142347;
-      --blue: #5fa9ff;
-      --blue-soft: #8ec5ff;
-      --green: #40e38a;
-      --green-soft: #9af7c7;
-      --red: #ff6a78;
-      --amber: #ffb24a;
-      --text: #e6e8ee;
-      --text-soft: #9aa3b5;
-      --text-muted: #6f7888;
-      --border-subtle: rgba(255, 255, 255, 0.06);
+      --bg-deep: #020617;
+      --bg-main: #070b14;
+      --bg-mid: #1f2933;
+
+      --card: #0f1729;
+      --card-soft: #101827;
+      --pill: #151b30;
+
+      --text-primary: #e5e7eb;
+      --text-soft: #9ca3af;
+      --text-muted: #6b7280;
+
+      --blue-start: #123fe8;
+      --blue-soft: #5fa5fb;
+      --blue-end: #0fd6e9;
+
+      --green: #4ade80;
+      --green-soft: #bbf7d0;
+
+      --red: #f87171;
+      --amber: #f97316;
+
+      --header-highlight: #c7d2fe;
     }
 
-    * {
-      box-sizing: border-box;
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overscroll-behavior: none;
+      touch-action: manipulation;
     }
 
     body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Segoe UI,
-        Inter, Arial, sans-serif;
-      background: radial-gradient(circle at top left, #151b3a 0, #050713 55%);
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #020617 0%, #020617 40%, #020617 100%);
+      color: var(--text-primary);
     }
 
-    .page {
-      padding: 12px;
-      max-width: 520px;
+    .app-shell {
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 960px;
       margin: 0 auto;
-    }
-
-    .card {
-      background: var(--card);
+      background: linear-gradient(135deg, var(--bg-deep), var(--bg-main));
       border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 10px;
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.5);
+      padding: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      position: relative;
+      z-index: 1;
     }
 
-    .card-soft {
+    @media (min-width: 700px) {
+      .app-container {
+        padding: 24px;
+      }
+    }
+
+    .section {
       background: var(--card-soft);
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (min-width: 700px) {
+      .section {
+        padding: 16px 18px;
+        margin-bottom: 16px;
+      }
     }
 
     .section-title {
-      font-size: 15px;
+      font-size: 0.95rem;
       font-weight: 600;
       margin-bottom: 6px;
+      color: var(--text-primary);
     }
 
-    .subtext {
-      font-size: 12px;
+    .section-subtitle {
+      font-size: 0.8rem;
       color: var(--text-soft);
+      margin-bottom: 8px;
     }
 
-    .pill-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .pill-value {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    /* HEADER */
-
-    .header-top {
+    .header-row {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
     }
 
-    .header-title {
-      font-size: 18px;
-      font-weight: 700;
+    .header-text h1 {
+      font-size: 1.25rem;
+      margin: 0;
+      color: var(--text-primary);
     }
 
-    .header-subtitle {
-      font-size: 12px;
+    .header-text p {
+      font-size: 0.8rem;
+      margin: 2px 0 0;
       color: var(--text-soft);
     }
 
     .header-icon {
-      width: 72px;
-      height: 72px;
+      width: 70px;
+      height: 70px;
       border-radius: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      object-fit: cover;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-    }
-
-    .header-month-row {
-      margin-top: 8px;
+      background: radial-gradient(circle at top left, var(--blue-end), var(--blue-start));
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+      overflow: hidden;
+      flex-shrink: 0;
     }
 
-    /* BUTTONS */
+    .header-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
 
-    .btn {
-      border-radius: 11px;
-      padding: 7px 12px;
+    .month-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      background: var(--pill);
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+
+    .month-row span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .month-label {
+      font-size: 0.9rem;
       font-weight: 600;
-      font-size: 13px;
+      color: var(--header-highlight);
+    }
+
+    .month-controls {
+      margin-left: 8px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .pill-btn {
+      background: radial-gradient(circle at top, #1f2937, #020617);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 4px;
       cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: linear-gradient(180deg, #1c2f5c, #122349);
-      color: #ffffff;
+      color: var(--text-soft);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      transition: transform 0.08s ease, box-shadow 0.08s ease,
-        filter 0.08s ease;
+      width: 28px;
+      height: 28px;
+      font-size: 0.7rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+      transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease, background 0.1s ease;
     }
 
-    .btn:hover {
-      filter: brightness(1.05);
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
-      transform: translateY(-0.5px);
+    .pill-btn:hover {
+      border-color: #60a5fa;
+      color: #e5e7eb;
+      background: radial-gradient(circle at top, #111827, #020617);
+      box-shadow: 0 3px 6px rgba(15,23,42,0.9);
     }
 
-    .btn:active {
-      transform: translateY(0.5px) scale(0.98);
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+    .pill-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.8) inset;
     }
 
-    .btn-small {
-      font-size: 12px;
-      padding: 5px 9px;
-      border-radius: 9px;
-    }
-
-    .btn-secondary {
-      background: radial-gradient(circle at top, #27375f, #141d39 70%);
-    }
-
-    .btn-ghost {
-      background: rgba(18, 33, 74, 0.7);
-      border-color: rgba(255, 255, 255, 0.15);
-    }
-
-    .btn-danger {
-      background: linear-gradient(180deg, #c53946, #8c2530);
-      border-color: rgba(255, 175, 184, 0.4);
-    }
-
-    .btn-full {
-      width: 100%;
-    }
-
-    /* INPUTS */
-
-    .input {
-      width: 100%;
-      background: rgba(15, 25, 50, 0.9);
-      border: 1px solid var(--blue);
-      border-radius: 10px;
-      color: var(--text);
-      padding: 8px 10px;
-      font-size: 14px;
-      font-weight: 600;
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
       margin-top: 6px;
     }
 
-    .input::placeholder {
-      color: rgba(154, 163, 181, 0.8);
-      font-weight: 500;
-    }
-
-    select.input {
-      padding-right: 30px;
-      background-image: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.06),
-        rgba(255, 255, 255, 0)
-      );
-    }
-
-    /* DASHBOARD GRID */
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
     .mini-card {
-      background: var(--card-soft);
-      border-radius: 12px;
-      padding: 8px 9px;
-      border: 1px solid var(--border-subtle);
+      background: var(--pill);
+      border-radius: 14px;
+      padding: 8px;
+      border: 1px solid rgba(30, 64, 175, 0.8);
     }
 
-    .mini-label {
-      font-size: 11px;
+    .mini-card-title {
+      font-size: 0.72rem;
+      font-weight: 500;
       color: var(--text-soft);
     }
 
-    .mini-value {
-      font-size: 14px;
-      font-weight: 700;
-      margin-top: 2px;
+    .mini-card-subtitle {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 1px;
     }
 
-    /* LISTS */
+    .mini-card-value {
+      margin-top: 4px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .whatif-box {
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .whatif-label {
+      font-size: 0.75rem;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+
+    .whatif-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      margin-top: 2px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .donut-and-text {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+      align-items: stretch;
+    }
+
+    .donut-wrapper {
+      background: radial-gradient(circle at top, #1e293b 0%, #020617 70%);
+      border-radius: 18px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      box-shadow: 0 0 25px rgba(37, 99, 235, 0.4);
+      margin: 0 auto;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .donut-wrapper:active {
+      transform: scale(0.97);
+      box-shadow: 0 0 18px rgba(37, 99, 235, 0.6);
+    }
+
+    .donut-svg {
+      width: 160px;
+      height: 160px;
+    }
+
+    .donut-center-text {
+      dominant-baseline: middle;
+      text-anchor: middle;
+      fill: var(--text-primary);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .donut-center-sub {
+      dominant-baseline: middle;
+      text-anchor: middle;
+      fill: var(--text-soft);
+      font-size: 10px;
+    }
+
+    .donut-text-block {
+      flex: 1;
+      min-width: 180px;
+      font-size: 0.8rem;
+    }
+
+    .status-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .status-title.green { color: var(--green-soft); }
+    .status-title.red   { color: var(--red); }
+    .status-title.amber { color: var(--amber); }
+
+    .status-body {
+      color: var(--text-soft);
+      line-height: 1.4;
+    }
+
+    .graph-box {
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .graph-label {
+      font-size: 0.75rem;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+
+    .graph-svg {
+      width: 100%;
+      height: 80px;
+    }
+
+    .axis-line {
+      stroke: rgba(148, 163, 184, 0.5);
+      stroke-width: 0.8;
+    }
+
+    .graph-line {
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .form-group {
+      margin-bottom: 6px;
+      font-size: 0.8rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--text-soft);
+    }
+
+    .input,
+    select {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(99, 102, 241, 0.7);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-primary);
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      outline: none;
+    }
+
+    input[type="date"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(99, 102, 241, 0.7);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-primary);
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    .input::placeholder {
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    .input:focus,
+    select:focus,
+    input[type="date"]:focus {
+      border-color: var(--blue-soft);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-top: 4px;
+      background: radial-gradient(circle at top, #111827, #020617);
+      color: var(--text-soft);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.7);
+      transition:
+        transform 0.1s ease,
+        box-shadow 0.1s ease,
+        border-color 0.1s ease,
+        background 0.1s ease,
+        color 0.1s ease;
+    }
+
+    .btn:hover {
+      border-color: #60a5fa;
+      background: radial-gradient(circle at top, #0b1220, #020617);
+      box-shadow: 0 3px 7px rgba(15,23,42,0.9);
+      color: #e5e7eb;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.9) inset;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue-start), var(--blue-end));
+      border-color: rgba(59, 130, 246, 0.9);
+      color: #ffffff;
+      box-shadow: 0 3px 7px rgba(37, 99, 235, 0.7);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.9);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 4px rgba(15,23,42,0.9) inset;
+    }
+
+    .btn-ghost {
+      background: radial-gradient(circle at top, #111827, #020617);
+      color: var(--text-soft);
+    }
+
+    .btn-danger {
+      border-color: rgba(248, 113, 113, 0.8);
+      color: var(--red);
+    }
+
+    .btn-danger:hover {
+      background: radial-gradient(circle at top, #111827, #020617);
+      color: #fecaca;
+      border-color: rgba(248, 113, 113, 1);
+    }
+
+    .btn-small {
+      padding: 3px 8px;
+      font-size: 0.7rem;
+    }
 
     .list-container {
-      max-height: 340px;
+      margin-top: 6px;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 12px;
+      padding: 4px;
+      max-height: 260px;
       overflow-y: auto;
-      margin-top: 8px;
-      padding-right: 2px;
+    }
+
+    .list-header {
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+      padding: 0 4px;
+    }
+
+    .list-empty {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      padding: 4px 6px;
     }
 
     .list-item {
-      background: rgba(10, 18, 35, 0.92);
-      border-radius: 11px;
-      border: 1px solid var(--border-subtle);
-      padding: 8px 10px;
-      margin-bottom: 5px;
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
+      padding: 6px 6px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #111827;
+      margin-bottom: 4px;
+      font-size: 0.78rem;
+    }
+
+    .dd-paused {
+      border-color: rgba(248, 113, 113, 0.8);
+      box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.25);
     }
 
     .list-main {
@@ -252,927 +528,1742 @@
     }
 
     .list-title {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 2px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
     .list-sub {
-      font-size: 11px;
       color: var(--text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .list-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      font-size: 0.7rem;
+      margin-top: 1px;
     }
 
     .list-amount {
-      font-size: 14px;
-      font-weight: 700;
+      font-weight: 600;
+      font-size: 0.78rem;
       text-align: right;
-      white-space: nowrap;
     }
 
-    .list-empty {
-      font-size: 12px;
-      color: var(--text-muted);
+    .summary-lines {
+      font-size: 0.78rem;
       margin-top: 4px;
     }
 
-    .dd-paused .list-title {
-      color: var(--red);
-    }
-
-    /* DONUT */
-
-    .donut-wrapper {
-      margin-top: 10px;
+    .summary-row {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
     }
 
-    #donutCanvas {
-      cursor: pointer;
-    }
-
-    #statusMessage {
-      font-size: 12px;
-      margin-top: 6px;
+    .summary-label {
       color: var(--text-soft);
     }
 
-    /* MODALS */
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.55);
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      z-index: 20;
+    .summary-value {
+      color: var(--text-primary);
     }
 
-    .modal-sheet {
-      width: 100%;
-      max-width: 520px;
-      background: #050813;
-      border-radius: 18px 18px 0 0;
-      border-top: 1px solid rgba(255, 255, 255, 0.18);
-      padding: 12px;
-      box-shadow: 0 -18px 44px rgba(0, 0, 0, 0.9);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-
-    .modal-title {
-      font-size: 15px;
+    .summary-total {
+      margin-top: 4px;
+      padding-top: 4px;
+      border-top: 1px solid rgba(15, 23, 42, 0.9);
       font-weight: 600;
     }
 
-    .modal-row {
-      margin-top: 6px;
-    }
-
-    .toggle-row {
+    .export-row {
       display: flex;
-      align-items: center;
       justify-content: space-between;
       gap: 8px;
-      margin-top: 8px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+      align-items: center;
     }
 
-    .toggle-label {
-      font-size: 13px;
-      color: var(--text-soft);
-    }
-
-    .toggle-pill {
-      width: 44px;
-      height: 24px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      position: relative;
-      cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      transition: background 0.12s ease, border-color 0.12s ease;
-    }
-
-    .toggle-thumb {
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #ffffff;
-      transition: transform 0.12s ease;
-    }
-
-    .toggle-pill.on {
-      background: linear-gradient(140deg, var(--green), var(--green-soft));
-      border-color: rgba(159, 255, 205, 0.9);
-    }
-
-    .toggle-pill.on .toggle-thumb {
-      transform: translateX(18px);
-    }
-
-    .modal-actions {
+    .export-row-right {
       display: flex;
-      justify-content: space-between;
-      gap: 6px;
-      margin-top: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    /* DONUT BREAKDOWN SCREEN */
-
-    #donutBreakdown {
-      display: none;
+    .donut-overlay {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at top, #151c3b, #050713 65%);
-      z-index: 15;
-      padding: 12px;
+      background: radial-gradient(circle at top, #020617 0%, #020617 50%, #020617 100%);
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+    }
+
+    .donut-overlay.show {
+      display: flex;
+    }
+
+    .donut-overlay-card {
+      width: 100%;
+      max-width: 960px;
+      background: linear-gradient(135deg, #020617, #020617);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.85);
+      max-height: calc(100vh - 32px);
       overflow-y: auto;
     }
 
-    .back-row {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      margin-bottom: 8px;
+    @media (min-width: 700px) {
+      .donut-overlay-card {
+        padding: 20px 22px 24px;
+      }
     }
 
-    .breakdown-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+    .donut-overlay-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
       gap: 8px;
-      margin-top: 8px;
+    }
+
+    .donut-overlay-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .donut-overlay-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+
+    .donut-overlay-body {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .donut-overlay-main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    @media (min-width: 700px) {
+      .donut-overlay-main {
+        flex-direction: row;
+        align-items: stretch;
+      }
+    }
+
+    .donut-overlay-svg-wrapper {
+      background: radial-gradient(circle at top, #111827 0%, #020617 70%);
+      border-radius: 22px;
+      padding: 14px;
+      flex: 0 0 auto;
+      box-shadow: 0 0 30px rgba(37, 99, 235, 0.6);
+    }
+
+    .donut-svg-large {
+      width: 220px;
+      height: 220px;
+    }
+
+    .donut-center-text-large {
+      dominant-baseline: middle;
+      text-anchor: middle;
+      fill: var(--text-primary);
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .donut-center-sub-large {
+      dominant-baseline: middle;
+      text-anchor: middle;
+      fill: var(--text-soft);
+      font-size: 11px;
+    }
+
+    .breakdown-panel {
+      flex: 1;
+      min-width: 220px;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 18px;
+      padding: 10px;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      font-size: 0.8rem;
     }
 
     .breakdown-label {
-      font-size: 12px;
       color: var(--text-soft);
     }
 
     .breakdown-value {
-      font-size: 14px;
-      font-weight: 700;
-      margin-top: 2px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .breakdown-value.green { color: var(--green-soft); }
+    .breakdown-value.red   { color: var(--red); }
+    .breakdown-value.amber { color: var(--amber); }
+
+    .stacked-bar-box {
+      margin-top: 10px;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 16px;
+      padding: 8px;
+      font-size: 0.78rem;
+    }
+
+    .stacked-bar-label {
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+
+    .stacked-bar-svg {
+      width: 100%;
+      height: 16px;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .legend-row {
+      margin-top: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.75rem;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .legend-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+    }
+
+    /* EDIT MODALS */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 998;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 420px;
+      background: linear-gradient(135deg, #020617, #020617);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+      border: 1px solid rgba(37, 99, 235, 0.4);
+    }
+
+    .modal-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .modal-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .modal-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-soft);
+      margin-bottom: 8px;
+    }
+
+    .modal-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .modal-footer-right {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
   </style>
 </head>
-
 <body>
-  <div class="page">
+<div class="app-shell">
+  <div class="app-container">
+
     <!-- HEADER -->
-    <div class="card card-soft">
-      <div class="header-top">
-        <div>
-          <div class="header-title">Monthly Budget</div>
-          <div class="header-subtitle">22 Bishop Road</div>
+    <section class="section">
+      <div class="header-row">
+        <div class="header-text">
+          <h1>22 Bishop Road Budget</h1>
+          <p>Clear monthly view of income, direct debits and spending.</p>
         </div>
-        <img src="icon-192.png" alt="App Icon" class="header-icon" />
-      </div>
-
-      <div class="header-month-row">
-        <span class="pill-label">Month:</span>
-        <span id="monthLabel" class="pill-value" style="color:#cdd6ff;">Jan 26</span>
-
-        <div style="margin-left:auto;display:flex;gap:6px;">
-          <button class="btn btn-small btn-secondary" onclick="changeMonth(-1)">‹</button>
-          <button class="btn btn-small btn-secondary" onclick="changeMonth(1)">›</button>
+        <div class="header-icon">
+          <img src="icon-192.png" alt="App icon">
         </div>
       </div>
-    </div>
 
-    <!-- DASHBOARD -->
-    <div class="card card-soft">
+      <div class="month-row">
+        <span>Month:</span>
+        <span class="month-label" id="monthLabel">---</span>
+        <div class="month-controls">
+          <button class="pill-btn" id="prevMonthBtn">&#x2039;</button>
+          <button class="pill-btn" id="nextMonthBtn">&#x203A;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD SNAPSHOT -->
+    <section class="section">
       <div class="section-title">Dashboard Snapshot</div>
 
-      <div class="grid-2">
+      <div class="cards-grid">
         <div class="mini-card">
-          <div class="mini-label">Monthly income</div>
-          <div id="incomeValue" class="mini-value"></div>
+          <div class="mini-card-title">Monthly income</div>
+          <div class="mini-card-subtitle">For this month</div>
+          <div class="mini-card-value" id="incomeValue">£0.00</div>
         </div>
+
         <div class="mini-card">
-          <div class="mini-label">Direct Debits & Bills</div>
-          <div id="ddValue" class="mini-value" style="color:#ffffff;"></div>
+          <div class="mini-card-title">Direct Debits &amp; bills</div>
+          <div class="mini-card-subtitle">Mortgage, utilities, tax</div>
+          <div class="mini-card-value" id="ddValue">£0.00</div>
+        </div>
+
+        <div class="mini-card">
+          <div class="mini-card-title">Other spending</div>
+          <div class="mini-card-subtitle">Food, fuel, nights out</div>
+          <div class="mini-card-value" id="spendValue">£0.00</div>
+        </div>
+
+        <div class="mini-card" id="leftCard">
+          <div class="mini-card-title">Left after spending</div>
+          <div class="mini-card-subtitle">If you stopped today</div>
+          <div class="mini-card-value" id="leftValue">£0.00</div>
         </div>
       </div>
 
-      <div class="grid-2">
-        <div class="mini-card">
-          <div class="mini-label">Other Spending</div>
-          <div id="spendValue" class="mini-value"></div>
-        </div>
-        <div class="mini-card">
-          <div class="mini-label">Left after Spending</div>
-          <div id="afterValue" class="mini-value"></div>
+      <div class="whatif-box">
+        <div class="whatif-label">What if this month changed by…</div>
+        <input type="range" id="whatIfSlider" min="-1000" max="1000" step="10" value="0">
+        <div class="whatif-meta">
+          <span id="whatIfChange">Change: £0.00</span>
+          <span id="whatIfAfter">After change: £0.00</span>
+          <button class="btn btn-ghost btn-small" id="resetWhatIfBtn">Reset</button>
         </div>
       </div>
 
-      <div class="donut-wrapper">
-        <canvas
-          id="donutCanvas"
-          width="180"
-          height="180"
-          onclick="openDonutBreakdown()"
-        ></canvas>
-      </div>
+      <div class="donut-and-text">
+        <div class="donut-wrapper" id="donutWrapper">
+          <svg class="donut-svg" viewBox="0 0 120 120">
+            <circle
+              cx="60" cy="60" r="40"
+              stroke="rgba(15,23,42,0.95)"
+              stroke-width="18"
+              fill="none"
+            ></circle>
 
-      <div id="statusMessage"></div>
-    </div>
+            <defs>
+              <linearGradient id="donutGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#5fa5fb"></stop>
+                <stop offset="50%" stop-color="#4ade80"></stop>
+                <stop offset="100%" stop-color="#0fd6e9"></stop>
+              </linearGradient>
+
+              <filter id="donutGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#22c55e" flood-opacity="0.7" />
+              </filter>
+            </defs>
+
+            <circle
+              id="donutArc"
+              cx="60" cy="60" r="40"
+              stroke="url(#donutGradient)"
+              stroke-width="18"
+              fill="none"
+              stroke-linecap="round"
+              transform="rotate(-90 60 60)"
+              stroke-dasharray="251.2"
+              stroke-dashoffset="251.2"
+              filter="url(#donutGlow)"
+            ></circle>
+
+            <text x="60" y="53" class="donut-center-text" id="donutPercentText">0%</text>
+            <text x="60" y="70" class="donut-center-sub">income left</text>
+          </svg>
+        </div>
+
+        <div class="donut-text-block">
+          <div id="statusTitle" class="status-title">Waiting for income</div>
+          <div id="statusBody" class="status-body">
+            Add your salary for this month to see how much is left after direct debits and spending.
+          </div>
+
+          <div class="graph-box">
+            <div class="graph-label">Daily balance this month</div>
+            <svg class="graph-svg" viewBox="0 0 100 50">
+              <line x1="0" y1="40" x2="100" y2="40" class="axis-line"></line>
+              <polyline id="graphLine" class="graph-line" stroke="#4ade80" points=""></polyline>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- ADD TRANSACTION -->
-    <div class="card card-soft">
+    <section class="section">
       <div class="section-title">Add transaction (one-off)</div>
 
-      <input id="txDate" type="date" class="input" />
-      <select id="txType" class="input">
-        <option value="income">Income</option>
-        <option value="spend">Spending</option>
-      </select>
-      <input id="txDesc" class="input" placeholder="Description" />
-      <input id="txAmt" class="input" placeholder="Amount" inputmode="decimal" />
-
-      <button class="btn btn-full" style="margin-top:6px;" onclick="addTransaction()">
-        Add transaction
-      </button>
-
-      <div id="txList" class="list-container"></div>
-    </div>
-
-    <!-- DIRECT DEBITS -->
-    <div class="card card-soft">
-      <div class="section-title">Direct debits & bills</div>
-
-      <input id="ddName" class="input" placeholder="Name (e.g. Mortgage)" />
-      <input
-        id="ddAmt"
-        class="input"
-        placeholder="Amount (per month)"
-        inputmode="decimal"
-      />
-      <input
-        id="ddDay"
-        class="input"
-        placeholder="Day of month (1–31)"
-        inputmode="numeric"
-      />
-      <input id="ddCat" class="input" placeholder="Category (optional)" />
-
-      <button class="btn btn-full" style="margin-top:6px;" onclick="addDirectDebit()">
-        Add direct debit
-      </button>
-
-      <div id="ddList" class="list-container"></div>
-    </div>
-  </div>
-
-  <!-- TRANSACTION EDIT MODAL -->
-  <div id="txModal" class="modal-overlay">
-    <div class="modal-sheet">
-      <div class="modal-header">
-        <div class="modal-title">Edit transaction</div>
-        <button class="btn btn-small btn-ghost" onclick="closeTxModal()">Done</button>
+      <div class="form-group">
+        <label for="txDate">Date</label>
+        <input type="date" id="txDate" class="input">
       </div>
 
-      <div class="modal-row">
-        <label class="pill-label">Date</label>
-        <input id="editTxDate" type="date" class="input" />
-      </div>
-      <div class="modal-row">
-        <label class="pill-label">Type</label>
-        <select id="editTxType" class="input">
+      <div class="form-group">
+        <label for="txType">Type</label>
+        <select id="txType" class="input">
           <option value="income">Income</option>
-          <option value="spend">Spending</option>
+          <option value="spending">Spending</option>
         </select>
       </div>
-      <div class="modal-row">
-        <label class="pill-label">Description</label>
-        <input id="editTxDesc" class="input" />
-      </div>
-      <div class="modal-row">
-        <label class="pill-label">Amount</label>
-        <input id="editTxAmt" class="input" inputmode="decimal" />
+
+      <div class="form-group">
+        <label for="txDescription">Description</label>
+        <input type="text" id="txDescription" class="input" placeholder="e.g. RN salary, Tesco shop">
       </div>
 
-      <div class="modal-actions">
-        <button class="btn btn-danger" onclick="deleteCurrentTx()">Delete</button>
-        <button class="btn btn-secondary" style="flex:1;" onclick="saveCurrentTx()">
-          Save changes
+      <div class="form-group">
+        <label for="txAmount">Amount</label>
+        <input type="number" id="txAmount" class="input" placeholder="0.00" step="0.01">
+      </div>
+
+      <button class="btn btn-primary" id="addTxBtn">Add transaction</button>
+
+      <div class="list-container" style="margin-top:8px;">
+        <div class="list-header">Transactions this month</div>
+        <div id="txList"></div>
+      </div>
+    </section>
+
+    <!-- DIRECT DEBITS -->
+    <section class="section">
+      <div class="section-title">Direct debits &amp; regular bills</div>
+
+      <div class="form-group">
+        <label for="ddName">Name</label>
+        <input type="text" id="ddName" class="input" placeholder="e.g. Mortgage, Council tax">
+      </div>
+
+      <div class="form-group">
+        <label for="ddAmount">Amount (per month)</label>
+        <input type="number" id="ddAmount" class="input" placeholder="0.00" step="0.01">
+      </div>
+
+      <div class="form-group">
+        <label for="ddDay">Day of month (1–31)</label>
+        <input type="number" id="ddDay" class="input" placeholder="1" min="1" max="31">
+      </div>
+
+      <div class="form-group">
+        <label for="ddCategory">Category (optional)</label>
+        <input type="text" id="ddCategory" class="input" placeholder="e.g. Housing, Utilities">
+      </div>
+
+      <button class="btn btn-ghost" id="addDdBtn">Add direct debit</button>
+
+      <div class="list-container" style="margin-top:8px;">
+        <div class="list-header">All direct debits (effective this month)</div>
+        <div id="ddList"></div>
+      </div>
+    </section>
+
+    <!-- MONTH SUMMARY + EXPORT -->
+    <section class="section">
+      <div class="section-title">Month summary</div>
+
+      <div class="summary-lines">
+        <div class="summary-row">
+          <span class="summary-label">Started with</span>
+          <span class="summary-value" id="sumIncome">£0.00</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Committed to direct debits</span>
+          <span class="summary-value" id="sumDD">£0.00</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Spent this month</span>
+          <span class="summary-value" id="sumSpend">£0.00</span>
+        </div>
+        <div class="summary-row summary-total">
+          <span class="summary-label">Left after everything</span>
+          <span class="summary-value" id="sumLeft">£0.00</span>
+        </div>
+      </div>
+
+      <div class="export-row">
+        <button class="btn btn-danger btn-small" id="resetAllBtn">
+          Reset all data
         </button>
+
+        <div class="export-row-right">
+          <button class="btn btn-ghost" id="exportBtn">
+            Export data (CSV)
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- DONUT DETAIL OVERLAY -->
+<div class="donut-overlay" id="donutOverlay">
+  <div class="donut-overlay-card">
+    <div class="donut-overlay-header">
+      <div>
+        <div class="donut-overlay-title">Monthly breakdown</div>
+        <div class="donut-overlay-subtitle" id="overlayMonthLabel">---</div>
+      </div>
+      <button class="btn btn-ghost btn-small" id="closeOverlayBtn">Back</button>
+    </div>
+
+    <div class="donut-overlay-body">
+      <div class="donut-overlay-main">
+        <div class="donut-overlay-svg-wrapper">
+          <svg class="donut-svg-large" viewBox="0 0 160 160">
+            <circle
+              cx="80" cy="80" r="55"
+              stroke="rgba(15,23,42,0.95)"
+              stroke-width="22"
+              fill="none"
+            ></circle>
+
+            <defs>
+              <linearGradient id="detailDonutGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#5fa5fb"></stop>
+                <stop offset="50%" stop-color="#4ade80"></stop>
+                <stop offset="100%" stop-color="#0fd6e9"></stop>
+              </linearGradient>
+
+              <filter id="detailDonutGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#22c55e" flood-opacity="0.8" />
+              </filter>
+            </defs>
+
+            <circle
+              id="detailDonutArc"
+              cx="80" cy="80" r="55"
+              stroke="url(#detailDonutGradient)"
+              stroke-width="22"
+              fill="none"
+              stroke-linecap="round"
+              transform="rotate(-90 80 80)"
+              stroke-dasharray="345.6"
+              stroke-dashoffset="345.6"
+              filter="url(#detailDonutGlow)"
+            ></circle>
+
+            <text x="80" y="72" class="donut-center-text-large" id="detailDonutPercentText">0%</text>
+            <text x="80" y="92" class="donut-center-sub-large">income left</text>
+          </svg>
+        </div>
+
+        <div class="breakdown-panel">
+          <div class="breakdown-row">
+            <span class="breakdown-label">Income</span>
+            <span class="breakdown-value" id="bdIncome">£0.00</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="breakdown-label">Direct debits &amp; bills</span>
+            <span class="breakdown-value" id="bdDD">£0.00</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="breakdown-label">Other spending</span>
+            <span class="breakdown-value" id="bdSpend">£0.00</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="breakdown-label">Left after everything</span>
+            <span class="breakdown-value" id="bdLeft">£0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stacked-bar-box">
+        <div class="stacked-bar-label">Where this month’s income goes</div>
+        <svg class="stacked-bar-svg" viewBox="0 0 100 16">
+          <rect x="0" y="0" width="100" height="16" fill="#020617"></rect>
+          <rect id="barDD" x="0" y="0" width="0" height="16" fill="#5fa5fb"></rect>
+          <rect id="barSpend" x="0" y="0" width="0" height="16" fill="#f97316"></rect>
+          <rect id="barLeft" x="0" y="0" width="0" height="16" fill="#4ade80"></rect>
+        </svg>
+
+        <div class="legend-row">
+          <div class="legend-item">
+            <span class="legend-color" style="background:#5fa5fb;"></span>
+            <span>Direct debits</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background:#f97316;"></span>
+            <span>Other spending</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background:#4ade80;"></span>
+            <span>Left</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- DIRECT DEBIT EDIT MODAL -->
-  <div id="ddModal" class="modal-overlay">
-    <div class="modal-sheet">
-      <div class="modal-header">
-        <div class="modal-title">Edit direct debit</div>
-        <button class="btn btn-small btn-ghost" onclick="closeDdModal()">Done</button>
-      </div>
+<!-- TRANSACTION EDIT MODAL -->
+<div class="modal-backdrop" id="txEditModal">
+  <div class="modal-card">
+    <div class="modal-title-row">
+      <div class="modal-title">Edit transaction</div>
+      <button class="btn btn-ghost btn-small" id="txEditCloseBtn">Close</button>
+    </div>
+    <div class="modal-subtitle" id="txEditMonthLabel"></div>
 
-      <div class="modal-row">
-        <label class="pill-label">Name</label>
-        <input id="editDdName" class="input" />
-      </div>
-      <div class="modal-row">
-        <label class="pill-label">Amount</label>
-        <input id="editDdAmt" class="input" inputmode="decimal" />
-      </div>
-      <div class="modal-row">
-        <label class="pill-label">Day of month</label>
-        <input id="editDdDay" class="input" inputmode="numeric" />
-      </div>
-      <div class="modal-row">
-        <label class="pill-label">Category</label>
-        <input id="editDdCat" class="input" />
-      </div>
+    <div class="form-group">
+      <label for="txEditDate">Date</label>
+      <input type="date" id="txEditDate" class="input">
+    </div>
 
-      <div class="toggle-row">
-        <span class="toggle-label">Paused for this month</span>
-        <div id="ddPausedToggle" class="toggle-pill" onclick="toggleDdPaused()">
-          <div class="toggle-thumb"></div>
-        </div>
-      </div>
+    <div class="form-group">
+      <label for="txEditType">Type</label>
+      <select id="txEditType" class="input">
+        <option value="income">Income</option>
+        <option value="spending">Spending</option>
+      </select>
+    </div>
 
-      <div class="modal-actions">
-        <button class="btn btn-danger" onclick="deleteCurrentDd()">
-          Delete this month
-        </button>
-        <button class="btn btn-secondary" style="flex:1;" onclick="saveCurrentDd()">
-          Save changes
-        </button>
+    <div class="form-group">
+      <label for="txEditDescription">Description</label>
+      <input type="text" id="txEditDescription" class="input">
+    </div>
+
+    <div class="form-group">
+      <label for="txEditAmount">Amount</label>
+      <input type="number" id="txEditAmount" class="input" step="0.01">
+    </div>
+
+    <div class="modal-footer-row">
+      <button class="btn btn-danger btn-small" id="txEditDeleteBtn">Delete</button>
+      <div class="modal-footer-right">
+        <button class="btn btn-ghost btn-small" id="txEditCancelBtn">Cancel</button>
+        <button class="btn btn-primary btn-small" id="txEditSaveBtn">Save</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- DONUT BREAKDOWN SCREEN -->
-  <div id="donutBreakdown">
-    <div class="page" style="padding-top:8px;">
-      <div class="back-row">
-        <button class="btn btn-small btn-ghost" onclick="closeDonutBreakdown()">
-          ← Back
-        </button>
-      </div>
+<!-- DIRECT DEBIT EDIT MODAL -->
+<div class="modal-backdrop" id="ddEditModal">
+  <div class="modal-card">
+    <div class="modal-title-row">
+      <div class="modal-title">Edit direct debit</div>
+      <button class="btn btn-ghost btn-small" id="ddEditCloseBtn">Close</button>
+    </div>
+    <div class="modal-subtitle" id="ddEditMonthLabel"></div>
 
-      <div class="card card-soft">
-        <div class="section-title">Income vs outgoings</div>
-        <div class="subtext">
-          A larger, more detailed donut using this month’s figures and the carried
-          balance from last month.
-        </div>
+    <div class="form-group">
+      <label for="ddEditName">Name</label>
+      <input type="text" id="ddEditName" class="input">
+    </div>
 
-        <div class="donut-wrapper" style="margin-top:10px;">
-          <canvas id="donutBig" width="260" height="260"></canvas>
-        </div>
+    <div class="form-group">
+      <label for="ddEditAmount">Amount</label>
+      <input type="number" id="ddEditAmount" class="input" step="0.01">
+    </div>
 
-        <div class="breakdown-grid">
-          <div class="mini-card">
-            <div class="breakdown-label">Income this month</div>
-            <div id="bdIncome" class="breakdown-value"></div>
-          </div>
-          <div class="mini-card">
-            <div class="breakdown-label">Direct debits & bills</div>
-            <div id="bdDd" class="breakdown-value"></div>
-          </div>
-          <div class="mini-card">
-            <div class="breakdown-label">Other spending</div>
-            <div id="bdSpend" class="breakdown-value"></div>
-          </div>
-          <div class="mini-card">
-            <div class="breakdown-label">Carried from last month</div>
-            <div id="bdCarry" class="breakdown-value"></div>
-          </div>
-          <div class="mini-card" style="grid-column:1/3;">
-            <div class="breakdown-label">Left after everything</div>
-            <div id="bdAfter" class="breakdown-value"></div>
-          </div>
-        </div>
+    <div class="form-group">
+      <label for="ddEditDay">Day of month (1–31)</label>
+      <input type="number" id="ddEditDay" class="input" min="1" max="31">
+    </div>
+
+    <div class="form-group">
+      <label for="ddEditCategory">Category (optional)</label>
+      <input type="text" id="ddEditCategory" class="input">
+    </div>
+
+    <div class="form-group">
+      <label for="ddEditStatus">Status</label>
+      <select id="ddEditStatus" class="input">
+        <option value="active">Active</option>
+        <option value="paused">Paused</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="ddEditScope">Apply changes to</label>
+      <select id="ddEditScope" class="input">
+        <option value="month">This month only</option>
+        <option value="series">Entire series (all months)</option>
+      </select>
+    </div>
+
+    <div class="modal-footer-row">
+      <button class="btn btn-danger btn-small" id="ddEditDeleteBtn">Delete</button>
+      <div class="modal-footer-right">
+        <button class="btn btn-ghost btn-small" id="ddEditCancelBtn">Cancel</button>
+        <button class="btn btn-primary btn-small" id="ddEditSaveBtn">Save</button>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    // ========== BASIC UTILITIES ==========
-    let transactions = JSON.parse(localStorage.getItem("tx") || "[]");
-    let directDebits = JSON.parse(localStorage.getItem("dd") || "[]");
+<script>
+  let transactions = [];
+  let directDebits = [];
+  let ddOverrides = [];
 
-    function saveAll() {
-      localStorage.setItem("tx", JSON.stringify(transactions));
-      localStorage.setItem("dd", JSON.stringify(directDebits));
+  let selectedMonth = firstOfMonth(new Date());
+  let whatIfOffset = 0;
+
+  let currentEditingTxId = null;
+  let currentEditingDdBaseId = null;
+  let currentEditingMonthISO = null;
+
+  const STORAGE_KEY_TX = "bb_transactions";
+  const STORAGE_KEY_DD = "bb_directDebits";
+  const STORAGE_KEY_DD_OVR = "bb_directDebitOverrides";
+  const STORAGE_KEY_MONTH = "bb_selectedMonth";
+
+  function formatMoney(value) {
+    const num = Number(value) || 0;
+    return num.toLocaleString("en-GB", {
+      style: "currency",
+      currency: "GBP",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function formatDateShortDisplay(dateStr) {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d)) return dateStr;
+    return d.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "2-digit"
+    });
+  }
+
+  function monthKey(date) {
+    return date.toLocaleDateString("en-GB", {
+      month: "short",
+      year: "2-digit"
+    });
+  }
+
+  function firstOfMonth(date) {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+  }
+
+  function daysInMonth(date) {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  }
+
+  function clamp(val, min, max) {
+    return Math.max(min, Math.min(max, val));
+  }
+
+  function uuid() {
+    return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+  }
+
+  function monthISO(date) {
+    return firstOfMonth(date).toISOString().slice(0, 10);
+  }
+
+  function normaliseDateForStorage(raw) {
+    if (!raw) return null;
+    const trimmed = raw.replace(/"/g, "").trim();
+    if (!trimmed) return null;
+
+    let d = new Date(trimmed);
+    if (!isNaN(d)) {
+      return d.toISOString().slice(0, 10);
     }
 
-    function uuid() {
-      if (crypto.randomUUID) return crypto.randomUUID();
-      return "id-" + Math.random().toString(16).slice(2);
+    const m = trimmed.match(/^(\d{1,2})[-/ ]([A-Za-z]{3})[-/ ](\d{2,4})$/);
+    if (m) {
+      const day = parseInt(m[1], 10);
+      const monStr = m[2].toLowerCase();
+      const yearStr = m[3];
+      const months = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+      const mIndex = months.indexOf(monStr);
+      if (mIndex >= 0) {
+        let year = parseInt(yearStr, 10);
+        if (year < 100) {
+          year += year >= 70 ? 1900 : 2000;
+        }
+        d = new Date(year, mIndex, day);
+        if (!isNaN(d)) {
+          return d.toISOString().slice(0, 10);
+        }
+      }
     }
 
-    let selectedMonth = firstOfMonth(new Date());
+    return null;
+  }
 
-    function firstOfMonth(d) {
-      return new Date(d.getFullYear(), d.getMonth(), 1);
+  function saveToStorage() {
+    localStorage.setItem(STORAGE_KEY_TX, JSON.stringify(transactions));
+    localStorage.setItem(STORAGE_KEY_DD, JSON.stringify(directDebits));
+    localStorage.setItem(STORAGE_KEY_DD_OVR, JSON.stringify(ddOverrides));
+    localStorage.setItem(STORAGE_KEY_MONTH, selectedMonth.toISOString());
+  }
+
+  function loadFromStorage() {
+    try {
+      const txRaw = localStorage.getItem(STORAGE_KEY_TX);
+      const ddRaw = localStorage.getItem(STORAGE_KEY_DD);
+      const ovrRaw = localStorage.getItem(STORAGE_KEY_DD_OVR);
+      const monthRaw = localStorage.getItem(STORAGE_KEY_MONTH);
+
+      if (txRaw) {
+        const data = JSON.parse(txRaw);
+        if (Array.isArray(data)) transactions = data;
+      }
+      if (ddRaw) {
+        const data = JSON.parse(ddRaw);
+        if (Array.isArray(data)) directDebits = data;
+      }
+      if (ovrRaw) {
+        const data = JSON.parse(ovrRaw);
+        if (Array.isArray(data)) ddOverrides = data;
+      }
+      if (monthRaw) {
+        const d = new Date(monthRaw);
+        if (!isNaN(d)) selectedMonth = firstOfMonth(d);
+      } else {
+        selectedMonth = firstOfMonth(new Date());
+      }
+    } catch (e) {
+      console.error("Load storage failed", e);
+    }
+  }
+
+  function monthTransactionsFor(date) {
+    const key = monthKey(date);
+    return transactions.filter(tx => {
+      const d = new Date(tx.date);
+      if (isNaN(d)) return false;
+      return monthKey(d) === key;
+    });
+  }
+
+  function effectiveDirectDebitsFor(date) {
+    const mISO = monthISO(date);
+    const overridesForMonth = ddOverrides.filter(o => o.monthISO === mISO);
+    const eff = [];
+
+    directDebits.forEach(dd => {
+      const ov = overridesForMonth.find(o => o.baseId === dd.id);
+      if (ov && ov.deleted) {
+        return;
+      }
+      const effDD = {
+        baseId: dd.id,
+        id: ov ? ov.id : dd.id,
+        name: ov && ov.name != null ? ov.name : dd.name,
+        amount: ov && ov.amount != null ? ov.amount : dd.amount,
+        day: ov && ov.day != null ? ov.day : dd.day,
+        category: ov && ov.category != null ? ov.category : dd.category,
+        active: typeof (ov && ov.active) === "boolean" ? ov.active : dd.active
+      };
+      eff.push(effDD);
+    });
+
+    return eff;
+  }
+
+  function computeTotalsForMonth(date) {
+    const mt = monthTransactionsFor(date);
+    const effDDs = effectiveDirectDebitsFor(date);
+
+    let incomeTotal = 0;
+    let spendTotal = 0;
+    let ddTotal = 0;
+
+    for (const tx of mt) {
+      if (tx.type === "income") incomeTotal += tx.amount;
+      else spendTotal += tx.amount;
     }
 
-    function monthKey(d) {
-      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+    for (const dd of effDDs) {
+      if (dd.active) ddTotal += dd.amount;
     }
 
-    function monthLabel(d) {
-      return d.toLocaleDateString("en-GB", { month: "short", year: "2-digit" });
+    const afterDDs = incomeTotal - ddTotal;
+    const afterAll = incomeTotal - ddTotal - spendTotal;
+
+    let donutPercentLeft = 0;
+    if (incomeTotal > 0) {
+      const left = incomeTotal - (ddTotal + spendTotal);
+      donutPercentLeft = clamp((left / incomeTotal) * 100, 0, 100);
     }
 
-    function formatMoney(v) {
-      if (!isFinite(v)) v = 0;
-      return "£" + v.toFixed(2);
+    return { mt, effDDs, incomeTotal, spendTotal, ddTotal, afterDDs, afterAll, donutPercentLeft };
+  }
+
+  function monthTransactions() {
+    return monthTransactionsFor(selectedMonth);
+  }
+
+  function computeTotals() {
+    return computeTotalsForMonth(selectedMonth);
+  }
+
+  function computeDailyBalances(incomeTotal, mt) {
+    if (incomeTotal <= 0) return [];
+    const days = daysInMonth(selectedMonth);
+    const key = monthKey(selectedMonth);
+    const effDDs = effectiveDirectDebitsFor(selectedMonth);
+
+    const spendsByDay = {};
+    mt.forEach(tx => {
+      if (tx.type !== "spend") return;
+      const d = new Date(tx.date);
+      if (isNaN(d)) return;
+      if (monthKey(d) !== key) return;
+      const day = d.getDate();
+      spendsByDay[day] = (spendsByDay[day] || 0) + tx.amount;
+    });
+
+    const ddByDay = {};
+    effDDs.forEach(dd => {
+      if (!dd.active) return;
+      const day = Math.max(1, Math.min(days, dd.day));
+      ddByDay[day] = (ddByDay[day] || 0) + dd.amount;
+    });
+
+    const result = [];
+    let runningDD = 0;
+    let runningSpend = 0;
+
+    for (let day = 1; day <= days; day++) {
+      if (ddByDay[day]) runningDD += ddByDay[day];
+      if (spendsByDay[day]) runningSpend += spendsByDay[day];
+      const bal = incomeTotal - runningDD - runningSpend;
+      result.push(bal);
+    }
+    return result;
+  }
+
+  function ensureOpeningBalanceForSelectedMonth() {
+    const prevMonth = firstOfMonth(new Date(
+      selectedMonth.getFullYear(),
+      selectedMonth.getMonth() - 1,
+      1
+    ));
+
+    const prevTotals = computeTotalsForMonth(prevMonth);
+    const leftover = prevTotals.afterAll;
+
+    if (!leftover || leftover === 0) {
+      return;
     }
 
-    function changeMonth(offset) {
-      selectedMonth = new Date(
-        selectedMonth.getFullYear(),
-        selectedMonth.getMonth() + offset,
-        1
-      );
-      renderAll();
+    const selectedKey = monthKey(selectedMonth);
+
+    const exists = transactions.some(tx => {
+      if (tx.type !== "income") return false;
+      if (tx.description !== "Opening balance (auto)") return false;
+      const d = new Date(tx.date);
+      if (isNaN(d)) return false;
+      return monthKey(d) === selectedKey;
+    });
+
+    if (exists) return;
+
+    const iso = firstOfMonth(selectedMonth).toISOString().slice(0, 10);
+
+    transactions.push({
+      id: uuid(),
+      date: iso,
+      type: "income",
+      description: "Opening balance (auto)",
+      amount: leftover
+    });
+
+    saveToStorage();
+  }
+
+  function refreshUI() {
+    const monthLabelEl = document.getElementById("monthLabel");
+    const incomeValueEl = document.getElementById("incomeValue");
+    const ddValueEl = document.getElementById("ddValue");
+    const spendValueEl = document.getElementById("spendValue");
+    const leftValueEl = document.getElementById("leftValue");
+    const leftCardEl = document.getElementById("leftCard");
+    const whatIfSlider = document.getElementById("whatIfSlider");
+    const whatIfChangeEl = document.getElementById("whatIfChange");
+    const whatIfAfterEl = document.getElementById("whatIfAfter");
+    const donutArcEl = document.getElementById("donutArc");
+    const donutPercentTextEl = document.getElementById("donutPercentText");
+    const statusTitleEl = document.getElementById("statusTitle");
+    const statusBodyEl = document.getElementById("statusBody");
+    const graphLineEl = document.getElementById("graphLine");
+
+    const sumIncomeEl = document.getElementById("sumIncome");
+    const sumDDEl = document.getElementById("sumDD");
+    const sumSpendEl = document.getElementById("sumSpend");
+    const sumLeftEl = document.getElementById("sumLeft");
+
+    const { mt, effDDs, incomeTotal, spendTotal, ddTotal, afterDDs, afterAll, donutPercentLeft } = computeTotals();
+
+    monthLabelEl.textContent = monthKey(selectedMonth);
+    incomeValueEl.textContent = formatMoney(incomeTotal);
+    ddValueEl.textContent = formatMoney(ddTotal);
+    spendValueEl.textContent = formatMoney(spendTotal);
+
+    const whatIfLeft = afterAll - whatIfOffset;
+    leftValueEl.textContent = formatMoney(whatIfLeft);
+
+    if (whatIfLeft > 0) {
+      leftCardEl.style.borderColor = "rgba(74, 222, 128, 0.6)";
+      leftCardEl.style.backgroundColor = "rgba(22, 163, 74, 0.15)";
+    } else if (whatIfLeft === 0) {
+      leftCardEl.style.borderColor = "rgba(251, 191, 36, 0.7)";
+      leftCardEl.style.backgroundColor = "rgba(251, 191, 36, 0.1)";
+    } else {
+      leftCardEl.style.borderColor = "rgba(248, 113, 113, 0.7)";
+      leftCardEl.style.backgroundColor = "rgba(248, 113, 113, 0.15)";
     }
 
-    function computeCarryForward(targetMonth) {
-      const prev = new Date(targetMonth.getFullYear(), targetMonth.getMonth() - 1, 1);
-      const mk = monthKey(prev);
-
-      const tx = transactions.filter((t) => t.month === mk);
-      const dd = directDebits.filter((d) => d.month === mk && d.active);
-
-      const income = tx
-        .filter((t) => t.type === "income")
-        .reduce((a, b) => a + b.amount, 0);
-      const spend = tx
-        .filter((t) => t.type === "spend")
-        .reduce((a, b) => a + b.amount, 0);
-      const ddTot = dd.reduce((a, b) => a + b.amount, 0);
-
-      return income - spend - ddTot;
+    const maxDelta = Math.max(500, incomeTotal);
+    whatIfSlider.min = String(-maxDelta);
+    whatIfSlider.max = String(maxDelta);
+    if (Math.abs(whatIfOffset) > maxDelta) {
+      whatIfOffset = 0;
+      whatIfSlider.value = "0";
     }
 
-    // ========== ADD TRANSACTION / DD ==========
+    const absChange = Math.abs(whatIfOffset);
+    const sign = whatIfOffset === 0 ? "" : (whatIfOffset > 0 ? "+" : "−");
+    whatIfChangeEl.textContent = `Change: ${sign}${formatMoney(absChange)}`;
+    whatIfAfterEl.textContent = `After change: ${formatMoney(whatIfLeft)}`;
 
-    function addTransaction() {
-      const date = document.getElementById("txDate").value;
-      const type = document.getElementById("txType").value;
-      const desc = document.getElementById("txDesc").value.trim();
-      const amtStr = document.getElementById("txAmt").value.replace(",", ".");
-      const amt = parseFloat(amtStr);
+    const circumference = 2 * Math.PI * 40;
+    const visiblePercent = clamp(donutPercentLeft, 0, 100);
+    const offset = circumference * (1 - visiblePercent / 100);
+    donutArcEl.setAttribute("stroke-dasharray", circumference.toFixed(1));
+    donutArcEl.setAttribute("stroke-dashoffset", offset.toFixed(1));
+    donutPercentTextEl.textContent = `${Math.round(visiblePercent)}%`;
 
-      if (!date || !desc || isNaN(amt)) return;
+    if (incomeTotal <= 0) {
+      statusTitleEl.textContent = "Waiting for income";
+      statusTitleEl.className = "status-title";
+      statusBodyEl.textContent = "Add your salary for this month to see how much is left after direct debits and spending.";
+    } else {
+      const left = afterAll;
+      if (left > 0) {
+        statusTitleEl.textContent = "You’re in the green";
+        statusTitleEl.className = "status-title green";
+        statusBodyEl.textContent = `${formatMoney(left)} left after this month’s direct debits and spending.`;
+      } else if (left === 0) {
+        statusTitleEl.textContent = "Every pound is allocated";
+        statusTitleEl.className = "status-title amber";
+        statusBodyEl.textContent = "You’ve used 100% of this month’s income.";
+      } else {
+        statusTitleEl.textContent = "Spending over income";
+        statusTitleEl.className = "status-title red";
+        statusBodyEl.textContent = `Over by ${formatMoney(Math.abs(left))} this month.`;
+      }
+    }
+
+    const baseBalances = computeDailyBalances(incomeTotal, mt);
+    let values = baseBalances;
+    if (whatIfOffset !== 0 && values.length > 0) {
+      const n = values.length;
+      values = values.map((v, idx) => {
+        const factor = (idx + 1) / n;
+        return v - whatIfOffset * factor;
+      });
+    }
+
+    if (!values || values.length === 0) {
+      graphLineEl.setAttribute("points", "");
+    } else {
+      const maxAbs = Math.max.apply(null, values.map(function(v){return Math.abs(v);}));
+      const scale = Math.max(maxAbs, 1);
+      const stepX = values.length > 1 ? 100 / (values.length - 1) : 0;
+      const points = values.map(function(v, idx) {
+        const x = idx * stepX;
+        const y = 40 - (v / scale) * 18;
+        return x.toFixed(2) + "," + y.toFixed(2);
+      }).join(" ");
+      graphLineEl.setAttribute("points", points);
+      graphLineEl.setAttribute("stroke", "#4ade80");
+    }
+
+    sumIncomeEl.textContent = formatMoney(incomeTotal);
+    sumDDEl.textContent = formatMoney(ddTotal);
+    sumSpendEl.textContent = formatMoney(spendTotal);
+    sumLeftEl.textContent = formatMoney(afterAll);
+
+    renderTransactionList(mt);
+    renderDirectDebitList(effDDs);
+
+    updateDonutOverlayUI({ incomeTotal, spendTotal, ddTotal, afterAll, donutPercentLeft });
+  }
+
+  function updateDonutOverlayUI({ incomeTotal, spendTotal, ddTotal, afterAll, donutPercentLeft }) {
+    const overlayMonthLabel = document.getElementById("overlayMonthLabel");
+    const bdIncome = document.getElementById("bdIncome");
+    const bdDD = document.getElementById("bdDD");
+    const bdSpend = document.getElementById("bdSpend");
+    const bdLeft = document.getElementById("bdLeft");
+
+    const detailDonutArc = document.getElementById("detailDonutArc");
+    const detailDonutPercentText = document.getElementById("detailDonutPercentText");
+
+    const barDD = document.getElementById("barDD");
+    const barSpend = document.getElementById("barSpend");
+    const barLeft = document.getElementById("barLeft");
+
+    overlayMonthLabel.textContent = monthKey(selectedMonth);
+
+    bdIncome.textContent = formatMoney(incomeTotal);
+    bdDD.textContent = formatMoney(ddTotal);
+    bdSpend.textContent = formatMoney(spendTotal);
+    bdLeft.textContent = formatMoney(afterAll);
+
+    bdLeft.classList.remove("green", "red", "amber");
+    if (afterAll > 0) bdLeft.classList.add("green");
+    else if (afterAll === 0) bdLeft.classList.add("amber");
+    else bdLeft.classList.add("red");
+
+    const circumferenceBig = 2 * Math.PI * 55;
+    const visiblePercentBig = clamp(donutPercentLeft, 0, 100);
+    const offsetBig = circumferenceBig * (1 - visiblePercentBig / 100);
+    detailDonutArc.setAttribute("stroke-dasharray", circumferenceBig.toFixed(1));
+    detailDonutArc.setAttribute("stroke-dashoffset", offsetBig.toFixed(1));
+    detailDonutPercentText.textContent = `${Math.round(visiblePercentBig)}%`;
+
+    let ddPct = 0, spendPct = 0, leftPct = 0;
+    if (incomeTotal > 0) {
+      ddPct = clamp((ddTotal / incomeTotal) * 100, 0, 100);
+      spendPct = clamp((spendTotal / incomeTotal) * 100, 0, 100);
+      leftPct = clamp((afterAll / incomeTotal) * 100, 0, 100);
+    }
+
+    const totalWidth = 100;
+    let ddWidth = totalWidth * ddPct / 100;
+    let spendWidth = totalWidth * spendPct / 100;
+    let leftWidth = totalWidth * leftPct / 100;
+
+    const sumWidth = ddWidth + spendWidth + leftWidth;
+    if (sumWidth !== 0 && incomeTotal > 0) {
+      const scale = totalWidth / sumWidth;
+      ddWidth *= scale;
+      spendWidth *= scale;
+      leftWidth *= scale;
+    }
+
+    const ddX = 0;
+    const spendX = ddX + ddWidth;
+    const leftX = spendX + spendWidth;
+
+    barDD.setAttribute("x", ddX.toFixed(1));
+    barDD.setAttribute("width", ddWidth.toFixed(1));
+
+    barSpend.setAttribute("x", spendX.toFixed(1));
+    barSpend.setAttribute("width", spendWidth.toFixed(1));
+
+    barLeft.setAttribute("x", leftX.toFixed(1));
+    barLeft.setAttribute("width", leftWidth.toFixed(1));
+  }
+
+  function renderTransactionList(mt) {
+    const txListEl = document.getElementById("txList");
+    txListEl.innerHTML = "";
+
+    if (!mt || mt.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "list-empty";
+      empty.textContent = "No transactions yet. Add income and spending above.";
+      txListEl.appendChild(empty);
+      return;
+    }
+
+    const sorted = mt.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    for (const tx of sorted) {
+      const item = document.createElement("div");
+      item.className = "list-item";
+
+      const main = document.createElement("div");
+      main.className = "list-main";
+
+      const title = document.createElement("div");
+      title.className = "list-title";
+      title.textContent = tx.description;
+
+      const sub = document.createElement("div");
+      sub.className = "list-sub";
+      sub.textContent = `${formatDateShortDisplay(tx.date)} · ${tx.type === "income" ? "Income" : "Spending"}`;
+
+      main.appendChild(title);
+      main.appendChild(sub);
+
+      const amt = document.createElement("div");
+      amt.className = "list-amount";
+      amt.style.color = tx.type === "income" ? "var(--green)" : "var(--red)";
+      amt.textContent = formatMoney(tx.amount);
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "btn btn-small btn-ghost";
+      editBtn.textContent = "Edit";
+      editBtn.addEventListener("click", () => {
+        openTransactionEditModal(tx);
+      });
+
+      const right = document.createElement("div");
+      right.style.display = "flex";
+      right.style.flexDirection = "column";
+      right.style.alignItems = "flex-end";
+      right.style.gap = "4px";
+      right.appendChild(amt);
+      right.appendChild(editBtn);
+
+      item.appendChild(main);
+      item.appendChild(right);
+
+      txListEl.appendChild(item);
+    }
+  }
+
+  function renderDirectDebitList(effDDs) {
+    const ddListEl = document.getElementById("ddList");
+    ddListEl.innerHTML = "";
+
+    if (!effDDs || effDDs.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "list-empty";
+      empty.textContent = "No direct debits this month.";
+      ddListEl.appendChild(empty);
+      return;
+    }
+
+    const sorted = effDDs.slice().sort((a, b) => a.day - b.day);
+
+    for (const dd of sorted) {
+      const item = document.createElement("div");
+      item.className = "list-item";
+      if (!dd.active) {
+        item.classList.add("dd-paused");
+      }
+
+      const main = document.createElement("div");
+      main.className = "list-main";
+
+      const title = document.createElement("div");
+      title.className = "list-title";
+      title.textContent = dd.name + (dd.active ? "" : " (paused)");
+
+      const sub = document.createElement("div");
+      sub.className = "list-sub";
+      const catPart = dd.category ? ` · ${dd.category}` : "";
+      sub.textContent = `${formatMoney(dd.amount)} · day ${dd.day}${catPart}`;
+
+      if (!dd.active) {
+        title.style.color = "var(--red)";
+        sub.style.color = "var(--red)";
+      }
+
+      main.appendChild(title);
+      main.appendChild(sub);
+
+      const right = document.createElement("div");
+      right.style.display = "flex";
+      right.style.flexDirection = "column";
+      right.style.alignItems = "flex-end";
+      right.style.gap = "4px";
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "btn btn-small btn-ghost";
+      editBtn.textContent = "Edit";
+      editBtn.addEventListener("click", () => {
+        openDirectDebitEditModal(dd);
+      });
+
+      right.appendChild(editBtn);
+
+      item.appendChild(main);
+      item.appendChild(right);
+
+      ddListEl.appendChild(item);
+    }
+  }
+
+  function openTransactionEditModal(tx) {
+    currentEditingTxId = tx.id;
+
+    const monthLabel = document.getElementById("txEditMonthLabel");
+    const dateInput = document.getElementById("txEditDate");
+    const typeInput = document.getElementById("txEditType");
+    const descInput = document.getElementById("txEditDescription");
+    const amountInput = document.getElementById("txEditAmount");
+
+    monthLabel.textContent = monthKey(selectedMonth);
+    dateInput.value = tx.date || "";
+    typeInput.value = tx.type === "income" ? "income" : "spending";
+    descInput.value = tx.description || "";
+    amountInput.value = (Number(tx.amount) || 0).toFixed(2);
+
+    document.getElementById("txEditModal").classList.add("show");
+  }
+
+  function closeTransactionEditModal() {
+    document.getElementById("txEditModal").classList.remove("show");
+    currentEditingTxId = null;
+  }
+
+  function openDirectDebitEditModal(effDD) {
+    currentEditingDdBaseId = effDD.baseId;
+    currentEditingMonthISO = monthISO(selectedMonth);
+
+    const monthLabel = document.getElementById("ddEditMonthLabel");
+    const nameInput = document.getElementById("ddEditName");
+    const amountInput = document.getElementById("ddEditAmount");
+    const dayInput = document.getElementById("ddEditDay");
+    const categoryInput = document.getElementById("ddEditCategory");
+    const statusInput = document.getElementById("ddEditStatus");
+    const scopeInput = document.getElementById("ddEditScope");
+
+    monthLabel.textContent = monthKey(selectedMonth);
+
+    nameInput.value = effDD.name || "";
+    amountInput.value = (Number(effDD.amount) || 0).toFixed(2);
+    dayInput.value = effDD.day || "";
+    categoryInput.value = effDD.category || "";
+    statusInput.value = effDD.active ? "active" : "paused";
+    scopeInput.value = "month";
+
+    document.getElementById("ddEditModal").classList.add("show");
+  }
+
+  function closeDirectDebitEditModal() {
+    document.getElementById("ddEditModal").classList.remove("show");
+    currentEditingDdBaseId = null;
+    currentEditingMonthISO = null;
+  }
+
+  function exportCSV() {
+    const lines = [];
+
+    lines.push([
+      "SECTION",
+      "TYPE",
+      "DATE",
+      "DESCRIPTION",
+      "AMOUNT",
+      "DAYOFMONTH",
+      "CATEGORY",
+      "ACTIVE"
+    ].join(","));
+
+    transactions.forEach(tx => {
+      const section = "TRANSACTION";
+      const type = tx.type === "income" ? "income" : "spending";
+      const dateStr = tx.date;
+      const desc = "\"" + (tx.description || "").replace(/"/g, '""') + "\"";
+      const amountStr = (Number(tx.amount) || 0).toFixed(2);
+      lines.push([
+        section,
+        type,
+        dateStr,
+        desc,
+        amountStr,
+        "",
+        "",
+        ""
+      ].join(","));
+    });
+
+    directDebits.forEach(dd => {
+      const section = "DIRECTDEBIT";
+      const type = "";
+      const dateStr = "";
+      const name = "\"" + (dd.name || "").replace(/"/g, '""') + "\"";
+      const amountStr = (Number(dd.amount) || 0).toFixed(2);
+      const dayStr = String(dd.day || "");
+      const category = "\"" + (dd.category || "").replace(/"/g, '""') + "\"";
+      const activeStr = dd.active ? "Yes" : "No";
+
+      lines.push([
+        section,
+        type,
+        dateStr,
+        name,
+        amountStr,
+        dayStr,
+        category,
+        activeStr
+      ].join(","));
+    });
+
+    const csvContent = lines.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "BishopBudget-Export.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadFromStorage();
+
+    const todayIso = new Date().toISOString().slice(0, 10);
+    const txDate = document.getElementById("txDate");
+    txDate.value = todayIso;
+
+    ensureOpeningBalanceForSelectedMonth();
+    saveToStorage();
+    refreshUI();
+
+    document.getElementById("prevMonthBtn").addEventListener("click", () => {
+      selectedMonth = firstOfMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1));
+      whatIfOffset = 0;
+      document.getElementById("whatIfSlider").value = "0";
+      ensureOpeningBalanceForSelectedMonth();
+      saveToStorage();
+      refreshUI();
+    });
+
+    document.getElementById("nextMonthBtn").addEventListener("click", () => {
+      selectedMonth = firstOfMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 1));
+      whatIfOffset = 0;
+      document.getElementById("whatIfSlider").value = "0";
+      ensureOpeningBalanceForSelectedMonth();
+      saveToStorage();
+      refreshUI();
+    });
+
+    document.getElementById("whatIfSlider").addEventListener("input", function(e) {
+      whatIfOffset = Number(e.target.value) || 0;
+      refreshUI();
+    });
+
+    document.getElementById("resetWhatIfBtn").addEventListener("click", function() {
+      whatIfOffset = 0;
+      document.getElementById("whatIfSlider").value = "0";
+      refreshUI();
+    });
+
+    document.getElementById("addTxBtn").addEventListener("click", () => {
+      const dateStr = document.getElementById("txDate").value;
+      const typeValue = document.getElementById("txType").value;
+      const type = typeValue === "income" ? "income" : "spend";
+      const desc = document.getElementById("txDescription").value.trim();
+      const amtStr = document.getElementById("txAmount").value.trim();
+
+      if (!desc) return;
+      const amt = parseFloat(amtStr.replace(",", "."));
+      if (isNaN(amt)) return;
+
+      const iso = normaliseDateForStorage(dateStr);
+      if (!iso) return;
 
       transactions.push({
         id: uuid(),
-        month: monthKey(selectedMonth),
-        date,
-        type,
+        date: iso,
+        type: type,
         description: desc,
-        amount: amt,
+        amount: amt
       });
 
-      saveAll();
-      clearTxInputs();
-      renderAll();
-      document.activeElement && document.activeElement.blur();
-    }
+      document.getElementById("txDescription").value = "";
+      document.getElementById("txAmount").value = "";
 
-    function clearTxInputs() {
-      document.getElementById("txDesc").value = "";
-      document.getElementById("txAmt").value = "";
-      document.getElementById("txType").value = "income";
-      document.getElementById("txDate").value = "";
-    }
+      saveToStorage();
+      refreshUI();
+    });
 
-    function addDirectDebit() {
-      const name = ddName.value.trim();
-      const amt = parseFloat(ddAmt.value.replace(",", "."));
-      const day = parseInt(ddDay.value, 10);
-      const cat = ddCat.value.trim();
+    document.getElementById("addDdBtn").addEventListener("click", () => {
+      const nameInput = document.getElementById("ddName");
+      const amountInput = document.getElementById("ddAmount");
+      const dayInput = document.getElementById("ddDay");
+      const categoryInput = document.getElementById("ddCategory");
 
-      if (!name || isNaN(amt) || isNaN(day) || day < 1 || day > 31) return;
+      const name = nameInput.value.trim();
+      const amtStr = amountInput.value.trim();
+      const dayStr = dayInput.value.trim();
+      const category = categoryInput.value.trim();
+
+      let amount = parseFloat(amtStr.replace(",", "."));
+      let day = parseInt(dayStr, 10);
+
+      let error = "";
+
+      if (!name) {
+        error = "Please enter a name for the direct debit.";
+      } else if (amtStr === "") {
+        error = "Please enter an amount for the direct debit.";
+      } else if (isNaN(amount)) {
+        error = "Amount must be a number (e.g. 1200 or 1200.50).";
+      } else if (!dayStr) {
+        error = "Please enter the day of month (1–31).";
+      } else if (isNaN(day) || day < 1 || day > 31) {
+        error = "Day of month must be a whole number between 1 and 31.";
+      }
+
+      if (error) {
+        alert(error);
+        return;
+      }
 
       directDebits.push({
         id: uuid(),
-        month: monthKey(selectedMonth),
-        name,
-        amount: amt,
-        day,
-        category: cat,
-        active: true,
+        name: name,
+        amount: amount,
+        day: day,
+        category: category,
+        active: true
       });
 
-      saveAll();
-      clearDdInputs();
-      renderAll();
-      document.activeElement && document.activeElement.blur();
-    }
+      nameInput.value = "";
+      amountInput.value = "";
+      dayInput.value = "";
+      categoryInput.value = "";
 
-    function clearDdInputs() {
-      ddName.value = "";
-      ddAmt.value = "";
-      ddDay.value = "";
-      ddCat.value = "";
-    }
+      saveToStorage();
+      refreshUI();
+    });
 
-    // ========== EDIT MODALS ==========
-    let currentTxId = null;
-    let currentDdId = null;
+    document.getElementById("resetAllBtn").addEventListener("click", () => {
+      if (!confirm("Reset all saved data? This cannot be undone.")) return;
+      transactions = [];
+      directDebits = [];
+      ddOverrides = [];
+      whatIfOffset = 0;
+      document.getElementById("whatIfSlider").value = "0";
+      localStorage.removeItem(STORAGE_KEY_TX);
+      localStorage.removeItem(STORAGE_KEY_DD);
+      localStorage.removeItem(STORAGE_KEY_DD_OVR);
+      saveToStorage();
+      refreshUI();
+    });
 
-    const txModal = document.getElementById("txModal");
-    const ddModal = document.getElementById("ddModal");
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      exportCSV();
+    });
 
-    function openTransactionEditModal(tx) {
-      currentTxId = tx.id;
+    const donutWrapper = document.getElementById("donutWrapper");
+    const donutOverlay = document.getElementById("donutOverlay");
+    const closeOverlayBtn = document.getElementById("closeOverlayBtn");
 
-      document.getElementById("editTxDate").value = tx.date;
-      document.getElementById("editTxType").value = tx.type;
-      document.getElementById("editTxDesc").value = tx.description;
-      document.getElementById("editTxAmt").value = tx.amount.toFixed(2);
+    donutWrapper.addEventListener("click", () => {
+      donutOverlay.classList.add("show");
+    });
 
-      txModal.style.display = "flex";
-    }
+    closeOverlayBtn.addEventListener("click", () => {
+      donutOverlay.classList.remove("show");
+    });
 
-    function closeTxModal() {
-      txModal.style.display = "none";
-      currentTxId = null;
-    }
+    document.getElementById("txEditCloseBtn").addEventListener("click", closeTransactionEditModal);
+    document.getElementById("txEditCancelBtn").addEventListener("click", closeTransactionEditModal);
+    document.getElementById("txEditSaveBtn").addEventListener("click", () => {
+      if (!currentEditingTxId) return;
 
-    function saveCurrentTx() {
-      if (!currentTxId) return;
-      const tx = transactions.find((t) => t.id === currentTxId);
-      if (!tx) return;
+      const dateInput = document.getElementById("txEditDate");
+      const typeInput = document.getElementById("txEditType");
+      const descInput = document.getElementById("txEditDescription");
+      const amountInput = document.getElementById("txEditAmount");
 
-      const newDate = document.getElementById("editTxDate").value;
-      const newType = document.getElementById("editTxType").value;
-      const newDesc = document.getElementById("editTxDesc").value.trim();
-      const newAmtStr = document
-        .getElementById("editTxAmt")
-        .value.replace(",", ".");
-      const newAmt = parseFloat(newAmtStr);
-
-      if (!newDate || !newDesc || isNaN(newAmt)) return;
-
-      tx.date = newDate;
-      tx.type = newType;
-      tx.description = newDesc;
-      tx.amount = newAmt;
-
-      saveAll();
-      renderAll();
-      closeTxModal();
-    }
-
-    function deleteCurrentTx() {
-      if (!currentTxId) return;
-      transactions = transactions.filter((t) => t.id !== currentTxId);
-      saveAll();
-      renderAll();
-      closeTxModal();
-    }
-
-    function openDirectDebitEditModal(dd) {
-      currentDdId = dd.id;
-
-      document.getElementById("editDdName").value = dd.name;
-      document.getElementById("editDdAmt").value = dd.amount.toFixed(2);
-      document.getElementById("editDdDay").value = dd.day;
-      document.getElementById("editDdCat").value = dd.category || "";
-
-      const toggle = document.getElementById("ddPausedToggle");
-      toggle.classList.toggle("on", !dd.active);
-
-      ddModal.style.display = "flex";
-    }
-
-    function closeDdModal() {
-      ddModal.style.display = "none";
-      currentDdId = null;
-    }
-
-    function toggleDdPaused() {
-      const toggle = document.getElementById("ddPausedToggle");
-      toggle.classList.toggle("on");
-    }
-
-    function saveCurrentDd() {
-      if (!currentDdId) return;
-      const dd = directDebits.find((d) => d.id === currentDdId);
-      if (!dd) return;
-
-      const newName = document.getElementById("editDdName").value.trim();
-      const newAmtStr = document
-        .getElementById("editDdAmt")
-        .value.replace(",", ".");
-      const newAmt = parseFloat(newAmtStr);
-      const newDay = parseInt(
-        document.getElementById("editDdDay").value,
-        10
-      );
-      const newCat = document.getElementById("editDdCat").value.trim();
-      const paused = document
-        .getElementById("ddPausedToggle")
-        .classList.contains("on");
-
-      if (!newName || isNaN(newAmt) || isNaN(newDay) || newDay < 1 || newDay > 31)
-        return;
-
-      dd.name = newName;
-      dd.amount = newAmt;
-      dd.day = newDay;
-      dd.category = newCat;
-      dd.active = !paused;
-
-      saveAll();
-      renderAll();
-      closeDdModal();
-    }
-
-    function deleteCurrentDd() {
-      if (!currentDdId) return;
-      directDebits = directDebits.filter((d) => d.id !== currentDdId);
-      saveAll();
-      renderAll();
-      closeDdModal();
-    }
-
-    // ========== RENDER LISTS ==========
-
-    function renderTransactionList() {
-      const mk = monthKey(selectedMonth);
-      const txList = document.getElementById("txList");
-      txList.innerHTML = "";
-
-      const mt = transactions.filter((t) => t.month === mk);
-      if (mt.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "list-empty";
-        empty.textContent =
-          "No transactions yet. Add income and spending above.";
-        txList.appendChild(empty);
+      const iso = normaliseDateForStorage(dateInput.value);
+      if (!iso) {
+        alert("Please enter a valid date.");
         return;
       }
 
-      const sorted = mt.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      for (const tx of sorted) {
-        const row = document.createElement("div");
-        row.className = "list-item";
-
-        const main = document.createElement("div");
-        main.className = "list-main";
-
-        const title = document.createElement("div");
-        title.className = "list-title";
-        title.textContent = tx.description;
-
-        const sub = document.createElement("div");
-        sub.className = "list-sub";
-        sub.textContent = `${formatDisplayDate(tx.date)} · ${
-          tx.type === "income" ? "Income" : "Spending"
-        }`;
-
-        main.appendChild(title);
-        main.appendChild(sub);
-
-        const amt = document.createElement("div");
-        amt.className = "list-amount";
-        amt.style.color =
-          tx.type === "income" ? "var(--green)" : "var(--red)";
-        amt.textContent = formatMoney(tx.amount);
-
-        const editBtn = document.createElement("button");
-        editBtn.className = "btn btn-small btn-ghost";
-        editBtn.textContent = "Edit";
-        editBtn.style.marginTop = "-2px"; // small upward nudge
-        editBtn.addEventListener("click", () => openTransactionEditModal(tx));
-
-        const right = document.createElement("div");
-        right.className = "list-right";
-        right.appendChild(amt);
-        right.appendChild(editBtn);
-
-        row.appendChild(main);
-        row.appendChild(right);
-
-        txList.appendChild(row);
-      }
-    }
-
-    function renderDirectDebitList() {
-      const mk = monthKey(selectedMonth);
-      const ddList = document.getElementById("ddList");
-      ddList.innerHTML = "";
-
-      const mt = directDebits.filter((d) => d.month === mk);
-      if (mt.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "list-empty";
-        empty.textContent =
-          "No direct debits yet. Start with mortgage, council tax and utilities.";
-        ddList.appendChild(empty);
+      const desc = descInput.value.trim();
+      if (!desc) {
+        alert("Description cannot be empty.");
         return;
       }
 
-      const sorted = mt
-        .slice()
-        .sort((a, b) => a.day - b.day || a.name.localeCompare(b.name));
-
-      for (const dd of sorted) {
-        const row = document.createElement("div");
-        row.className = "list-item";
-        if (!dd.active) row.classList.add("dd-paused");
-
-        const main = document.createElement("div");
-        main.className = "list-main";
-
-        const title = document.createElement("div");
-        title.className = "list-title";
-        title.textContent = dd.name;
-
-        const sub = document.createElement("div");
-        sub.className = "list-sub";
-        sub.textContent = `${formatMoney(dd.amount)} · day ${
-          dd.day
-        }${dd.category ? " · " + dd.category : ""}`;
-
-        main.appendChild(title);
-        main.appendChild(sub);
-
-        const editBtn = document.createElement("button");
-        editBtn.className = "btn btn-small btn-ghost";
-        editBtn.textContent = "Edit";
-        editBtn.addEventListener("click", () => openDirectDebitEditModal(dd));
-
-        row.appendChild(main);
-        row.appendChild(editBtn);
-
-        ddList.appendChild(row);
-      }
-    }
-
-    function formatDisplayDate(iso) {
-      if (!iso) return "";
-      const d = new Date(iso);
-      const day = String(d.getDate()).padStart(2, "0");
-      const mmm = d.toLocaleDateString("en-GB", { month: "short" });
-      const yy = String(d.getFullYear()).slice(-2);
-      return `${day}-${mmm}-${yy}`;
-    }
-
-    // ========== DONUT DRAWING ==========
-
-    function drawDonut(canvas, income, out) {
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
-      const radius = Math.min(cx, cy) - 12;
-
-      const total = Math.max(income, out, 1);
-      const left = Math.max(0, income - out);
-
-      const outAngle = (out / total) * Math.PI * 2;
-      const leftAngle = (left / total) * Math.PI * 2;
-
-      // Base ring
-      ctx.lineWidth = 18;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      const baseGrad = ctx.createLinearGradient(cx - radius, cy, cx + radius, cy);
-      baseGrad.addColorStop(0, "#1b2748");
-      baseGrad.addColorStop(1, "#141f3a");
-      ctx.strokeStyle = baseGrad;
-      ctx.stroke();
-
-      // Outgoings (red)
-      if (out > 0) {
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius, -Math.PI / 2, -Math.PI / 2 + outAngle);
-        const gradRed = ctx.createLinearGradient(cx, cy - radius, cx, cy + radius);
-        gradRed.addColorStop(0, "#ff8a94");
-        gradRed.addColorStop(1, "#ff6a78");
-        ctx.strokeStyle = gradRed;
-        ctx.stroke();
+      const amt = parseFloat(amountInput.value.trim().replace(",", "."));
+      if (isNaN(amt)) {
+        alert("Amount must be a number.");
+        return;
       }
 
-      // Left (green)
-      if (left > 0) {
-        ctx.beginPath();
-        ctx.arc(
-          cx,
-          cy,
-          radius,
-          -Math.PI / 2 + outAngle,
-          -Math.PI / 2 + outAngle + leftAngle
-        );
-        const gradGreen = ctx.createLinearGradient(
-          cx - radius,
-          cy,
-          cx + radius,
-          cy
-        );
-        gradGreen.addColorStop(0, "#9af7c7");
-        gradGreen.addColorStop(1, "#40e38a");
-        ctx.strokeStyle = gradGreen;
-        ctx.stroke();
+      const typeValue = typeInput.value;
+      const type = typeValue === "income" ? "income" : "spend";
+
+      const idx = transactions.findIndex(t => t.id === currentEditingTxId);
+      if (idx >= 0) {
+        transactions[idx].date = iso;
+        transactions[idx].description = desc;
+        transactions[idx].amount = amt;
+        transactions[idx].type = type;
       }
 
-      // Inner label
-      const text = document.getElementById("afterValue").textContent || "";
-      ctx.fillStyle = "#e8edf8";
-      ctx.font = "600 15px -apple-system, system-ui, sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(text, cx, cy);
-    }
+      saveToStorage();
+      closeTransactionEditModal();
+      refreshUI();
+    });
 
-    function openDonutBreakdown() {
-      document.getElementById("donutBreakdown").style.display = "block";
-      renderDonut(true);
-    }
+    document.getElementById("txEditDeleteBtn").addEventListener("click", () => {
+      if (!currentEditingTxId) return;
+      if (!confirm("Delete this transaction?")) return;
 
-    function closeDonutBreakdown() {
-      document.getElementById("donutBreakdown").style.display = "none";
-    }
+      transactions = transactions.filter(t => t.id !== currentEditingTxId);
+      saveToStorage();
+      closeTransactionEditModal();
+      refreshUI();
+    });
 
-    function renderDonut(big = false) {
-      const mk = monthKey(selectedMonth);
+    document.getElementById("ddEditCloseBtn").addEventListener("click", closeDirectDebitEditModal);
+    document.getElementById("ddEditCancelBtn").addEventListener("click", closeDirectDebitEditModal);
 
-      const tx = transactions.filter((t) => t.month === mk);
-      const dd = directDebits.filter((d) => d.month === mk && d.active);
+    document.getElementById("ddEditSaveBtn").addEventListener("click", () => {
+      if (!currentEditingDdBaseId || !currentEditingMonthISO) return;
 
-      const income = tx
-        .filter((t) => t.type === "income")
-        .reduce((a, b) => a + b.amount, 0);
-      const spend = tx
-        .filter((t) => t.type === "spend")
-        .reduce((a, b) => a + b.amount, 0);
-      const ddTot = dd.reduce((a, b) => a + b.amount, 0);
+      const nameInput = document.getElementById("ddEditName");
+      const amountInput = document.getElementById("ddEditAmount");
+      const dayInput = document.getElementById("ddEditDay");
+      const categoryInput = document.getElementById("ddEditCategory");
+      const statusInput = document.getElementById("ddEditStatus");
+      const scopeInput = document.getElementById("ddEditScope");
 
-      const carry = computeCarryForward(selectedMonth);
-      const after = income + carry - spend - ddTot;
+      const name = nameInput.value.trim();
+      const amtStr = amountInput.value.trim();
+      const dayStr = dayInput.value.trim();
+      const category = categoryInput.value.trim();
+      const active = statusInput.value === "active";
+      const scope = scopeInput.value;
 
-      document.getElementById("monthLabel").textContent =
-        monthLabel(selectedMonth);
-      document.getElementById("incomeValue").textContent = formatMoney(income);
-      document.getElementById("spendValue").textContent = formatMoney(spend);
-      document.getElementById("ddValue").textContent = formatMoney(ddTot);
-      document.getElementById("afterValue").textContent = formatMoney(after);
+      let amount = parseFloat(amtStr.replace(",", "."));
+      let day = parseInt(dayStr, 10);
 
-      const status = document.getElementById("statusMessage");
-      if (after > 0) {
-        status.textContent = "You're in the green";
-        status.style.color = "var(--green-soft)";
-      } else if (after < 0) {
-        status.textContent = "Spending over income";
-        status.style.color = "var(--red)";
+      if (!name) {
+        alert("Please enter a name.");
+        return;
+      }
+      if (amtStr === "" || isNaN(amount)) {
+        alert("Amount must be a number.");
+        return;
+      }
+      if (dayStr === "" || isNaN(day) || day < 1 || day > 31) {
+        alert("Day must be between 1 and 31.");
+        return;
+      }
+
+      if (scope === "month") {
+        let ov = ddOverrides.find(o => o.baseId === currentEditingDdBaseId && o.monthISO === currentEditingMonthISO);
+        if (!ov) {
+          ov = {
+            id: uuid(),
+            baseId: currentEditingDdBaseId,
+            monthISO: currentEditingMonthISO,
+            name: null,
+            amount: null,
+            day: null,
+            category: null,
+            active: null,
+            deleted: false
+          };
+          ddOverrides.push(ov);
+        }
+        ov.name = name;
+        ov.amount = amount;
+        ov.day = day;
+        ov.category = category;
+        ov.active = active;
+        ov.deleted = false;
       } else {
-        status.textContent = "Balanced";
-        status.style.color = "var(--text-soft)";
+        const baseIndex = directDebits.findIndex(d => d.id === currentEditingDdBaseId);
+        if (baseIndex >= 0) {
+          directDebits[baseIndex].name = name;
+          directDebits[baseIndex].amount = amount;
+          directDebits[baseIndex].day = day;
+          directDebits[baseIndex].category = category;
+          directDebits[baseIndex].active = active;
+        }
       }
 
-      const canvas = big
-        ? document.getElementById("donutBig")
-        : document.getElementById("donutCanvas");
-      drawDonut(canvas, income + carry, spend + ddTot);
+      saveToStorage();
+      closeDirectDebitEditModal();
+      refreshUI();
+    });
 
-      if (big) {
-        document.getElementById("bdIncome").textContent = formatMoney(income);
-        document.getElementById("bdDd").textContent = formatMoney(ddTot);
-        document.getElementById("bdSpend").textContent = formatMoney(spend);
-        document.getElementById("bdCarry").textContent = formatMoney(carry);
-        document.getElementById("bdAfter").textContent = formatMoney(after);
+    document.getElementById("ddEditDeleteBtn").addEventListener("click", () => {
+      if (!currentEditingDdBaseId || !currentEditingMonthISO) return;
+
+      const scopeInput = document.getElementById("ddEditScope");
+      const scope = scopeInput.value;
+
+      if (!confirm("Delete this direct debit?")) return;
+
+      if (scope === "month") {
+        let ov = ddOverrides.find(o => o.baseId === currentEditingDdBaseId && o.monthISO === currentEditingMonthISO);
+        if (!ov) {
+          ov = {
+            id: uuid(),
+            baseId: currentEditingDdBaseId,
+            monthISO: currentEditingMonthISO,
+            name: null,
+            amount: null,
+            day: null,
+            category: null,
+            active: null,
+            deleted: true
+          };
+          ddOverrides.push(ov);
+        } else {
+          ov.deleted = true;
+        }
+      } else {
+        directDebits = directDebits.filter(d => d.id !== currentEditingDdBaseId);
+        ddOverrides = ddOverrides.filter(o => o.baseId !== currentEditingDdBaseId);
       }
-    }
 
-    // ========== MASTER RENDER ==========
-
-    function renderAll() {
-      renderTransactionList();
-      renderDirectDebitList();
-      renderDonut(false);
-    }
-
-    renderAll();
-  </script>
+      saveToStorage();
+      closeDirectDebitEditModal();
+      refreshUI();
+    });
+  });
+</script>
 </body>
 </html>
