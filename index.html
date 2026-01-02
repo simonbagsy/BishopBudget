@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <title>22 Bishop Road Budget</title>
 
-  <!-- Prevent pinch-zoom / scaling as far as iOS allows -->
+  <!-- No pinch zoom -->
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
   />
 
-  <!-- Icons: make sure icon-192.png and/or icon-512.png are in the same folder -->
+  <!-- Icons -->
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
   <link rel="apple-touch-icon" href="icon-192.png">
@@ -40,9 +40,7 @@
       --amber: #f97316;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
@@ -271,6 +269,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      flex: 0 0 auto;
     }
 
     .donut-svg {
@@ -304,17 +303,9 @@
       margin-bottom: 2px;
     }
 
-    .status-title.green {
-      color: var(--green-soft);
-    }
-
-    .status-title.red {
-      color: var(--red);
-    }
-
-    .status-title.amber {
-      color: var(--amber);
-    }
+    .status-title.green { color: var(--green-soft); }
+    .status-title.red   { color: var(--red); }
+    .status-title.amber { color: var(--amber); }
 
     .status-body {
       color: var(--text-soft);
@@ -778,6 +769,16 @@
 </div>
 
 <script>
+  // ---------- Data ----------
+  let transactions = [];
+  let directDebits = [];
+  let selectedMonth = firstOfMonth(new Date());
+  let whatIfOffset = 0;
+
+  const STORAGE_KEY_TX = "bb_transactions";
+  const STORAGE_KEY_DD = "bb_directDebits";
+  const STORAGE_KEY_MONTH = "bb_selectedMonth";
+
   // ---------- Helpers ----------
   function formatMoney(value) {
     const num = Number(value) || 0;
@@ -823,6 +824,7 @@
     return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
   }
 
+  // Parse CSV row respecting quotes
   function splitCSVRow(row) {
     const result = [];
     let current = "";
@@ -838,7 +840,7 @@
         } else {
           inQuotes = !inQuotes;
         }
-      } else if (ch === ',' && !inQuotes) {
+      } else if (ch === "," && !inQuotes) {
         result.push(current);
         current = "";
       } else {
@@ -849,32 +851,32 @@
     return result;
   }
 
+  // Normalise a date string into YYYY-MM-DD (for storage)
   function normaliseDateForStorage(raw) {
     if (!raw) return null;
-    const s = raw.replace(/"/g, "").trim();
-    if (!s) return null;
+    const trimmed = raw.replace(/"/g, "").trim();
+    if (!trimmed) return null;
 
-    let d = new Date(s);
+    // Try native parse first
+    let d = new Date(trimmed);
     if (!isNaN(d)) {
       return d.toISOString().slice(0, 10);
     }
 
-    const m = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
+    // Try dd-MMM-yy or dd-MMM-yyyy
+    const m = trimmed.match(/^(\d{1,2})[-/ ]([A-Za-z]{3})[-/ ](\d{2,4})$/);
     if (m) {
       const day = parseInt(m[1], 10);
       const monStr = m[2].toLowerCase();
-      const yearNum = parseInt(m[3], 10);
-
-      const months = {
-        jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-        jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
-      };
-      const monthIdx = months[monStr];
-
-      if (!isNaN(day) && monthIdx != null && !isNaN(yearNum)) {
-        let year = yearNum;
-        if (year < 100) year += 2000;
-        d = new Date(year, monthIdx, day);
+      const yearStr = m[3];
+      const months = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+      const mIndex = months.indexOf(monStr);
+      if (mIndex >= 0) {
+        let year = parseInt(yearStr, 10);
+        if (year < 100) {
+          year += year >= 70 ? 1900 : 2000;
+        }
+        d = new Date(year, mIndex, day);
         if (!isNaN(d)) {
           return d.toISOString().slice(0, 10);
         }
@@ -884,299 +886,243 @@
     return null;
   }
 
-  // ---------- State ----------
-  const STORAGE_KEY_TX = "bishopBudget_transactions_v1";
-  const STORAGE_KEY_DD = "bishopBudget_directDebits_v1";
+  // ---------- Storage ----------
+  function saveToStorage() {
+    localStorage.setItem(STORAGE_KEY_TX, JSON.stringify(transactions));
+    localStorage.setItem(STORAGE_KEY_DD, JSON.stringify(directDebits));
+    localStorage.setItem(STORAGE_KEY_MONTH, selectedMonth.toISOString());
+  }
 
-  let transactions = [];
-  let directDebits = [];
-  let selectedMonth = firstOfMonth(new Date());
-  let whatIfOffset = 0;
-
-  // ---------- Persistence ----------
-  function loadData() {
+  function loadFromStorage() {
     try {
       const txRaw = localStorage.getItem(STORAGE_KEY_TX);
       const ddRaw = localStorage.getItem(STORAGE_KEY_DD);
-      transactions = txRaw ? JSON.parse(txRaw) : [];
-      directDebits = ddRaw ? JSON.parse(ddRaw) : [];
+      const monthRaw = localStorage.getItem(STORAGE_KEY_MONTH);
+
+      if (txRaw) {
+        const data = JSON.parse(txRaw);
+        if (Array.isArray(data)) transactions = data;
+      }
+      if (ddRaw) {
+        const data = JSON.parse(ddRaw);
+        if (Array.isArray(data)) directDebits = data;
+      }
+      if (monthRaw) {
+        const d = new Date(monthRaw);
+        if (!isNaN(d)) selectedMonth = firstOfMonth(d);
+      } else {
+        selectedMonth = firstOfMonth(new Date());
+      }
     } catch (e) {
-      console.error("Failed to load data", e);
-      transactions = [];
-      directDebits = [];
+      console.error("Load storage failed", e);
     }
   }
 
-  function saveData() {
-    localStorage.setItem(STORAGE_KEY_TX, JSON.stringify(transactions));
-    localStorage.setItem(STORAGE_KEY_DD, JSON.stringify(directDebits));
+  // ---------- Computations ----------
+  function monthTransactions() {
+    const key = monthKey(selectedMonth);
+    return transactions.filter(tx => {
+      const d = new Date(tx.date);
+      if (isNaN(d)) return false;
+      return monthKey(d) === key;
+    });
   }
 
-  function resetAllData() {
-    const ok = confirm("This will clear all local data (transactions and direct debits). Continue?");
-    if (!ok) return;
+  function computeTotals() {
+    const mt = monthTransactions();
 
-    transactions = [];
-    directDebits = [];
-    localStorage.removeItem(STORAGE_KEY_TX);
-    localStorage.removeItem(STORAGE_KEY_DD);
-    whatIfOffset = 0;
-    const slider = document.getElementById("whatIfSlider");
-    if (slider) slider.value = "0";
-    renderAll();
+    let incomeTotal = 0;
+    let spendTotal = 0;
+
+    for (const tx of mt) {
+      if (tx.type === "income") incomeTotal += tx.amount;
+      else spendTotal += tx.amount;
+    }
+
+    let ddTotal = 0;
+    for (const dd of directDebits) {
+      if (dd.active) ddTotal += dd.amount;
+    }
+
+    const afterDDs = incomeTotal - ddTotal;
+    const afterAll = incomeTotal - ddTotal - spendTotal;
+
+    let donutPercentLeft = 0;
+    if (incomeTotal > 0) {
+      const left = incomeTotal - (ddTotal + spendTotal);
+      donutPercentLeft = clamp((left / incomeTotal) * 100, 0, 100);
+    }
+
+    return { mt, incomeTotal, spendTotal, ddTotal, afterDDs, afterAll, donutPercentLeft };
   }
 
-  // ---------- Derived calculations ----------
-  function sameMonth(dateStr, monthDate) {
-    if (!dateStr) return false;
-    const d = new Date(dateStr);
-    return d.getFullYear() === monthDate.getFullYear() &&
-           d.getMonth() === monthDate.getMonth();
-  }
-
-  function getMonthTransactions() {
-    return transactions.filter(tx => sameMonth(tx.date, selectedMonth));
-  }
-
-  function getIncomeTotal() {
-    return getMonthTransactions()
-      .filter(tx => tx.type === "income")
-      .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
-  }
-
-  function getSpendTotal() {
-    return getMonthTransactions()
-      .filter(tx => tx.type !== "income")
-      .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
-  }
-
-  function getDDTotal() {
-    return directDebits
-      .filter(dd => dd.active)
-      .reduce((sum, dd) => sum + Number(dd.amount || 0), 0);
-  }
-
-  function getDailyBalances() {
+  function computeDailyBalances(incomeTotal, mt) {
+    if (incomeTotal <= 0) return [];
     const days = daysInMonth(selectedMonth);
-    const monthTx = getMonthTransactions();
-    const income = getIncomeTotal();
-    const activeDDs = directDebits.filter(dd => dd.active);
+    const key = monthKey(selectedMonth);
 
-    const balances = [];
+    const spendsByDay = {};
+    mt.forEach(tx => {
+      if (tx.type !== "spend") return;
+      const d = new Date(tx.date);
+      if (isNaN(d)) return;
+      if (monthKey(d) !== key) return;
+      const day = d.getDate();
+      spendsByDay[day] = (spendsByDay[day] || 0) + tx.amount;
+    });
+
+    const ddByDay = {};
+    directDebits.forEach(dd => {
+      if (!dd.active) return;
+      const day = clamp(dd.day, 1, days);
+      ddByDay[day] = (ddByDay[day] || 0) + dd.amount;
+    });
+
+    const result = [];
+    let runningDD = 0;
+    let runningSpend = 0;
+
     for (let day = 1; day <= days; day++) {
-      let ddUpToDay = 0;
-      activeDDs.forEach(dd => {
-        if (dd.day <= day) {
-          ddUpToDay += Number(dd.amount || 0);
-        }
-      });
-
-      let spendUpToDay = 0;
-      monthTx.forEach(tx => {
-        if (tx.type !== "income") {
-          const d = new Date(tx.date);
-          if (d.getDate() <= day) {
-            spendUpToDay += Number(tx.amount || 0);
-          }
-        }
-      });
-
-      let bal = income - ddUpToDay - spendUpToDay - (whatIfOffset * (day / days));
-      balances.push(bal);
+      if (ddByDay[day]) runningDD += ddByDay[day];
+      if (spendsByDay[day]) runningSpend += spendsByDay[day];
+      const bal = incomeTotal - runningDD - runningSpend;
+      result.push(bal);
     }
-    return balances;
+    return result;
   }
 
-  // ---------- UI rendering ----------
-  function renderMonthLabel() {
-    const label = document.getElementById("monthLabel");
-    label.textContent = monthKey(selectedMonth);
-  }
-
-  function renderDashboard() {
-    const income = getIncomeTotal();
-    const spend = getSpendTotal();
-    const dd = getDDTotal();
-
-    const afterDDs = income - dd;
-    const afterAll = income - dd - spend;
-    const afterAllWhatIf = afterAll - whatIfOffset;
-
-    document.getElementById("incomeValue").textContent = formatMoney(income);
-    document.getElementById("spendValue").textContent = formatMoney(spend);
-    document.getElementById("ddValue").textContent = formatMoney(dd);
-    document.getElementById("leftValue").textContent = formatMoney(afterAllWhatIf);
-
-    const leftCard = document.getElementById("leftCard");
-    if (afterAllWhatIf > 0) {
-      leftCard.style.borderColor = "rgba(34,197,94,0.7)";
-    } else if (afterAllWhatIf === 0) {
-      leftCard.style.borderColor = "rgba(249,115,22,0.7)";
-    } else {
-      leftCard.style.borderColor = "rgba(248,113,113,0.7)";
-    }
-
+  // ---------- UI refresh ----------
+  function refreshUI() {
+    const monthLabelEl = document.getElementById("monthLabel");
+    const incomeValueEl = document.getElementById("incomeValue");
+    const ddValueEl = document.getElementById("ddValue");
+    const spendValueEl = document.getElementById("spendValue");
+    const leftValueEl = document.getElementById("leftValue");
+    const leftCardEl = document.getElementById("leftCard");
+    const whatIfSlider = document.getElementById("whatIfSlider");
     const whatIfChangeEl = document.getElementById("whatIfChange");
     const whatIfAfterEl = document.getElementById("whatIfAfter");
+    const donutArcEl = document.getElementById("donutArc");
+    const donutPercentTextEl = document.getElementById("donutPercentText");
+    const statusTitleEl = document.getElementById("statusTitle");
+    const statusBodyEl = document.getElementById("statusBody");
+    const graphLineEl = document.getElementById("graphLine");
+
+    const sumIncomeEl = document.getElementById("sumIncome");
+    const sumDDEl = document.getElementById("sumDD");
+    const sumSpendEl = document.getElementById("sumSpend");
+    const sumLeftEl = document.getElementById("sumLeft");
+
+    const { mt, incomeTotal, spendTotal, ddTotal, afterDDs, afterAll, donutPercentLeft } = computeTotals();
+
+    monthLabelEl.textContent = monthKey(selectedMonth);
+    incomeValueEl.textContent = formatMoney(incomeTotal);
+    ddValueEl.textContent = formatMoney(ddTotal);
+    spendValueEl.textContent = formatMoney(spendTotal);
+
+    const whatIfLeft = afterAll - whatIfOffset;
+    leftValueEl.textContent = formatMoney(whatIfLeft);
+
+    if (whatIfLeft > 0) {
+      leftCardEl.style.borderColor = "rgba(74, 222, 128, 0.6)";
+      leftCardEl.style.backgroundColor = "rgba(22, 163, 74, 0.15)";
+    } else if (whatIfLeft === 0) {
+      leftCardEl.style.borderColor = "rgba(251, 191, 36, 0.7)";
+      leftCardEl.style.backgroundColor = "rgba(251, 191, 36, 0.1)";
+    } else {
+      leftCardEl.style.borderColor = "rgba(248, 113, 113, 0.7)";
+      leftCardEl.style.backgroundColor = "rgba(248, 113, 113, 0.15)";
+    }
+
+    const maxDelta = Math.max(500, incomeTotal);
+    whatIfSlider.min = String(-maxDelta);
+    whatIfSlider.max = String(maxDelta);
+    if (Math.abs(whatIfOffset) > maxDelta) {
+      whatIfOffset = 0;
+      whatIfSlider.value = "0";
+    }
+
     const absChange = Math.abs(whatIfOffset);
     const sign = whatIfOffset === 0 ? "" : (whatIfOffset > 0 ? "+" : "−");
-    whatIfChangeEl.textContent = "Change: " + sign + formatMoney(absChange);
-    whatIfAfterEl.textContent = "After change: " + formatMoney(afterAllWhatIf);
+    whatIfChangeEl.textContent = `Change: ${sign}${formatMoney(absChange)}`;
+    whatIfAfterEl.textContent = `After change: ${formatMoney(whatIfLeft)}`;
 
-    let percentLeft = 0;
-    if (income > 0) {
-      const left = income - dd - spend;
-      percentLeft = clamp((left / income) * 100, 0, 100);
-    }
     const circumference = 2 * Math.PI * 40;
-    const offset = circumference * (1 - percentLeft / 100);
-    const donutArc = document.getElementById("donutArc");
-    donutArc.style.strokeDasharray = circumference.toString();
-    donutArc.style.strokeDashoffset = offset.toString();
-    document.getElementById("donutPercentText").textContent =
-      Math.round(percentLeft) + "%";
+    const visiblePercent = clamp(donutPercentLeft, 0, 100);
+    const offset = circumference * (1 - visiblePercent / 100);
+    donutArcEl.setAttribute("stroke-dasharray", circumference.toFixed(1));
+    donutArcEl.setAttribute("stroke-dashoffset", offset.toFixed(1));
+    donutPercentTextEl.textContent = `${Math.round(visiblePercent)}%`;
 
-    const statusTitle = document.getElementById("statusTitle");
-    const statusBody = document.getElementById("statusBody");
-
-    if (income <= 0) {
-      statusTitle.textContent = "Waiting for income";
-      statusTitle.className = "status-title";
-      statusBody.textContent =
-        "Add your salary for this month to see how much is left after direct debits and spending.";
+    if (incomeTotal <= 0) {
+      statusTitleEl.textContent = "Waiting for income";
+      statusTitleEl.className = "status-title";
+      statusBodyEl.textContent = "Add your salary for this month to see how much is left after direct debits and spending.";
     } else {
       const left = afterAll;
       if (left > 0) {
-        statusTitle.textContent = "You’re in the green";
-        statusTitle.className = "status-title green";
-        statusBody.textContent =
-          formatMoney(left) + " left after this month’s direct debits and spending.";
+        statusTitleEl.textContent = "You’re in the green";
+        statusTitleEl.className = "status-title green";
+        statusBodyEl.textContent = `${formatMoney(left)} left after this month’s direct debits and spending.`;
       } else if (left === 0) {
-        statusTitle.textContent = "Every pound is allocated";
-        statusTitle.className = "status-title amber";
-        statusBody.textContent = "You’ve used 100% of this month’s income.";
+        statusTitleEl.textContent = "Every pound is allocated";
+        statusTitleEl.className = "status-title amber";
+        statusBodyEl.textContent = "You’ve used 100% of this month’s income.";
       } else {
-        statusTitle.textContent = "Spending over income";
-        statusTitle.className = "status-title red";
-        statusBody.textContent =
-          "Over by " + formatMoney(Math.abs(left)) + " this month.";
+        statusTitleEl.textContent = "Spending over income";
+        statusTitleEl.className = "status-title red";
+        statusBodyEl.textContent = `Over by ${formatMoney(Math.abs(left))} this month.`;
       }
     }
 
-    renderGraph();
-
-    document.getElementById("sumIncome").textContent = formatMoney(income);
-    document.getElementById("sumDD").textContent = formatMoney(dd);
-    document.getElementById("sumSpend").textContent = formatMoney(spend);
-    document.getElementById("sumLeft").textContent = formatMoney(afterAll);
-  }
-
-  function renderGraph() {
-    const balances = getDailyBalances();
-    const svgLine = document.getElementById("graphLine");
-
-    if (!balances.length) {
-      svgLine.setAttribute("points", "");
-      return;
+    const baseBalances = computeDailyBalances(incomeTotal, mt);
+    let values = baseBalances;
+    if (whatIfOffset !== 0 && values.length > 0) {
+      const n = values.length;
+      values = values.map((v, idx) => {
+        const factor = (idx + 1) / n;
+        return v - whatIfOffset * factor;
+      });
     }
 
-    let minVal = Math.min(...balances, 0);
-    let maxVal = Math.max(...balances, 0);
-    if (minVal === maxVal) {
-      maxVal = minVal + 1;
+    if (!values || values.length === 0) {
+      graphLineEl.setAttribute("points", "");
+    } else {
+      const maxAbs = Math.max(...values.map(v => Math.abs(v)), 1);
+      const stepX = values.length > 1 ? 100 / (values.length - 1) : 0;
+      const points = values.map((v, idx) => {
+        const x = idx * stepX;
+        const y = 40 - (v / maxAbs) * 18;
+        return `${x.toFixed(2)},${y.toFixed(2)}`;
+      }).join(" ");
+      graphLineEl.setAttribute("points", points);
+      graphLineEl.setAttribute("stroke", "#4ade80");
     }
-    const range = maxVal - minVal;
 
-    const points = balances.map((val, index) => {
-      const x = balances.length > 1
-        ? (index / (balances.length - 1)) * 100
-        : 50;
-      const norm = (val - minVal) / range;
-      const y = 5 + (1 - norm) * 40;
-      return `${x.toFixed(2)},${y.toFixed(2)}`;
-    });
+    sumIncomeEl.textContent = formatMoney(incomeTotal);
+    sumDDEl.textContent = formatMoney(ddTotal);
+    sumSpendEl.textContent = formatMoney(spendTotal);
+    sumLeftEl.textContent = formatMoney(afterAll);
 
-    svgLine.setAttribute("points", points.join(" "));
+    renderTransactionList(mt);
+    renderDirectDebitList();
   }
 
-  function renderTransactions() {
-    const container = document.getElementById("txList");
-    container.innerHTML = "";
+  function renderTransactionList(mt) {
+    const txListEl = document.getElementById("txList");
+    txListEl.innerHTML = "";
 
-    const monthTx = getMonthTransactions();
-    if (!monthTx.length) {
+    if (!mt || mt.length === 0) {
       const empty = document.createElement("div");
       empty.className = "list-empty";
       empty.textContent = "No transactions yet. Add income and spending above.";
-      container.appendChild(empty);
+      txListEl.appendChild(empty);
       return;
     }
 
-    monthTx
-      .slice()
-      .sort((a, b) => new Date(a.date) - new Date(b.date))
-      .forEach(tx => {
-        const item = document.createElement("div");
-        item.className = "list-item";
+    const sorted = mt.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        const main = document.createElement("div");
-        main.className = "list-main";
-
-        const title = document.createElement("div");
-        title.className = "list-title";
-        title.textContent = tx.description || "(No description)";
-
-        const sub = document.createElement("div");
-        sub.className = "list-sub";
-        sub.textContent =
-          `${formatDateShortDisplay(tx.date)} · ${tx.type === "income" ? "Income" : "Spending"}`;
-
-        main.appendChild(title);
-        main.appendChild(sub);
-
-        const amount = document.createElement("div");
-        amount.className = "list-amount";
-        amount.textContent = formatMoney(tx.amount);
-        amount.style.color = tx.type === "income" ? "var(--green)" : "var(--red)";
-
-        const actions = document.createElement("div");
-
-        const editBtn = document.createElement("button");
-        editBtn.className = "btn btn-ghost btn-small";
-        editBtn.textContent = "Edit";
-        editBtn.onclick = () => editTransaction(tx.id);
-
-        const delBtn = document.createElement("button");
-        delBtn.className = "btn btn-danger btn-small";
-        delBtn.textContent = "Delete";
-        delBtn.onclick = () => deleteTransaction(tx.id);
-
-        actions.appendChild(editBtn);
-        actions.appendChild(delBtn);
-
-        item.appendChild(main);
-        item.appendChild(amount);
-        item.appendChild(actions);
-
-        container.appendChild(item);
-      });
-  }
-
-  function renderDirectDebits() {
-    const container = document.getElementById("ddList");
-    container.innerHTML = "";
-
-    if (!directDebits.length) {
-      const empty = document.createElement("div");
-      empty.className = "list-empty";
-      empty.textContent = "No direct debits yet. Start with mortgage, council tax and utilities.";
-      container.appendChild(empty);
-      return;
-    }
-
-    const sorted = directDebits.slice().sort((a, b) => (a.day || 0) - (b.day || 0));
-
-    sorted.forEach(dd => {
+    for (const tx of sorted) {
       const item = document.createElement("div");
       item.className = "list-item";
 
@@ -1185,272 +1131,156 @@
 
       const title = document.createElement("div");
       title.className = "list-title";
-      title.textContent = dd.name || "(No name)";
+      title.textContent = tx.description;
 
-      const cat = dd.category ? ` · ${dd.category}` : "";
       const sub = document.createElement("div");
       sub.className = "list-sub";
-      sub.textContent =
-        `${formatMoney(dd.amount)} · day ${dd.day}${cat}`;
+      sub.textContent = `${formatDateShortDisplay(tx.date)} · ${tx.type === "income" ? "Income" : "Spending"}`;
 
       main.appendChild(title);
       main.appendChild(sub);
 
-      const status = document.createElement("div");
+      const amt = document.createElement("div");
+      amt.className = "list-amount";
+      amt.style.color = tx.type === "income" ? "var(--green)" : "var(--red)";
+      amt.textContent = formatMoney(tx.amount);
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "btn btn-small btn-danger";
+      delBtn.textContent = "Delete";
+      delBtn.addEventListener("click", () => {
+        transactions = transactions.filter(t => t.id !== tx.id);
+        saveToStorage();
+        refreshUI();
+      });
+
+      item.appendChild(main);
+      item.appendChild(amt);
+      item.appendChild(delBtn);
+
+      txListEl.appendChild(item);
+    }
+  }
+
+  function renderDirectDebitList() {
+    const ddListEl = document.getElementById("ddList");
+    ddListEl.innerHTML = "";
+
+    if (!directDebits || directDebits.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "list-empty";
+      empty.textContent = "No direct debits yet. Start with mortgage, council tax and utilities.";
+      ddListEl.appendChild(empty);
+      return;
+    }
+
+    const sorted = directDebits.slice().sort((a, b) => a.day - b.day);
+
+    for (const dd of sorted) {
+      const item = document.createElement("div");
+      item.className = "list-item";
+
+      const main = document.createElement("div");
+      main.className = "list-main";
+
+      const title = document.createElement("div");
+      title.className = "list-title";
+      title.textContent = dd.name;
+
+      const sub = document.createElement("div");
+      sub.className = "list-sub";
+      const catPart = dd.category ? ` · ${dd.category}` : "";
+      sub.textContent = `${formatMoney(dd.amount)} · day ${dd.day}${catPart}`;
+
+      main.appendChild(title);
+      main.appendChild(sub);
+
+      const status = document.createElement("span");
       status.className = "badge " + (dd.active ? "badge-green" : "badge-red");
       status.textContent = dd.active ? "Active" : "Paused";
 
-      const actions = document.createElement("div");
-
-      const editBtn = document.createElement("button");
-      editBtn.className = "btn btn-ghost btn-small";
-      editBtn.textContent = "Edit";
-      editBtn.onclick = () => editDirectDebit(dd.id);
-
       const delBtn = document.createElement("button");
-      delBtn.className = "btn btn-danger btn-small";
+      delBtn.className = "btn btn-small btn-danger";
       delBtn.textContent = "Delete";
-      delBtn.onclick = () => deleteDirectDebit(dd.id);
-
-      actions.appendChild(status);
-      actions.appendChild(editBtn);
-      actions.appendChild(delBtn);
+      delBtn.addEventListener("click", () => {
+        directDebits = directDebits.filter(x => x.id !== dd.id);
+        saveToStorage();
+        refreshUI();
+      });
 
       item.appendChild(main);
-      item.appendChild(actions);
+      item.appendChild(status);
+      item.appendChild(delBtn);
 
-      container.appendChild(item);
-    });
-  }
-
-  function renderAll() {
-    renderMonthLabel();
-    renderDashboard();
-    renderTransactions();
-    renderDirectDebits();
-  }
-
-  // ---------- Actions ----------
-  function changeMonth(offset) {
-    selectedMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + offset, 1);
-    whatIfOffset = 0;
-    document.getElementById("whatIfSlider").value = "0";
-    renderAll();
-  }
-
-  function addTransaction() {
-    const dateEl = document.getElementById("txDate");
-    const typeEl = document.getElementById("txType");
-    const descEl = document.getElementById("txDescription");
-    const amountEl = document.getElementById("txAmount");
-
-    const date = dateEl.value;
-    const typeValue = typeEl.value;
-    const type = typeValue === "income" ? "income" : "spend";
-    const desc = descEl.value.trim();
-    const amount = parseFloat(amountEl.value);
-
-    if (!date || isNaN(amount) || !desc) {
-      alert("Please enter date, description and amount.");
-      return;
+      ddListEl.appendChild(item);
     }
-
-    const tx = {
-      id: uuid(),
-      date,
-      type,
-      description: desc,
-      amount
-    };
-    transactions.push(tx);
-    saveData();
-
-    descEl.value = "";
-    amountEl.value = "";
-    dateEl.value = "";
-    typeEl.value = "income";
-
-    renderAll();
   }
 
-  function editTransaction(id) {
-    const tx = transactions.find(t => t.id === id);
-    if (!tx) return;
-
-    const newDesc = prompt("Description:", tx.description || "");
-    if (newDesc === null) return;
-
-    const newAmtStr = prompt("Amount:", tx.amount != null ? tx.amount : "");
-    if (newAmtStr === null) return;
-    const newAmt = parseFloat(newAmtStr);
-    if (isNaN(newAmt)) {
-      alert("Invalid amount.");
-      return;
-    }
-
-    tx.description = newDesc.trim() || tx.description;
-    tx.amount = newAmt;
-    saveData();
-    renderAll();
-  }
-
-  function deleteTransaction(id) {
-    if (!confirm("Delete this transaction?")) return;
-    transactions = transactions.filter(t => t.id !== id);
-    saveData();
-    renderAll();
-  }
-
-  function addDirectDebit() {
-    const nameEl = document.getElementById("ddName");
-    const amountEl = document.getElementById("ddAmount");
-    const dayEl = document.getElementById("ddDay");
-    const catEl = document.getElementById("ddCategory");
-    const activeEl = document.getElementById("ddActive");
-
-    const name = nameEl.value.trim();
-    const amount = parseFloat(amountEl.value);
-    const day = parseInt(dayEl.value, 10);
-    const category = catEl.value.trim();
-    const active = !!activeEl.checked;
-
-    if (!name || isNaN(amount) || isNaN(day) || day < 1 || day > 31) {
-      alert("Please enter name, valid amount and day (1–31).");
-      return;
-    }
-
-    const dd = {
-      id: uuid(),
-      name,
-      amount,
-      day,
-      category,
-      active
-    };
-    directDebits.push(dd);
-    saveData();
-
-    nameEl.value = "";
-    amountEl.value = "";
-    dayEl.value = "";
-    catEl.value = "";
-    activeEl.checked = true;
-
-    renderAll();
-  }
-
-  function editDirectDebit(id) {
-    const dd = directDebits.find(d => d.id === id);
-    if (!dd) return;
-
-    const newName = prompt("Name:", dd.name || "");
-    if (newName === null) return;
-
-    const newAmtStr = prompt("Amount:", dd.amount != null ? dd.amount : "");
-    if (newAmtStr === null) return;
-    const newAmt = parseFloat(newAmtStr);
-    if (isNaN(newAmt)) {
-      alert("Invalid amount.");
-      return;
-    }
-
-    const newDayStr = prompt("Day of month (1–31):", dd.day != null ? dd.day : "");
-    if (newDayStr === null) return;
-    const newDay = parseInt(newDayStr, 10);
-    if (isNaN(newDay) || newDay < 1 || newDay > 31) {
-      alert("Invalid day.");
-      return;
-    }
-
-    const activeStr = prompt("Active? (yes/no):", dd.active ? "yes" : "no");
-    if (activeStr === null) return;
-    const active = activeStr.toLowerCase().startsWith("y");
-
-    dd.name = newName.trim() || dd.name;
-    dd.amount = newAmt;
-    dd.day = newDay;
-    dd.active = active;
-
-    saveData();
-    renderAll();
-  }
-
-  function deleteDirectDebit(id) {
-    if (!confirm("Delete this direct debit?")) return;
-    directDebits = directDebits.filter(d => d.id !== id);
-    saveData();
-    renderAll();
-  }
-
-  function handleWhatIfChange() {
-    const slider = document.getElementById("whatIfSlider");
-    whatIfOffset = parseFloat(slider.value) || 0;
-    renderDashboard();
-  }
-
-  function resetWhatIf() {
-    whatIfOffset = 0;
-    document.getElementById("whatIfSlider").value = "0";
-    renderDashboard();
-  }
-
-  // ---------- Export CSV ----------
+  // ---------- CSV import / export ----------
   function exportCSV() {
-    const monthTx = getMonthTransactions();
+    const lines = [];
 
-    let csv = "";
-    csv += "SECTION,TYPE,DATE,DESCRIPTION,AMOUNT\n";
-    monthTx.forEach(tx => {
-      const safeDesc = (tx.description || "").replace(/"/g, '""');
-      csv += `"Transaction","${tx.type}","${tx.date}","${safeDesc}",${tx.amount}\n`;
+    lines.push([
+      "SECTION",
+      "TYPE",
+      "DATE",
+      "DESCRIPTION",
+      "AMOUNT",
+      "DAYOFMONTH",
+      "CATEGORY",
+      "ACTIVE"
+    ].join(","));
+
+    transactions.forEach(tx => {
+      const section = "TRANSACTION";
+      const type = tx.type === "income" ? "income" : "spending";
+      const dateStr = tx.date;
+      const desc = `"${(tx.description || "").replace(/"/g, '""')}"`;
+      const amountStr = (Number(tx.amount) || 0).toFixed(2);
+      lines.push([
+        section,
+        type,
+        dateStr,
+        desc,
+        amountStr,
+        "",
+        "",
+        ""
+      ].join(","));
     });
 
-    csv += "\nSECTION,NAME,AMOUNT,DAY_OF_MONTH,CATEGORY,ACTIVE\n";
     directDebits.forEach(dd => {
-      const safeName = (dd.name || "").replace(/"/g, '""');
-      const safeCat = (dd.category || "").replace(/"/g, '""');
-      csv += `"DirectDebit","${safeName}",${dd.amount},${dd.day},"${safeCat}",${dd.active ? "Yes" : "No"}\n`;
+      const section = "DIRECTDEBIT";
+      const type = "";
+      const dateStr = "";
+      const name = `"${(dd.name || "").replace(/"/g, '""')}"`;
+      const amountStr = (Number(dd.amount) || 0).toFixed(2);
+      const dayStr = String(dd.day || "");
+      const category = `"${(dd.category || "").replace(/"/g, '""')}"`;
+      const activeStr = dd.active ? "Yes" : "No";
+
+      lines.push([
+        section,
+        type,
+        dateStr,
+        name,
+        amountStr,
+        dayStr,
+        category,
+        activeStr
+      ].join(","));
     });
 
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const csvContent = lines.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement("a");
-    const mk = monthKey(selectedMonth).replace(/\s/g, "-");
     a.href = url;
-    a.download = `BishopBudget-${mk}.csv`;
+    a.download = "BishopBudget-Export.csv";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-
     URL.revokeObjectURL(url);
-  }
-
-  // ---------- Import CSV (no-duplicate Master import) ----------
-  function importCSVFiles(fileList) {
-    if (!fileList || !fileList.length) return;
-
-    let filesRemaining = fileList.length;
-
-    for (const file of fileList) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const text = e.target.result;
-          parseAndMergeCSV(text);
-        } catch (err) {
-          console.error("Error importing", file.name, err);
-        } finally {
-          filesRemaining--;
-          if (filesRemaining === 0) {
-            saveData();
-            renderAll();
-            alert("Import complete. Check your data and month selector.");
-          }
-        }
-      };
-      reader.readAsText(file);
-    }
   }
 
   function parseAndMergeCSV(text) {
@@ -1464,7 +1294,7 @@
     const headerRaw = splitCSVRow(lines[0]).map(h => h.trim());
     const normHeader = headerRaw.map(h => h.toLowerCase().replace(/[\s_]/g, ""));
 
-    // 1) Combined HTML export: SECTION, ...
+    // 1) Combined export from this HTML app: SECTION,...
     if (normHeader[0] === "section") {
       for (let i = 1; i < lines.length; i++) {
         const cols = splitCSVRow(lines[i]);
@@ -1489,11 +1319,11 @@
             amount: amt
           });
         } else if (section === "directdebit") {
-          const name = (cols[1] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
-          const amt = parseFloat((cols[2] || "").replace(/"/g, "").trim());
-          const day = parseInt((cols[3] || "").replace(/"/g, "").trim(), 10);
-          const category = (cols[4] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
-          const activeRaw = (cols[5] || "").replace(/"/g, "").trim().toLowerCase();
+          const name = (cols[3] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
+          const amt = parseFloat((cols[4] || "").replace(/"/g, "").trim());
+          const day = parseInt((cols[5] || "").replace(/"/g, "").trim(), 10);
+          const category = (cols[6] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
+          const activeRaw = (cols[7] || "").replace(/"/g, "").trim().toLowerCase();
           const active = activeRaw === "yes" || activeRaw === "true" || activeRaw === "1";
 
           if (!name || isNaN(amt) || isNaN(day)) continue;
@@ -1511,12 +1341,12 @@
       return;
     }
 
-    // 2) Generic detection for any transactions CSV:
+    // 2) Generic detection for any TRANSACTIONS CSV
     const hasTxCols = ["date", "type", "description", "amount"].every(col =>
       normHeader.includes(col)
     );
 
-    // 3) Generic detection for any direct debit CSV:
+    // 3) Generic detection for any DIRECT DEBITS CSV
     const hasDdCore = ["name", "dayofmonth", "category", "active"].every(col =>
       normHeader.includes(col)
     );
@@ -1524,17 +1354,14 @@
       normHeader.includes("amount") || normHeader.includes("amountformonth");
     const hasDdCols = hasDdCore && hasDdAmount;
 
-    // MASTER TRANSACTIONS CSV (e.g. with MonthKey): clear old tx before import
+    // MASTER / TRANSACTIONS CSV – replace in-app transactions
     if (hasTxCols) {
-      if (normHeader.includes("monthkey")) {
-        // treat as canonical master export: replace transactions
-        transactions = [];
-      }
-
       const idxDate = normHeader.indexOf("date");
       const idxType = normHeader.indexOf("type");
       const idxDesc = normHeader.indexOf("description");
       const idxAmount = normHeader.indexOf("amount");
+
+      const newTxs = [];
 
       for (let i = 1; i < lines.length; i++) {
         const cols = splitCSVRow(lines[i]);
@@ -1549,11 +1376,9 @@
         const amt = parseFloat((cols[idxAmount] || "").replace(/"/g, "").trim());
         if (!desc || isNaN(amt)) continue;
 
-        let type;
-        if (typeRaw === "income") type = "income";
-        else type = "spend";
+        const type = typeRaw === "income" ? "income" : "spend";
 
-        transactions.push({
+        newTxs.push({
           id: uuid(),
           date: dateIso,
           type,
@@ -1561,16 +1386,13 @@
           amount: amt
         });
       }
+
+      transactions = newTxs;
       return;
     }
 
-    // MASTER DIRECT DEBITS CSV (MonthKey / AmountForMonth etc) – clear old DDs first
+    // MASTER / DIRECT DEBITS CSV – replace in-app direct debits
     if (hasDdCols) {
-      if (normHeader.includes("monthkey")) {
-        // treat as canonical master export: replace direct debits
-        directDebits = [];
-      }
-
       const idxName = normHeader.indexOf("name");
       let idxAmount = normHeader.indexOf("amount");
       if (idxAmount === -1) {
@@ -1579,6 +1401,8 @@
       const idxDay = normHeader.indexOf("dayofmonth");
       const idxCategory = normHeader.indexOf("category");
       const idxActive = normHeader.indexOf("active");
+
+      const newDDs = [];
 
       for (let i = 1; i < lines.length; i++) {
         const cols = splitCSVRow(lines[i]);
@@ -1593,7 +1417,7 @@
 
         if (!name || isNaN(amt) || isNaN(day)) continue;
 
-        directDebits.push({
+        newDDs.push({
           id: uuid(),
           name,
           amount: amt,
@@ -1602,42 +1426,165 @@
           active
         });
       }
+
+      directDebits = newDDs;
       return;
     }
 
     console.warn("CSV format not recognised, skipping this file.");
   }
 
-  // ---------- Wiring ----------
-  function init() {
-    loadData();
+  function handleImportFiles(files) {
+    if (!files || files.length === 0) return;
 
-    document.getElementById("txDate").valueAsDate = new Date();
+    let remaining = files.length;
 
-    document.getElementById("prevMonthBtn").addEventListener("click", () => changeMonth(-1));
-    document.getElementById("nextMonthBtn").addEventListener("click", () => changeMonth(1));
-
-    document.getElementById("addTxBtn").addEventListener("click", addTransaction);
-    document.getElementById("addDdBtn").addEventListener("click", addDirectDebit);
-
-    document.getElementById("whatIfSlider").addEventListener("input", handleWhatIfChange);
-    document.getElementById("resetWhatIfBtn").addEventListener("click", resetWhatIf);
-
-    document.getElementById("exportBtn").addEventListener("click", exportCSV);
-
-    const importInput = document.getElementById("importInput");
-    document.getElementById("importBtn").addEventListener("click", () => importInput.click());
-    importInput.addEventListener("change", (e) => {
-      importCSVFiles(e.target.files);
-      importInput.value = "";
-    });
-
-    document.getElementById("resetAllBtn").addEventListener("click", resetAllData);
-
-    renderAll();
+    for (const file of files) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          parseAndMergeCSV(e.target.result);
+        } catch (err) {
+          console.error("Parse error for file", file.name, err);
+        } finally {
+          remaining -= 1;
+          if (remaining === 0) {
+            saveToStorage();
+            refreshUI();
+          }
+        }
+      };
+      reader.readAsText(file);
+    }
   }
 
-  document.addEventListener("DOMContentLoaded", init);
+  // ---------- Event wiring ----------
+  document.addEventListener("DOMContentLoaded", () => {
+    loadFromStorage();
+
+    const todayIso = new Date().toISOString().slice(0, 10);
+    const txDate = document.getElementById("txDate");
+    txDate.value = todayIso;
+
+    const monthLabelEl = document.getElementById("monthLabel");
+    monthLabelEl.textContent = monthKey(selectedMonth);
+
+    document.getElementById("prevMonthBtn").addEventListener("click", () => {
+      selectedMonth = firstOfMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1));
+      whatIfOffset = 0;
+      document.getElementById("whatIfSlider").value = "0";
+      saveToStorage();
+      refreshUI();
+    });
+
+    document.getElementById("nextMonthBtn").addEventListener("click", () => {
+      selectedMonth = firstOfMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 1));
+      whatIfOffset = 0;
+      document.getElementById("whatIfSlider").value = "0";
+      saveToStorage();
+      refreshUI();
+    });
+
+    document.getElementById("whatIfSlider").addEventListener("input", e => {
+      whatIfOffset = Number(e.target.value) || 0;
+      refreshUI();
+    });
+
+    document.getElementById("resetWhatIfBtn").addEventListener("click", () => {
+      whatIfOffset = 0;
+      document.getElementById("whatIfSlider").value = "0";
+      refreshUI();
+    });
+
+    document.getElementById("addTxBtn").addEventListener("click", () => {
+      const dateStr = document.getElementById("txDate").value;
+      const type = document.getElementById("txType").value === "income" ? "income" : "spend";
+      const desc = document.getElementById("txDescription").value.trim();
+      const amtStr = document.getElementById("txAmount").value.trim();
+
+      if (!desc) return;
+      const amt = parseFloat(amtStr.replace(",", "."));
+      if (isNaN(amt)) return;
+
+      const iso = normaliseDateForStorage(dateStr);
+      if (!iso) return;
+
+      transactions.push({
+        id: uuid(),
+        date: iso,
+        type,
+        description: desc,
+        amount: amt
+      });
+
+      document.getElementById("txDescription").value = "";
+      document.getElementById("txAmount").value = "";
+
+      saveToStorage();
+      refreshUI();
+    });
+
+    document.getElementById("addDdBtn").addEventListener("click", () => {
+      const name = document.getElementById("ddName").value.trim();
+      if (!name) return;
+
+      const amtStr = document.getElementById("ddAmount").value.trim();
+      const amount = parseFloat(amtStr.replace(",", "."));
+      if (isNaN(amount)) return;
+
+      const dayStr = document.getElementById("ddDay").value.trim();
+      let day = parseInt(dayStr, 10);
+      if (isNaN(day) || day < 1 || day > 31) return;
+
+      const category = document.getElementById("ddCategory").value.trim();
+      const active = document.getElementById("ddActive").checked;
+
+      directDebits.push({
+        id: uuid(),
+        name,
+        amount,
+        day,
+        category,
+        active
+      });
+
+      document.getElementById("ddName").value = "";
+      document.getElementById("ddAmount").value = "";
+      document.getElementById("ddDay").value = "";
+      document.getElementById("ddCategory").value = "";
+      document.getElementById("ddActive").checked = true;
+
+      saveToStorage();
+      refreshUI();
+    });
+
+    document.getElementById("resetAllBtn").addEventListener("click", () => {
+      if (!confirm("Reset all saved data? This cannot be undone.")) return;
+      transactions = [];
+      directDebits = [];
+      whatIfOffset = 0;
+      document.getElementById("whatIfSlider").value = "0";
+      localStorage.removeItem(STORAGE_KEY_TX);
+      localStorage.removeItem(STORAGE_KEY_DD);
+      saveToStorage();
+      refreshUI();
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      exportCSV();
+    });
+
+    const importInput = document.getElementById("importInput");
+    document.getElementById("importBtn").addEventListener("click", () => {
+      importInput.value = "";
+      importInput.click();
+    });
+    importInput.addEventListener("change", e => {
+      handleImportFiles(e.target.files);
+    });
+
+    refreshUI();
+  });
 </script>
 </body>
 </html>
