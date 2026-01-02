@@ -178,7 +178,6 @@
       gap: 4px;
     }
 
-    /* MONTH NAV BUTTONS - more button-like */
     .pill-btn {
       background: radial-gradient(circle at top, #1f2937, #020617);
       border-radius: 999px;
@@ -386,7 +385,6 @@
       outline: none;
     }
 
-    /* Force iOS date input to behave like the other pills */
     input[type="date"] {
       -webkit-appearance: none;
       appearance: none;
@@ -419,7 +417,6 @@
       color: var(--text-soft);
     }
 
-    /* MAIN BUTTON STYLE – more “buttony” */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -608,8 +605,6 @@
       gap: 8px;
       flex-wrap: wrap;
     }
-
-    /* ---------- DONUT DETAIL OVERLAY ---------- */
 
     .donut-overlay {
       position: fixed;
@@ -1779,20 +1774,41 @@
       refreshUI();
     });
 
+    // UPDATED: Add direct debit with visible validation errors
     document.getElementById("addDdBtn").addEventListener("click", () => {
-      const name = document.getElementById("ddName").value.trim();
-      if (!name) return;
+      const nameInput = document.getElementById("ddName");
+      const amountInput = document.getElementById("ddAmount");
+      const dayInput = document.getElementById("ddDay");
+      const categoryInput = document.getElementById("ddCategory");
+      const activeInput = document.getElementById("ddActive");
 
-      const amtStr = document.getElementById("ddAmount").value.trim();
-      const amount = parseFloat(amtStr.replace(",", "."));
-      if (isNaN(amount)) return;
+      const name = nameInput.value.trim();
+      const amtStr = amountInput.value.trim();
+      const dayStr = dayInput.value.trim();
+      const category = categoryInput.value.trim();
+      const active = activeInput.checked;
 
-      const dayStr = document.getElementById("ddDay").value.trim();
+      let amount = parseFloat(amtStr.replace(",", "."));
       let day = parseInt(dayStr, 10);
-      if (isNaN(day) || day < 1 || day > 31) return;
 
-      const category = document.getElementById("ddCategory").value.trim();
-      const active = document.getElementById("ddActive").checked;
+      let error = "";
+
+      if (!name) {
+        error = "Please enter a name for the direct debit.";
+      } else if (amtStr === "") {
+        error = "Please enter an amount for the direct debit.";
+      } else if (isNaN(amount)) {
+        error = "Amount must be a number (e.g. 1200 or 1200.50).";
+      } else if (!dayStr) {
+        error = "Please enter the day of month (1–31).";
+      } else if (isNaN(day) || day < 1 || day > 31) {
+        error = "Day of month must be a whole number between 1 and 31.";
+      }
+
+      if (error) {
+        alert(error);
+        return;
+      }
 
       directDebits.push({
         id: uuid(),
@@ -1803,11 +1819,11 @@
         active: active
       });
 
-      document.getElementById("ddName").value = "";
-      document.getElementById("ddAmount").value = "";
-      document.getElementById("ddDay").value = "";
-      document.getElementById("ddCategory").value = "";
-      document.getElementById("ddActive").checked = true;
+      nameInput.value = "";
+      amountInput.value = "";
+      dayInput.value = "";
+      categoryInput.value = "";
+      activeInput.checked = true;
 
       saveToStorage();
       refreshUI();
