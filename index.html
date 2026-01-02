@@ -263,25 +263,26 @@
     }
 
     .donut-wrapper {
-      background: rgba(15, 23, 42, 0.8);
-      border-radius: 16px;
-      padding: 8px;
+      background: radial-gradient(circle at top, #1e293b 0%, #020617 70%);
+      border-radius: 18px;
+      padding: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex: 0 0 auto;
+      box-shadow: 0 0 25px rgba(37, 99, 235, 0.4);
     }
 
     .donut-svg {
-      width: 120px;
-      height: 120px;
+      width: 160px;
+      height: 160px;
     }
 
     .donut-center-text {
       dominant-baseline: middle;
       text-anchor: middle;
       fill: var(--text-primary);
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 600;
     }
 
@@ -289,7 +290,7 @@
       dominant-baseline: middle;
       text-anchor: middle;
       fill: var(--text-soft);
-      font-size: 9px;
+      font-size: 10px;
     }
 
     .donut-text-block {
@@ -605,33 +606,42 @@
       <div class="donut-and-text">
         <div class="donut-wrapper">
           <svg class="donut-svg" viewBox="0 0 120 120">
+            <!-- background ring -->
             <circle
               cx="60" cy="60" r="40"
-              stroke="rgba(15,23,42,0.9)"
-              stroke-width="16"
+              stroke="rgba(15,23,42,0.95)"
+              stroke-width="18"
               fill="none"
-            ></circle>
-            <circle
-              id="donutArc"
-              cx="60" cy="60" r="40"
-              stroke="url(#donutGradient)"
-              stroke-width="16"
-              fill="none"
-              stroke-linecap="round"
-              transform="rotate(-90 60 60)"
-              stroke-dasharray="251.2"
-              stroke-dashoffset="251.2"
             ></circle>
 
+            <!-- active arc -->
             <defs>
               <linearGradient id="donutGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#5fa5fb"></stop>
                 <stop offset="50%" stop-color="#4ade80"></stop>
                 <stop offset="100%" stop-color="#0fd6e9"></stop>
               </linearGradient>
+
+              <filter id="donutGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#22c55e" flood-opacity="0.7" />
+              </filter>
             </defs>
 
-            <text x="60" y="54" class="donut-center-text" id="donutPercentText">0%</text>
+            <circle
+              id="donutArc"
+              cx="60" cy="60" r="40"
+              stroke="url(#donutGradient)"
+              stroke-width="18"
+              fill="none"
+              stroke-linecap="round"
+              transform="rotate(-90 60 60)"
+              stroke-dasharray="251.2"
+              stroke-dashoffset="251.2"
+              filter="url(#donutGlow)"
+            ></circle>
+
+            <!-- center text -->
+            <text x="60" y="53" class="donut-center-text" id="donutPercentText">0%</text>
             <text x="60" y="70" class="donut-center-sub">income left</text>
           </svg>
         </div>
@@ -885,8 +895,8 @@
   }
 
   // ---------- Computations ----------
-  function monthTransactions() {
-    const key = monthKey(selectedMonth);
+  function monthTransactionsFor(date) {
+    const key = monthKey(date);
     return transactions.filter(tx => {
       const d = new Date(tx.date);
       if (isNaN(d)) return false;
@@ -894,8 +904,8 @@
     });
   }
 
-  function computeTotals() {
-    const mt = monthTransactions();
+  function computeTotalsForMonth(date) {
+    const mt = monthTransactionsFor(date);
 
     let incomeTotal = 0;
     let spendTotal = 0;
@@ -920,6 +930,14 @@
     }
 
     return { mt, incomeTotal, spendTotal, ddTotal, afterDDs, afterAll, donutPercentLeft };
+  }
+
+  function monthTransactions() {
+    return monthTransactionsFor(selectedMonth);
+  }
+
+  function computeTotals() {
+    return computeTotalsForMonth(selectedMonth);
   }
 
   function computeDailyBalances(incomeTotal, mt) {
@@ -955,6 +973,50 @@
       result.push(bal);
     }
     return result;
+  }
+
+  // ---------- Opening balance (auto carry-over) ----------
+  function ensureOpeningBalanceForSelectedMonth() {
+    // Previous month
+    const prevMonth = firstOfMonth(new Date(
+      selectedMonth.getFullYear(),
+      selectedMonth.getMonth() - 1,
+      1
+    ));
+
+    const prevTotals = computeTotalsForMonth(prevMonth);
+    const leftover = prevTotals.afterAll;
+
+    // If no leftover or zero, nothing to carry
+    if (!leftover || leftover === 0) {
+      return;
+    }
+
+    const selectedKey = monthKey(selectedMonth);
+
+    // Check if we already have an auto opening for this month
+    const exists = transactions.some(tx => {
+      if (tx.type !== "income") return false;
+      if (tx.description !== "Opening balance (auto)") return false;
+      const d = new Date(tx.date);
+      if (isNaN(d)) return false;
+      return monthKey(d) === selectedKey;
+    });
+
+    if (exists) return;
+
+    // Create opening balance on the first of this month
+    const iso = firstOfMonth(selectedMonth).toISOString().slice(0, 10);
+
+    transactions.push({
+      id: uuid(),
+      date: iso,
+      type: "income",
+      description: "Opening balance (auto)",
+      amount: leftover
+    });
+
+    saveToStorage();
   }
 
   // ---------- UI refresh ----------
@@ -1054,12 +1116,13 @@
     if (!values || values.length === 0) {
       graphLineEl.setAttribute("points", "");
     } else {
-      const maxAbs = Math.max(...values.map(v => Math.abs(v)), 1);
+      const maxAbs = Math.max.apply(null, values.map(function(v){return Math.abs(v);})); 
+      const scale = Math.max(maxAbs, 1);
       const stepX = values.length > 1 ? 100 / (values.length - 1) : 0;
-      const points = values.map((v, idx) => {
+      const points = values.map(function(v, idx) {
         const x = idx * stepX;
-        const y = 40 - (v / maxAbs) * 18;
-        return `${x.toFixed(2)},${y.toFixed(2)}`;
+        const y = 40 - (v / scale) * 18;
+        return x.toFixed(2) + "," + y.toFixed(2);
       }).join(" ");
       graphLineEl.setAttribute("points", points);
       graphLineEl.setAttribute("stroke", "#4ade80");
@@ -1201,7 +1264,7 @@
       const section = "TRANSACTION";
       const type = tx.type === "income" ? "income" : "spending";
       const dateStr = tx.date;
-      const desc = `"${(tx.description || "").replace(/"/g, '""')}"`;
+      const desc = "\"" + (tx.description || "").replace(/"/g, '""') + "\"";
       const amountStr = (Number(tx.amount) || 0).toFixed(2);
       lines.push([
         section,
@@ -1219,10 +1282,10 @@
       const section = "DIRECTDEBIT";
       const type = "";
       const dateStr = "";
-      const name = `"${(dd.name || "").replace(/"/g, '""')}"`;
+      const name = "\"" + (dd.name || "").replace(/"/g, '""') + "\"";
       const amountStr = (Number(dd.amount) || 0).toFixed(2);
       const dayStr = String(dd.day || "");
-      const category = `"${(dd.category || "").replace(/"/g, '""')}"`;
+      const category = "\"" + (dd.category || "").replace(/"/g, '""') + "\"";
       const activeStr = dd.active ? "Yes" : "No";
 
       lines.push([
@@ -1260,10 +1323,16 @@
     const monthLabelEl = document.getElementById("monthLabel");
     monthLabelEl.textContent = monthKey(selectedMonth);
 
+    // Ensure opening balance for initial month
+    ensureOpeningBalanceForSelectedMonth();
+    saveToStorage();
+    refreshUI();
+
     document.getElementById("prevMonthBtn").addEventListener("click", () => {
       selectedMonth = firstOfMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1));
       whatIfOffset = 0;
       document.getElementById("whatIfSlider").value = "0";
+      ensureOpeningBalanceForSelectedMonth();
       saveToStorage();
       refreshUI();
     });
@@ -1272,16 +1341,17 @@
       selectedMonth = firstOfMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 1));
       whatIfOffset = 0;
       document.getElementById("whatIfSlider").value = "0";
+      ensureOpeningBalanceForSelectedMonth();
       saveToStorage();
       refreshUI();
     });
 
-    document.getElementById("whatIfSlider").addEventListener("input", e => {
+    document.getElementById("whatIfSlider").addEventListener("input", function(e) {
       whatIfOffset = Number(e.target.value) || 0;
       refreshUI();
     });
 
-    document.getElementById("resetWhatIfBtn").addEventListener("click", () => {
+    document.getElementById("resetWhatIfBtn").addEventListener("click", function() {
       whatIfOffset = 0;
       document.getElementById("whatIfSlider").value = "0";
       refreshUI();
@@ -1303,7 +1373,7 @@
       transactions.push({
         id: uuid(),
         date: iso,
-        type,
+        type: type,
         description: desc,
         amount: amt
       });
@@ -1332,11 +1402,11 @@
 
       directDebits.push({
         id: uuid(),
-        name,
-        amount,
-        day,
-        category,
-        active
+        name: name,
+        amount: amount,
+        day: day,
+        category: category,
+        active: active
       });
 
       document.getElementById("ddName").value = "";
@@ -1364,8 +1434,6 @@
     document.getElementById("exportBtn").addEventListener("click", () => {
       exportCSV();
     });
-
-    refreshUI();
   });
 </script>
 </body>
