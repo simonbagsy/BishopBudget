@@ -531,9 +531,16 @@
 
     .export-row {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       gap: 8px;
       margin-top: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .export-row-right {
+      display: flex;
+      gap: 8px;
       flex-wrap: wrap;
     }
   </style>
@@ -751,13 +758,19 @@
       </div>
 
       <div class="export-row">
-        <input type="file" id="importInput" accept=".csv,text/csv" multiple style="display:none;">
-        <button class="btn btn-ghost" id="importBtn">
-          Import CSV
+        <button class="btn btn-danger btn-small" id="resetAllBtn">
+          Reset all data
         </button>
-        <button class="btn btn-ghost" id="exportBtn">
-          Export data (CSV)
-        </button>
+
+        <div class="export-row-right">
+          <input type="file" id="importInput" accept=".csv,text/csv" multiple style="display:none;">
+          <button class="btn btn-ghost" id="importBtn">
+            Import CSV
+          </button>
+          <button class="btn btn-ghost" id="exportBtn">
+            Export data (CSV)
+          </button>
+        </div>
       </div>
     </section>
 
@@ -897,6 +910,20 @@
   function saveData() {
     localStorage.setItem(STORAGE_KEY_TX, JSON.stringify(transactions));
     localStorage.setItem(STORAGE_KEY_DD, JSON.stringify(directDebits));
+  }
+
+  function resetAllData() {
+    const ok = confirm("This will clear all local data (transactions and direct debits). Continue?");
+    if (!ok) return;
+
+    transactions = [];
+    directDebits = [];
+    localStorage.removeItem(STORAGE_KEY_TX);
+    localStorage.removeItem(STORAGE_KEY_DD);
+    whatIfOffset = 0;
+    const slider = document.getElementById("whatIfSlider");
+    if (slider) slider.value = "0";
+    renderAll();
   }
 
   // ---------- Derived calculations ----------
@@ -1399,7 +1426,7 @@
     URL.revokeObjectURL(url);
   }
 
-  // ---------- Import CSV (flexible, incl. Master files) ----------
+  // ---------- Import CSV (no-duplicate Master import) ----------
   function importCSVFiles(fileList) {
     if (!fileList || !fileList.length) return;
 
@@ -1497,7 +1524,13 @@
       normHeader.includes("amount") || normHeader.includes("amountformonth");
     const hasDdCols = hasDdCore && hasDdAmount;
 
+    // MASTER TRANSACTIONS CSV (e.g. with MonthKey): clear old tx before import
     if (hasTxCols) {
+      if (normHeader.includes("monthkey")) {
+        // treat as canonical master export: replace transactions
+        transactions = [];
+      }
+
       const idxDate = normHeader.indexOf("date");
       const idxType = normHeader.indexOf("type");
       const idxDesc = normHeader.indexOf("description");
@@ -1531,7 +1564,13 @@
       return;
     }
 
+    // MASTER DIRECT DEBITS CSV (MonthKey / AmountForMonth etc) – clear old DDs first
     if (hasDdCols) {
+      if (normHeader.includes("monthkey")) {
+        // treat as canonical master export: replace direct debits
+        directDebits = [];
+      }
+
       const idxName = normHeader.indexOf("name");
       let idxAmount = normHeader.indexOf("amount");
       if (idxAmount === -1) {
@@ -1592,6 +1631,8 @@
       importCSVFiles(e.target.files);
       importInput.value = "";
     });
+
+    document.getElementById("resetAllBtn").addEventListener("click", resetAllData);
 
     renderAll();
   }
