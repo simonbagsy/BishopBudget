@@ -725,7 +725,7 @@
       </div>
     </section>
 
-    <!-- MONTH SUMMARY + EXPORT / IMPORT -->
+    <!-- MONTH SUMMARY + EXPORT -->
     <section class="section">
       <div class="section-title">Month summary</div>
 
@@ -754,10 +754,6 @@
         </button>
 
         <div class="export-row-right">
-          <input type="file" id="importInput" accept=".csv,text/csv" multiple style="display:none;">
-          <button class="btn btn-ghost" id="importBtn">
-            Import CSV
-          </button>
           <button class="btn btn-ghost" id="exportBtn">
             Export data (CSV)
           </button>
@@ -824,46 +820,16 @@
     return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
   }
 
-  // Parse CSV row respecting quotes
-  function splitCSVRow(row) {
-    const result = [];
-    let current = "";
-    let inQuotes = false;
-
-    for (let i = 0; i < row.length; i++) {
-      const ch = row[i];
-
-      if (ch === '"') {
-        if (inQuotes && row[i + 1] === '"') {
-          current += '"';
-          i++;
-        } else {
-          inQuotes = !inQuotes;
-        }
-      } else if (ch === "," && !inQuotes) {
-        result.push(current);
-        current = "";
-      } else {
-        current += ch;
-      }
-    }
-    result.push(current);
-    return result;
-  }
-
-  // Normalise a date string into YYYY-MM-DD (for storage)
   function normaliseDateForStorage(raw) {
     if (!raw) return null;
     const trimmed = raw.replace(/"/g, "").trim();
     if (!trimmed) return null;
 
-    // Try native parse first
     let d = new Date(trimmed);
     if (!isNaN(d)) {
       return d.toISOString().slice(0, 10);
     }
 
-    // Try dd-MMM-yy or dd-MMM-yyyy
     const m = trimmed.match(/^(\d{1,2})[-/ ]([A-Za-z]{3})[-/ ](\d{2,4})$/);
     if (m) {
       const day = parseInt(m[1], 10);
@@ -1216,7 +1182,7 @@
     }
   }
 
-  // ---------- CSV import / export ----------
+  // ---------- CSV export ----------
   function exportCSV() {
     const lines = [];
 
@@ -1281,181 +1247,6 @@
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }
-
-  function parseAndMergeCSV(text) {
-    const lines = text
-      .replace(/\r\n/g, "\n")
-      .replace(/\r/g, "\n")
-      .split("\n")
-      .filter(l => l.trim() !== "");
-    if (lines.length < 2) return;
-
-    const headerRaw = splitCSVRow(lines[0]).map(h => h.trim());
-    const normHeader = headerRaw.map(h => h.toLowerCase().replace(/[\s_]/g, ""));
-
-    // 1) Combined export from this HTML app: SECTION,...
-    if (normHeader[0] === "section") {
-      for (let i = 1; i < lines.length; i++) {
-        const cols = splitCSVRow(lines[i]);
-        if (!cols.length) continue;
-        const section = (cols[0] || "").replace(/"/g, "").trim().toLowerCase();
-
-        if (section === "transaction") {
-          const typeRaw = (cols[1] || "").replace(/"/g, "").trim().toLowerCase();
-          const dateRaw = (cols[2] || "").trim();
-          const desc = (cols[3] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
-          const amt = parseFloat((cols[4] || "").replace(/"/g, "").trim());
-
-          const dateIso = normaliseDateForStorage(dateRaw);
-          if (!dateIso || !desc || isNaN(amt)) continue;
-
-          const type = typeRaw === "income" ? "income" : "spend";
-          transactions.push({
-            id: uuid(),
-            date: dateIso,
-            type,
-            description: desc,
-            amount: amt
-          });
-        } else if (section === "directdebit") {
-          const name = (cols[3] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
-          const amt = parseFloat((cols[4] || "").replace(/"/g, "").trim());
-          const day = parseInt((cols[5] || "").replace(/"/g, "").trim(), 10);
-          const category = (cols[6] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
-          const activeRaw = (cols[7] || "").replace(/"/g, "").trim().toLowerCase();
-          const active = activeRaw === "yes" || activeRaw === "true" || activeRaw === "1";
-
-          if (!name || isNaN(amt) || isNaN(day)) continue;
-
-          directDebits.push({
-            id: uuid(),
-            name,
-            amount: amt,
-            day,
-            category,
-            active
-          });
-        }
-      }
-      return;
-    }
-
-    // 2) Generic detection for any TRANSACTIONS CSV
-    const hasTxCols = ["date", "type", "description", "amount"].every(col =>
-      normHeader.includes(col)
-    );
-
-    // 3) Generic detection for any DIRECT DEBITS CSV
-    const hasDdCore = ["name", "dayofmonth", "category", "active"].every(col =>
-      normHeader.includes(col)
-    );
-    const hasDdAmount =
-      normHeader.includes("amount") || normHeader.includes("amountformonth");
-    const hasDdCols = hasDdCore && hasDdAmount;
-
-    // MASTER / TRANSACTIONS CSV – replace in-app transactions
-    if (hasTxCols) {
-      const idxDate = normHeader.indexOf("date");
-      const idxType = normHeader.indexOf("type");
-      const idxDesc = normHeader.indexOf("description");
-      const idxAmount = normHeader.indexOf("amount");
-
-      const newTxs = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        const cols = splitCSVRow(lines[i]);
-        if (cols.length <= Math.max(idxDate, idxType, idxDesc, idxAmount)) continue;
-
-        const dateRaw = cols[idxDate];
-        const dateIso = normaliseDateForStorage(dateRaw);
-        if (!dateIso) continue;
-
-        const typeRaw = (cols[idxType] || "").replace(/"/g, "").trim().toLowerCase();
-        const desc = (cols[idxDesc] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
-        const amt = parseFloat((cols[idxAmount] || "").replace(/"/g, "").trim());
-        if (!desc || isNaN(amt)) continue;
-
-        const type = typeRaw === "income" ? "income" : "spend";
-
-        newTxs.push({
-          id: uuid(),
-          date: dateIso,
-          type,
-          description: desc,
-          amount: amt
-        });
-      }
-
-      transactions = newTxs;
-      return;
-    }
-
-    // MASTER / DIRECT DEBITS CSV – replace in-app direct debits
-    if (hasDdCols) {
-      const idxName = normHeader.indexOf("name");
-      let idxAmount = normHeader.indexOf("amount");
-      if (idxAmount === -1) {
-        idxAmount = normHeader.indexOf("amountformonth");
-      }
-      const idxDay = normHeader.indexOf("dayofmonth");
-      const idxCategory = normHeader.indexOf("category");
-      const idxActive = normHeader.indexOf("active");
-
-      const newDDs = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        const cols = splitCSVRow(lines[i]);
-        if (cols.length <= Math.max(idxName, idxAmount, idxDay, idxCategory, idxActive)) continue;
-
-        const name = (cols[idxName] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
-        const amt = parseFloat((cols[idxAmount] || "").replace(/"/g, "").trim());
-        const day = parseInt((cols[idxDay] || "").replace(/"/g, "").trim(), 10);
-        const category = (cols[idxCategory] || "").replace(/^"|"$/g, "").replace(/""/g, '"').trim();
-        const activeRaw = (cols[idxActive] || "").replace(/"/g, "").trim().toLowerCase();
-        const active = activeRaw === "yes" || activeRaw === "true" || activeRaw === "1";
-
-        if (!name || isNaN(amt) || isNaN(day)) continue;
-
-        newDDs.push({
-          id: uuid(),
-          name,
-          amount: amt,
-          day,
-          category,
-          active
-        });
-      }
-
-      directDebits = newDDs;
-      return;
-    }
-
-    console.warn("CSV format not recognised, skipping this file.");
-  }
-
-  function handleImportFiles(files) {
-    if (!files || files.length === 0) return;
-
-    let remaining = files.length;
-
-    for (const file of files) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        try {
-          parseAndMergeCSV(e.target.result);
-        } catch (err) {
-          console.error("Parse error for file", file.name, err);
-        } finally {
-          remaining -= 1;
-          if (remaining === 0) {
-            saveToStorage();
-            refreshUI();
-          }
-        }
-      };
-      reader.readAsText(file);
-    }
   }
 
   // ---------- Event wiring ----------
@@ -1572,15 +1363,6 @@
 
     document.getElementById("exportBtn").addEventListener("click", () => {
       exportCSV();
-    });
-
-    const importInput = document.getElementById("importInput");
-    document.getElementById("importBtn").addEventListener("click", () => {
-      importInput.value = "";
-      importInput.click();
-    });
-    importInput.addEventListener("change", e => {
-      handleImportFiles(e.target.files);
     });
 
     refreshUI();
