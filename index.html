@@ -1186,7 +1186,7 @@
       return `${day}-${mmm}-${yy}`;
     }
 
-    // Ignore any old auto-opening incomes from previous versions
+    // Ignore old auto-opening incomes from previous versions
     function isAutoOpening(tx) {
       return (
         tx.type === "income" &&
@@ -1205,24 +1205,31 @@
       const cx = w / 2;
       const cy = h / 2;
       const radius = Math.min(cx, cy) - 12;
+      const ringWidth = 18;
 
-      const total = Math.max(openingPlusIncome, outgoing, 1);
-      const left = Math.max(0, openingPlusIncome - outgoing);
-
-      const outAngle = (outgoing / total) * Math.PI * 2;
-      const leftAngle = (left / total) * Math.PI * 2;
-
-      ctx.lineWidth = 18;
+      // Base ring
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       const baseGrad = ctx.createLinearGradient(cx - radius, cy, cx + radius, cy);
       baseGrad.addColorStop(0, "#1b2748");
       baseGrad.addColorStop(1, "#11182f");
       ctx.strokeStyle = baseGrad;
+      ctx.lineWidth = ringWidth;
       ctx.stroke();
 
+      // Left / outgoing + percentage
+      const total = Math.max(openingPlusIncome, outgoing, 1);
+      const rawLeft = openingPlusIncome - outgoing;
+      const left = Math.max(0, rawLeft);
+      const percentLeft = openingPlusIncome > 0
+        ? Math.max(0, Math.min(100, (left / openingPlusIncome) * 100))
+        : 0;
+
+      const outAngle = (outgoing / total) * Math.PI * 2;
+      const leftAngle = (left / total) * Math.PI * 2;
       const startAngle = -Math.PI / 2;
 
+      // Outgoing segment
       if (outgoing > 0) {
         ctx.beginPath();
         ctx.arc(cx, cy, radius, startAngle, startAngle + outAngle);
@@ -1230,9 +1237,12 @@
         gradRed.addColorStop(0, "#ff9fab");
         gradRed.addColorStop(1, "#ff6a78");
         ctx.strokeStyle = gradRed;
+        ctx.lineWidth = ringWidth;
+        ctx.lineCap = "round";
         ctx.stroke();
       }
 
+      // Left segment
       if (left > 0) {
         ctx.beginPath();
         ctx.arc(
@@ -1251,23 +1261,21 @@
         gradGreen.addColorStop(0, "#9af7c7");
         gradGreen.addColorStop(1, "#40e38a");
         ctx.strokeStyle = gradGreen;
+        ctx.lineWidth = ringWidth;
+        ctx.lineCap = "round";
         ctx.stroke();
       }
 
+      // Centre text: XX% + "income left"
       ctx.fillStyle = "#e8edf8";
-      ctx.font = "600 14px -apple-system, system-ui, sans-serif";
+      ctx.font = "600 22px -apple-system, system-ui, sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      const labelText = "Tap to view\ndetailed donut";
-      const lines = labelText.split("\n");
-      const lineHeight = 16;
-      const totalHeight = lineHeight * lines.length;
-      let startY = cy - totalHeight / 2 + 2;
+      ctx.fillText(`${Math.round(percentLeft)}%`, cx, cy - 5);
 
-      for (const line of lines) {
-        ctx.fillText(line, cx, startY);
-        startY += lineHeight;
-      }
+      ctx.fillStyle = "#9aa3b1";
+      ctx.font = "11px -apple-system, system-ui, sans-serif";
+      ctx.fillText("income left", cx, cy + 12);
     }
 
     function drawBalanceLine(canvas, dailyBalances) {
@@ -1617,7 +1625,9 @@
       });
 
       drawBalanceLine(balanceCanvas, adjustedBalances);
-      drawDonut(donutCanvas, openingPlusIncome - whatIfOffset, totalOut);
+
+      const adjustedOpeningPlusIncome = openingPlusIncome - whatIfOffset;
+      drawDonut(donutCanvas, adjustedOpeningPlusIncome, totalOut);
 
       renderTransactionList();
       renderDirectDebitList();
