@@ -294,6 +294,15 @@
       font-weight: 500;
     }
 
+    /* Make the date pill visually consistent with other inputs */
+    input[type="date"].input {
+      -webkit-appearance: none;
+      appearance: none;
+      padding: 7px 9px;
+      background-color: rgba(10, 17, 37, 0.9);
+      border-radius: 10px;
+    }
+
     select.input {
       padding-right: 28px;
       background-image: linear-gradient(
@@ -1219,10 +1228,6 @@
       return `${day}-${mmm}-${yy}`;
     }
 
-    function cloneDate(d) {
-      return new Date(d.getTime());
-    }
-
     function computeTotalsForMonth(monthDate) {
       const mk = monthKey(monthDate);
       const tx = transactions.filter((t) => {
@@ -1340,22 +1345,6 @@
       };
     }
 
-    function computeCarryForward(targetMonth) {
-      const prev = new Date(
-        targetMonth.getFullYear(),
-        targetMonth.getMonth() - 1,
-        1
-      );
-      const prevTotals = computeTotalsForMonth(prev);
-      return prevTotals.afterAll;
-    }
-
-    let selectedMonth = firstOfMonth(new Date());
-    let whatIfOffset = 0;
-    let currentEditingTxId = null;
-    let currentEditingDdBaseId = null;
-    let currentEditingDdMonthKey = null;
-
     function drawDonut(canvas, incomePlusCarry, outgoing) {
       const ctx = canvas.getContext("2d");
       const w = canvas.width;
@@ -1418,8 +1407,7 @@
       ctx.font = "600 14px -apple-system, system-ui, sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      const labelText =
-        "Tap to view\ndetailed donut";
+      const labelText = "Tap to view\ndetailed donut";
       const lines = labelText.split("\n");
       const lineHeight = 16;
       const totalHeight = lineHeight * lines.length;
@@ -1535,6 +1523,12 @@
       saveToStorage();
     }
 
+    let selectedMonth = firstOfMonth(new Date());
+    let whatIfOffset = 0;
+    let currentEditingTxId = null;
+    let currentEditingDdBaseId = null;
+    let currentEditingDdMonthKey = null;
+
     function refreshUI() {
       const monthLabelEl = document.getElementById("monthLabel");
       const incomeValueEl = document.getElementById("incomeValue");
@@ -1563,37 +1557,34 @@
 
       monthLabelEl.textContent = monthLabel(selectedMonth);
 
-      const mk = monthKey(selectedMonth);
       const totals = computeTotalsForMonth(selectedMonth);
-      const carry = computeCarryForward(selectedMonth);
-
-      let incomeTotal = totals.income;
-      let spendTotal = totals.spend;
-      let ddTotal = totals.ddTotal;
-      let afterAll = incomeTotal + carry - ddTotal - spendTotal;
+      const incomeTotal = totals.income;
+      const spendTotal = totals.spend;
+      const ddTotal = totals.ddTotal;
+      const baseAfterAll = totals.afterAll;
 
       incomeValueEl.textContent = formatMoney(incomeTotal);
       ddValueEl.textContent = formatMoney(ddTotal);
       spendValueEl.textContent = formatMoney(spendTotal);
-      leftValueEl.textContent = formatMoney(afterAll);
+      leftValueEl.textContent = formatMoney(baseAfterAll);
 
-      const effectiveIncome = incomeTotal + carry;
+      const effectiveIncomeBase = incomeTotal;
       const totalOut = ddTotal + spendTotal;
       const percentLeft =
-        effectiveIncome <= 0
+        effectiveIncomeBase <= 0
           ? 0
-          : Math.max(0, Math.min(100, (afterAll / effectiveIncome) * 100));
+          : Math.max(0, Math.min(100, (baseAfterAll / effectiveIncomeBase) * 100));
 
-      legendIncomeEl.textContent = formatMoney(effectiveIncome);
+      legendIncomeEl.textContent = formatMoney(effectiveIncomeBase);
       legendOutEl.textContent = formatMoney(totalOut);
-      legendLeftEl.textContent = formatMoney(afterAll);
+      legendLeftEl.textContent = formatMoney(baseAfterAll);
 
-      summaryStartEl.textContent = formatMoney(effectiveIncome);
+      summaryStartEl.textContent = formatMoney(effectiveIncomeBase);
       summaryDdEl.textContent = formatMoney(ddTotal);
       summarySpendEl.textContent = formatMoney(spendTotal);
-      summaryAfterEl.textContent = formatMoney(afterAll);
+      summaryAfterEl.textContent = formatMoney(baseAfterAll);
 
-      if (afterAll > 0) {
+      if (baseAfterAll > 0) {
         leftCardEl.style.borderColor = "rgba(64,227,138,0.5)";
         leftCardEl.style.boxShadow = "0 12px 30px rgba(64,227,138,0.35)";
         leftValueEl.style.color = "var(--green-soft)";
@@ -1602,8 +1593,8 @@
         statusDotEl.classList.add("status-dot");
         statusMainEl.textContent = "You’re in the green";
         statusMainEl.style.color = "var(--green-soft)";
-        statusSubEl.textContent = `${formatMoney(afterAll)} left after this month’s direct debits and spending.`;
-      } else if (afterAll < 0) {
+        statusSubEl.textContent = `${formatMoney(baseAfterAll)} left after this month’s direct debits and spending.`;
+      } else if (baseAfterAll < 0) {
         leftCardEl.style.borderColor = "rgba(255,106,120,0.55)";
         leftCardEl.style.boxShadow = "0 12px 30px rgba(255,106,120,0.4)";
         leftValueEl.style.color = "var(--red-soft)";
@@ -1612,7 +1603,7 @@
         statusDotEl.classList.add("status-dot-red");
         statusMainEl.textContent = "Spending over income";
         statusMainEl.style.color = "var(--red-soft)";
-        statusSubEl.textContent = `Over by ${formatMoney(Math.abs(afterAll))} this month.`;
+        statusSubEl.textContent = `Over by ${formatMoney(Math.abs(baseAfterAll))} this month.`;
       } else {
         leftCardEl.style.borderColor = "rgba(255,255,255,0.12)";
         leftCardEl.style.boxShadow = "0 12px 30px rgba(0,0,0,0.7)";
@@ -1625,14 +1616,14 @@
         statusSubEl.textContent = "You’ve used 100% of this month’s effective income.";
       }
 
-      const maxSlider = Math.max(2000, Math.round(effectiveIncome) || 0);
+      const maxSlider = Math.max(2000, Math.round(effectiveIncomeBase) || 0);
       whatIfSlider.min = -maxSlider;
       whatIfSlider.max = maxSlider;
       whatIfSlider.value = whatIfOffset;
 
       const absChange = Math.abs(whatIfOffset);
       const sign = whatIfOffset === 0 ? "" : whatIfOffset > 0 ? "+" : "−";
-      const afterChange = afterAll - whatIfOffset;
+      const afterChange = baseAfterAll - whatIfOffset;
 
       whatIfChangeEl.textContent = `Change: ${sign}${formatMoney(absChange).replace("£", "")}`;
       whatIfAfterEl.textContent = `After change: ${formatMoney(afterChange)}`;
@@ -1644,7 +1635,7 @@
       });
 
       drawBalanceLine(balanceCanvas, adjustedBalances);
-      drawDonut(donutCanvas, effectiveIncome - whatIfOffset, totalOut);
+      drawDonut(donutCanvas, effectiveIncomeBase - whatIfOffset, totalOut);
 
       renderTransactionList();
       renderDirectDebitList();
@@ -2085,10 +2076,22 @@
     }
 
     function openDonutBreakdown() {
-      const mk = monthKey(selectedMonth);
-
       const thisTotals = computeTotalsForMonth(selectedMonth);
-      const carry = computeCarryForward(selectedMonth);
+      const thisIncomeTotal = thisTotals.income;
+      const thisSpend = thisTotals.spend;
+      const thisDd = thisTotals.ddTotal;
+      const thisAfter = thisTotals.afterAll;
+
+      const mk = monthKey(selectedMonth);
+      const openingTx = transactions.find(tx => {
+        if (tx.type !== "income") return false;
+        if (tx.description !== "Opening balance (auto)") return false;
+        const d = new Date(tx.date);
+        if (isNaN(d)) return false;
+        return monthKey(d) === mk;
+      });
+      const carry = openingTx ? openingTx.amount : 0;
+      const thisIncome = thisIncomeTotal - carry;
 
       const prevMonth = new Date(
         selectedMonth.getFullYear(),
@@ -2096,14 +2099,7 @@
         1
       );
       const prevTotals = computeTotalsForMonth(prevMonth);
-      const prevCarry = computeCarryForward(prevMonth);
-
-      const thisIncome = thisTotals.income;
-      const thisSpend = thisTotals.spend;
-      const thisDd = thisTotals.ddTotal;
-      const thisAfter = thisIncome + carry - thisDd - thisSpend;
-
-      const lastMonthAfter = prevTotals.income + prevCarry - prevTotals.ddTotal - prevTotals.spend;
+      const lastMonthAfter = prevTotals.afterAll;
 
       document.getElementById("bdIncome").textContent = formatMoney(thisIncome);
       document.getElementById("bdDd").textContent = formatMoney(thisDd);
@@ -2112,7 +2108,7 @@
       document.getElementById("bdAfter").textContent = formatMoney(thisAfter);
 
       const diffAfter = thisAfter - lastMonthAfter;
-      const diffIncome = thisIncome - prevTotals.income;
+      const diffIncome = thisIncomeTotal - prevTotals.income;
       const diffSpend = thisSpend - prevTotals.spend;
 
       const afterLabel =
@@ -2133,7 +2129,7 @@
       document.getElementById("compareSpend").textContent = spendLabel;
 
       const donutBig = document.getElementById("donutBig");
-      const effectiveIncome = thisIncome + carry;
+      const effectiveIncome = thisIncomeTotal;
       const totalOut = thisDd + thisSpend;
       drawDonut(donutBig, effectiveIncome, totalOut);
 
