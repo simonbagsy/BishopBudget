@@ -899,7 +899,7 @@
         <div class="section-header">
           <div>
             <div class="section-title">Direct debits & regular bills</div>
-            <div class="section-subtitle">Per-month commitments for this month.</div>
+            <div class="section-subtitle">Per-month commitments, auto-carrying to future months.</div>
           </div>
         </div>
 
@@ -1376,7 +1376,13 @@
         return monthKey(d) === mk;
       });
 
-      const monthBaseDDs = directDebits.filter((dd) => dd.month === mk);
+      // CHANGED: any DD whose "start month" <= this month is considered part of the series
+      const monthBaseDDs = directDebits.filter((dd) => {
+        if (!dd.month) return false;
+        const baseDate = parseMonthKey(dd.month);
+        if (!baseDate) return false;
+        return baseDate <= monthDate;   // repeats for this and all future months
+      });
 
       const actualDDs = monthBaseDDs.map((dd) => {
         const override = ddOverrides.find(
@@ -1708,7 +1714,13 @@
       const ddList = document.getElementById("ddList");
       ddList.innerHTML = "";
 
-      const monthBaseDDs = directDebits.filter((dd) => dd.month === mk);
+      // CHANGED: treat DDs whose start month <= this month as part of the series
+      const monthBaseDDs = directDebits.filter((dd) => {
+        if (!dd.month) return false;
+        const baseDate = parseMonthKey(dd.month);
+        if (!baseDate) return false;
+        return baseDate <= selectedMonth;
+      });
 
       const actualDDs = monthBaseDDs.map((dd) => {
         const override = ddOverrides.find(
