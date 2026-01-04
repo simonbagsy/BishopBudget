@@ -108,64 +108,6 @@
       color: var(--text-muted);
     }
 
-    .chip-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .chip-value {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .pill {
-      background: var(--pill);
-      border-radius: 999px;
-      padding: 5px 9px;
-      border: 1px solid var(--border-subtle);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .pill-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--blue-soft);
-    }
-
-    .pill-muted {
-      background: rgba(12, 19, 40, 0.9);
-      border-color: rgba(255, 255, 255, 0.06);
-    }
-
-    .pill-amount-green {
-      color: var(--green-soft);
-    }
-
-    .pill-amount-red {
-      color: var(--red-soft);
-    }
-
-    .pill-small {
-      padding: 3px 7px;
-      border-radius: 999px;
-      font-size: 11px;
-    }
-
-    .pill-soft {
-      background: rgba(20, 34, 74, 0.8);
-    }
-
-    .pill-amber {
-      background: rgba(255, 178, 74, 0.15);
-      border-color: rgba(255, 178, 74, 0.4);
-      color: #ffd38c;
-    }
-
     .header-top {
       display: flex;
       justify-content: space-between;
@@ -266,7 +208,7 @@
 
     .btn-subtle {
       background: rgba(9, 15, 33, 0.95);
-      border-color: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.18);
       font-size: 12px;
     }
 
@@ -294,7 +236,6 @@
       font-weight: 500;
     }
 
-    /* Make the date pill visually consistent with other inputs */
     input[type="date"].input {
       -webkit-appearance: none;
       appearance: none;
@@ -865,7 +806,7 @@
             <div class="donut-legend-row">
               <div class="donut-legend-label">
                 <div class="legend-swatch legend-swatch-carry"></div>
-                <span>Opening balance & income</span>
+                <span>Opening balance + income</span>
               </div>
               <span id="legendIncome" style="font-weight:600;">£0.00</span>
             </div>
@@ -896,7 +837,7 @@
 
         <div class="line-graph-container">
           <div class="line-graph-label">
-            Balance curve across the month (after DDs and spending)
+            Balance curve across the month (with opening balance applied)
           </div>
           <canvas id="balanceCanvas" class="line-graph-canvas"></canvas>
         </div>
@@ -1002,7 +943,7 @@
         <div class="summary-card-inner">
           <div class="summary-rows">
             <div class="summary-row">
-              <span class="summary-row-label">Started with (income + opening)</span>
+              <span class="summary-row-label">Started with (opening + income)</span>
               <span id="summaryStart" class="summary-row-value">£0.00</span>
             </div>
             <div class="summary-row">
@@ -1019,6 +960,15 @@
               <span id="summaryAfter" class="summary-row-value">£0.00</span>
             </div>
           </div>
+        </div>
+
+        <div style="margin-top:8px;display:flex;gap:6px;justify-content:space-between;">
+          <button id="exportCsvBtn" class="btn btn-small btn-secondary" style="flex:1;">
+            Export all data (CSV)
+          </button>
+          <button id="resetAppBtn" class="btn btn-small btn-ghost" style="flex:1;">
+            Reset app
+          </button>
         </div>
       </div>
     </div>
@@ -1116,7 +1066,7 @@
           <div>
             <div class="section-title">Detailed donut breakdown</div>
             <div class="section-subtitle">
-              Income, DDs and spending for the selected month, with carry from the previous month.
+              Income, DDs and spending for the selected month, with carry from the previous months.
             </div>
           </div>
         </div>
@@ -1126,7 +1076,7 @@
         </div>
 
         <div class="bd-subtext">
-          Tap different months in the main view to see how the donut changes over time.
+          The donut shows: opening balance + income vs DDs + spending, with what’s left after everything.
         </div>
 
         <div class="bd-grid">
@@ -1143,7 +1093,7 @@
             <div id="bdSpend" class="bd-value">£0.00</div>
           </div>
           <div class="bd-mini">
-            <div class="bd-label">Carried from last month</div>
+            <div class="bd-label">Opening balance from last month</div>
             <div id="bdCarry" class="bd-value">£0.00</div>
           </div>
           <div class="bd-mini" style="grid-column:1/3;">
@@ -1171,6 +1121,8 @@
   </div>
 
   <script>
+    // ------------ DATA & HELPERS ------------
+
     let transactions = [];
     let directDebits = [];
     let ddOverrides = [];
@@ -1209,6 +1161,12 @@
       return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
     }
 
+    function parseMonthKey(mk) {
+      const [y, m] = mk.split("-").map(Number);
+      if (!y || !m) return null;
+      return new Date(y, m - 1, 1);
+    }
+
     function monthLabel(d) {
       return d.toLocaleDateString("en-GB", { month: "short", year: "2-digit" });
     }
@@ -1228,124 +1186,17 @@
       return `${day}-${mmm}-${yy}`;
     }
 
-    function computeTotalsForMonth(monthDate) {
-      const mk = monthKey(monthDate);
-      const tx = transactions.filter((t) => {
-        const d = new Date(t.date);
-        if (Number.isNaN(d.getTime())) return false;
-        return monthKey(d) === mk;
-      });
-
-      const allBaseForMonth = directDebits.filter((dd) => dd.month === mk);
-
-      const actualDDs = allBaseForMonth.map((dd) => {
-        const override = ddOverrides.find(
-          (ov) => ov.baseId === dd.id && ov.month === mk
-        );
-        if (!override || override.type === "none") {
-          const active = override ? override.active : dd.active;
-          return {
-            id: dd.id,
-            amount: dd.amount,
-            day: dd.day,
-            category: dd.category,
-            name: dd.name,
-            active: active !== false
-          };
-        }
-        if (override.type === "modified") {
-          return {
-            id: dd.id,
-            amount: override.amount,
-            day: override.day,
-            category: override.category,
-            name: override.name,
-            active: override.active !== false
-          };
-        }
-        if (override.type === "skipped") {
-          return {
-            id: dd.id,
-            amount: dd.amount,
-            day: dd.day,
-            category: dd.category,
-            name: dd.name,
-            active: false
-          };
-        }
-        return {
-          id: dd.id,
-          amount: dd.amount,
-          day: dd.day,
-          category: dd.category,
-          name: dd.name,
-          active: dd.active
-        };
-      });
-
-      const activeDDs = actualDDs.filter((d) => d.active);
-
-      const income = tx
-        .filter((t) => t.type === "income")
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-      const spend = tx
-        .filter((t) => t.type === "spend")
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-      const ddTotal = activeDDs.reduce(
-        (sum, d) => sum + (d.amount || 0),
-        0
+    // Ignore any old auto-opening incomes from previous versions
+    function isAutoOpening(tx) {
+      return (
+        tx.type === "income" &&
+        tx.description === "Opening balance (auto)"
       );
-
-      const afterAll = income - ddTotal - spend;
-
-      const daysInMonth = new Date(
-        monthDate.getFullYear(),
-        monthDate.getMonth() + 1,
-        0
-      ).getDate();
-
-      const dailyBalances = [];
-      for (let day = 1; day <= daysInMonth; day++) {
-        const ddUpToDay = activeDDs
-          .filter((d) => d.day <= day)
-          .reduce((sum, d) => sum + (d.amount || 0), 0);
-
-        const spendUpToDay = tx
-          .filter((t) => {
-            if (t.type !== "spend") return false;
-            const d = new Date(t.date);
-            if (Number.isNaN(d.getTime())) return false;
-            return d.getDate() <= day;
-          })
-          .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-        const incUpToDay = tx
-          .filter((t) => {
-            if (t.type !== "income") return false;
-            const d = new Date(t.date);
-            if (Number.isNaN(d.getTime())) return false;
-            return d.getDate() <= day;
-          })
-          .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-        const bal = incUpToDay - ddUpToDay - spendUpToDay;
-        dailyBalances.push(bal);
-      }
-
-      return {
-        income,
-        spend,
-        ddTotal,
-        afterAll,
-        dailyBalances,
-        activeDDs,
-        rawTransactions: tx
-      };
     }
 
-    function drawDonut(canvas, incomePlusCarry, outgoing) {
+    // ------------ DONUT & GRAPH DRAWING ------------
+
+    function drawDonut(canvas, openingPlusIncome, outgoing) {
       const ctx = canvas.getContext("2d");
       const w = canvas.width;
       const h = canvas.height;
@@ -1355,8 +1206,8 @@
       const cy = h / 2;
       const radius = Math.min(cx, cy) - 12;
 
-      const total = Math.max(incomePlusCarry, outgoing, 1);
-      const left = Math.max(0, incomePlusCarry - outgoing);
+      const total = Math.max(openingPlusIncome, outgoing, 1);
+      const left = Math.max(0, openingPlusIncome - outgoing);
 
       const outAngle = (outgoing / total) * Math.PI * 2;
       const leftAngle = (left / total) * Math.PI * 2;
@@ -1477,51 +1328,185 @@
       ctx.stroke();
     }
 
-    function ensureOpeningBalanceForSelectedMonth() {
-      const prevMonth = firstOfMonth(new Date(
-        selectedMonth.getFullYear(),
-        selectedMonth.getMonth() - 1,
-        1
-      ));
+    // ------------ MONTH CALC WITH CARRY ------------
 
-      const prevTotals = computeTotalsForMonth(prevMonth);
-      const leftover = prevTotals.afterAll;
+    function getAllMonthKeysIncluding(targetMonth) {
+      const set = new Set();
+      const targetMK = monthKey(targetMonth);
 
-      const selectedKey = monthKey(selectedMonth);
-
-      const existingIndex = transactions.findIndex(tx => {
-        if (tx.type !== "income") return false;
-        if (tx.description !== "Opening balance (auto)") return false;
+      for (const tx of transactions) {
+        if (isAutoOpening(tx)) continue;
         const d = new Date(tx.date);
-        if (isNaN(d)) return false;
-        return monthKey(d) === selectedKey;
+        if (Number.isNaN(d.getTime())) continue;
+        set.add(monthKey(d));
+      }
+
+      for (const dd of directDebits) {
+        if (dd.month) set.add(dd.month);
+      }
+
+      for (const ov of ddOverrides) {
+        if (ov.month) set.add(ov.month);
+      }
+
+      set.add(targetMK);
+
+      if (set.size === 0) {
+        set.add(targetMK);
+      }
+
+      return Array.from(set).sort();
+    }
+
+    function computeRawMonthTotals(monthDate, carryIn) {
+      const mk = monthKey(monthDate);
+
+      const monthTx = transactions.filter((t) => {
+        if (isAutoOpening(t)) return false;
+        const d = new Date(t.date);
+        if (Number.isNaN(d.getTime())) return false;
+        return monthKey(d) === mk;
       });
 
-      if (!isFinite(leftover) || leftover === 0) {
-        if (existingIndex !== -1) {
-          transactions.splice(existingIndex, 1);
-          saveToStorage();
+      const monthBaseDDs = directDebits.filter((dd) => dd.month === mk);
+
+      const actualDDs = monthBaseDDs.map((dd) => {
+        const override = ddOverrides.find(
+          (ov) => ov.baseId === dd.id && ov.month === mk
+        );
+        if (!override || override.type === "none") {
+          const active = override ? override.active : dd.active;
+          return {
+            baseId: dd.id,
+            name: dd.name,
+            amount: dd.amount,
+            day: dd.day,
+            category: dd.category,
+            active: active !== false
+          };
         }
-        return;
+        if (override.type === "modified") {
+          return {
+            baseId: dd.id,
+            name: override.name,
+            amount: override.amount,
+            day: override.day,
+            category: override.category,
+            active: override.active !== false
+          };
+        }
+        if (override.type === "skipped") {
+          return {
+            baseId: dd.id,
+            name: dd.name,
+            amount: dd.amount,
+            day: dd.day,
+            category: dd.category,
+            active: false
+          };
+        }
+        return {
+          baseId: dd.id,
+          name: dd.name,
+          amount: dd.amount,
+          day: dd.day,
+          category: dd.category,
+          active: dd.active
+        };
+      });
+
+      const activeDDs = actualDDs.filter((d) => d.active);
+
+      const income = monthTx
+        .filter((t) => t.type === "income")
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+      const spend = monthTx
+        .filter((t) => t.type === "spend")
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+      const ddTotal = activeDDs.reduce(
+        (sum, d) => sum + (d.amount || 0),
+        0
+      );
+
+      const daysInMonth = new Date(
+        monthDate.getFullYear(),
+        monthDate.getMonth() + 1,
+        0
+      ).getDate();
+
+      const dailyBalances = [];
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const ddUpToDay = activeDDs
+          .filter((d) => d.day <= day)
+          .reduce((sum, d) => sum + (d.amount || 0), 0);
+
+        const spendUpToDay = monthTx
+          .filter((t) => {
+            if (t.type !== "spend") return false;
+            const d = new Date(t.date);
+            if (Number.isNaN(d.getTime())) return false;
+            return d.getDate() <= day;
+          })
+          .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+        const incomeUpToDay = monthTx
+          .filter((t) => {
+            if (t.type !== "income") return false;
+            const d = new Date(t.date);
+            if (Number.isNaN(d.getTime())) return false;
+            return d.getDate() <= day;
+          })
+          .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+        const bal = carryIn + incomeUpToDay - ddUpToDay - spendUpToDay;
+        dailyBalances.push(bal);
       }
 
-      const iso = firstOfMonth(selectedMonth).toISOString().slice(0, 10);
+      const afterAll = carryIn + income - ddTotal - spend;
 
-      if (existingIndex !== -1) {
-        transactions[existingIndex].amount = leftover;
-        transactions[existingIndex].date = iso;
-      } else {
-        transactions.push({
-          id: uuid(),
-          date: iso,
-          type: "income",
-          description: "Opening balance (auto)",
-          amount: leftover
-        });
-      }
-
-      saveToStorage();
+      return {
+        carryIn,
+        income,
+        spend,
+        ddTotal,
+        afterAll,
+        dailyBalances,
+        activeDDs,
+        rawTransactions: monthTx
+      };
     }
+
+    function computeMonthWithCarry(targetMonth) {
+      const targetMK = monthKey(targetMonth);
+      const allMKs = getAllMonthKeysIncluding(targetMonth);
+      let carry = 0;
+      let result = null;
+
+      for (const mk of allMKs) {
+        const mDate = parseMonthKey(mk);
+        if (!mDate) continue;
+
+        const raw = computeRawMonthTotals(mDate, carry);
+        if (mk === targetMK) {
+          result = raw;
+          break;
+        } else {
+          carry = raw.afterAll;
+        }
+      }
+
+      if (!result) {
+        const fallback = computeRawMonthTotals(targetMonth, 0);
+        return fallback;
+      }
+
+      return result;
+    }
+
+    // ------------ UI RENDERING ------------
 
     let selectedMonth = firstOfMonth(new Date());
     let whatIfOffset = 0;
@@ -1557,31 +1542,28 @@
 
       monthLabelEl.textContent = monthLabel(selectedMonth);
 
-      const totals = computeTotalsForMonth(selectedMonth);
-      const incomeTotal = totals.income;
-      const spendTotal = totals.spend;
+      const totals = computeMonthWithCarry(selectedMonth);
+      const income = totals.income;
+      const spend = totals.spend;
       const ddTotal = totals.ddTotal;
+      const carryIn = totals.carryIn;
       const baseAfterAll = totals.afterAll;
 
-      incomeValueEl.textContent = formatMoney(incomeTotal);
+      const openingPlusIncome = carryIn + income;
+      const totalOut = ddTotal + spend;
+
+      incomeValueEl.textContent = formatMoney(income);
       ddValueEl.textContent = formatMoney(ddTotal);
-      spendValueEl.textContent = formatMoney(spendTotal);
+      spendValueEl.textContent = formatMoney(spend);
       leftValueEl.textContent = formatMoney(baseAfterAll);
 
-      const effectiveIncomeBase = incomeTotal;
-      const totalOut = ddTotal + spendTotal;
-      const percentLeft =
-        effectiveIncomeBase <= 0
-          ? 0
-          : Math.max(0, Math.min(100, (baseAfterAll / effectiveIncomeBase) * 100));
-
-      legendIncomeEl.textContent = formatMoney(effectiveIncomeBase);
+      legendIncomeEl.textContent = formatMoney(openingPlusIncome);
       legendOutEl.textContent = formatMoney(totalOut);
       legendLeftEl.textContent = formatMoney(baseAfterAll);
 
-      summaryStartEl.textContent = formatMoney(effectiveIncomeBase);
+      summaryStartEl.textContent = formatMoney(openingPlusIncome);
       summaryDdEl.textContent = formatMoney(ddTotal);
-      summarySpendEl.textContent = formatMoney(spendTotal);
+      summarySpendEl.textContent = formatMoney(spend);
       summaryAfterEl.textContent = formatMoney(baseAfterAll);
 
       if (baseAfterAll > 0) {
@@ -1613,10 +1595,10 @@
         statusDotEl.classList.add("status-dot");
         statusMainEl.textContent = "Every pound is allocated";
         statusMainEl.style.color = "var(--text)";
-        statusSubEl.textContent = "You’ve used 100% of this month’s effective income.";
+        statusSubEl.textContent = "You’ve used 100% of this month’s opening + income.";
       }
 
-      const maxSlider = Math.max(2000, Math.round(effectiveIncomeBase) || 0);
+      const maxSlider = Math.max(2000, Math.round(openingPlusIncome) || 0);
       whatIfSlider.min = -maxSlider;
       whatIfSlider.max = maxSlider;
       whatIfSlider.value = whatIfOffset;
@@ -1635,7 +1617,7 @@
       });
 
       drawBalanceLine(balanceCanvas, adjustedBalances);
-      drawDonut(donutCanvas, effectiveIncomeBase - whatIfOffset, totalOut);
+      drawDonut(donutCanvas, openingPlusIncome - whatIfOffset, totalOut);
 
       renderTransactionList();
       renderDirectDebitList();
@@ -1647,6 +1629,7 @@
       txList.innerHTML = "";
 
       const filtered = transactions.filter((t) => {
+        if (isAutoOpening(t)) return false;
         const d = new Date(t.date);
         if (Number.isNaN(d.getTime())) return false;
         return monthKey(d) === mk;
@@ -1809,6 +1792,8 @@
         ddList.appendChild(row);
       }
     }
+
+    // ------------ ADD / EDIT / DELETE ------------
 
     function addTransaction() {
       const dateVal = document.getElementById("txDate").value;
@@ -2075,40 +2060,33 @@
       refreshUI();
     }
 
+    // ------------ DONUT BREAKDOWN ------------
+
     function openDonutBreakdown() {
-      const thisTotals = computeTotalsForMonth(selectedMonth);
-      const thisIncomeTotal = thisTotals.income;
+      const thisTotals = computeMonthWithCarry(selectedMonth);
+      const carryIn = thisTotals.carryIn;
+      const thisIncome = thisTotals.income;
       const thisSpend = thisTotals.spend;
       const thisDd = thisTotals.ddTotal;
       const thisAfter = thisTotals.afterAll;
-
-      const mk = monthKey(selectedMonth);
-      const openingTx = transactions.find(tx => {
-        if (tx.type !== "income") return false;
-        if (tx.description !== "Opening balance (auto)") return false;
-        const d = new Date(tx.date);
-        if (isNaN(d)) return false;
-        return monthKey(d) === mk;
-      });
-      const carry = openingTx ? openingTx.amount : 0;
-      const thisIncome = thisIncomeTotal - carry;
 
       const prevMonth = new Date(
         selectedMonth.getFullYear(),
         selectedMonth.getMonth() - 1,
         1
       );
-      const prevTotals = computeTotalsForMonth(prevMonth);
+      const prevTotals = computeMonthWithCarry(prevMonth);
       const lastMonthAfter = prevTotals.afterAll;
+      const lastMonthIncomeTotal = prevTotals.income + prevTotals.carryIn;
 
       document.getElementById("bdIncome").textContent = formatMoney(thisIncome);
       document.getElementById("bdDd").textContent = formatMoney(thisDd);
       document.getElementById("bdSpend").textContent = formatMoney(thisSpend);
-      document.getElementById("bdCarry").textContent = formatMoney(carry);
+      document.getElementById("bdCarry").textContent = formatMoney(carryIn);
       document.getElementById("bdAfter").textContent = formatMoney(thisAfter);
 
       const diffAfter = thisAfter - lastMonthAfter;
-      const diffIncome = thisIncomeTotal - prevTotals.income;
+      const diffIncome = (thisIncome + carryIn) - lastMonthIncomeTotal;
       const diffSpend = thisSpend - prevTotals.spend;
 
       const afterLabel =
@@ -2116,7 +2094,7 @@
           ? "–"
           : `${diffAfter >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffAfter)).replace("£", "")}`;
       const incomeLabel =
-        !isFinite(prevTotals.income) || prevTotals.income === 0
+        !isFinite(lastMonthIncomeTotal) || lastMonthIncomeTotal === 0
           ? "–"
           : `${diffIncome >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffIncome)).replace("£", "")}`;
       const spendLabel =
@@ -2129,7 +2107,7 @@
       document.getElementById("compareSpend").textContent = spendLabel;
 
       const donutBig = document.getElementById("donutBig");
-      const effectiveIncome = thisIncomeTotal;
+      const effectiveIncome = carryIn + thisIncome;
       const totalOut = thisDd + thisSpend;
       drawDonut(donutBig, effectiveIncome, totalOut);
 
@@ -2140,9 +2118,138 @@
       document.getElementById("donutBreakdown").style.display = "none";
     }
 
+    // ------------ EXPORT & RESET ------------
+
+    function exportAllData() {
+      function esc(str) {
+        if (str == null) str = "";
+        str = String(str).replace(/"/g, '""');
+        return `"${str}"`;
+      }
+
+      const lines = [];
+      lines.push([
+        "RowType",
+        "MonthKey",
+        "Date",
+        "TxType",
+        "Description",
+        "TxAmount",
+        "DDName",
+        "DDAmount",
+        "DDDay",
+        "DDCategory",
+        "DDActive",
+        "OverrideMonth",
+        "OverrideType",
+        "OverrideAmount",
+        "OverrideDay",
+        "OverrideCategory",
+        "OverrideActive"
+      ].join(","));
+
+      for (const t of transactions) {
+        if (isAutoOpening(t)) continue;
+        const d = new Date(t.date);
+        const mk = Number.isNaN(d.getTime()) ? "" : monthKey(d);
+        lines.push([
+          "TRANSACTION",
+          mk,
+          t.date || "",
+          t.type || "",
+          esc(t.description || ""),
+          t.amount != null ? t.amount.toFixed(2) : "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ].join(","));
+      }
+
+      for (const dd of directDebits) {
+        lines.push([
+          "DIRECT_DEBIT",
+          dd.month || "",
+          "",
+          "",
+          "",
+          "",
+          esc(dd.name || ""),
+          dd.amount != null ? dd.amount.toFixed(2) : "",
+          dd.day != null ? String(dd.day) : "",
+          esc(dd.category || ""),
+          dd.active ? "Yes" : "No",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ].join(","));
+      }
+
+      for (const ov of ddOverrides) {
+        lines.push([
+          "DD_OVERRIDE",
+          ov.month || "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ov.month || "",
+          ov.type || "",
+          ov.amount != null ? ov.amount.toFixed(2) : "",
+          ov.day != null ? String(ov.day) : "",
+          esc(ov.category || ""),
+          ov.active === false ? "No" : "Yes"
+        ].join(","));
+      }
+
+      const csv = lines.join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "BishopBudget-AllData.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function resetApp() {
+      const ok = confirm(
+        "This will delete ALL transactions, direct debits and overrides.\n\nAre you sure?"
+      );
+      if (!ok) return;
+
+      localStorage.removeItem("bb_tx");
+      localStorage.removeItem("bb_dd");
+      localStorage.removeItem("bb_dd_overrides");
+      transactions = [];
+      directDebits = [];
+      ddOverrides = [];
+      whatIfOffset = 0;
+      selectedMonth = firstOfMonth(new Date());
+      refreshUI();
+    }
+
+    // ------------ INIT ------------
+
     function init() {
       loadFromStorage();
-
       selectedMonth = firstOfMonth(new Date());
 
       const today = new Date();
@@ -2157,8 +2264,6 @@
           1
         );
         whatIfOffset = 0;
-        ensureOpeningBalanceForSelectedMonth();
-        saveToStorage();
         refreshUI();
       });
 
@@ -2169,8 +2274,6 @@
           1
         );
         whatIfOffset = 0;
-        ensureOpeningBalanceForSelectedMonth();
-        saveToStorage();
         refreshUI();
       });
 
@@ -2224,8 +2327,13 @@
           refreshUI();
         });
 
-      ensureOpeningBalanceForSelectedMonth();
-      saveToStorage();
+      document
+        .getElementById("exportCsvBtn")
+        .addEventListener("click", exportAllData);
+      document
+        .getElementById("resetAppBtn")
+        .addEventListener("click", resetApp);
+
       refreshUI();
     }
 
