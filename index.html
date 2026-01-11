@@ -4,1356 +4,1241 @@
   <meta charset="utf-8" />
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
   />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#020617" />
+  <title>BishopBudget</title>
 
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
-
-  <title>Monthly Budget</title>
+  <!-- Prevent double-tap zoom as well -->
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    html, body { touch-action: manipulation; }
+  </style>
 
   <style>
     :root{
-      --bgDeep: #020617;
-      --bg: #0b1120;
-      --bgMid: #1f2937;
+      --bg0:#020617;
+      --bg1:#071028;
+      --bg2:#0b1120;
 
-      --card: #0f172a;
-      --cardSoft: #121b33;
-      --pill: #16213a;
+      --card:#0f172a;
+      --card2:#101b33;
+      --pill:#121f3a;
 
-      --text: #e5e7eb;
-      --textSoft: #9ca3af;
-      --textMuted: #6b7280;
+      --stroke: rgba(255,255,255,.12);
+      --stroke2: rgba(96,165,250,.28);
 
-      --blueA: #1d4ed8;
-      --blueB: #06b6d4;
-      --blueSoft: #60a5fa;
+      --text:#e5e7eb;
+      --soft:#9ca3af;
+      --muted:#6b7280;
 
-      --green: #22c55e;
-      --greenSoft: #bbf7d0;
+      --blue1:#1d4ed8;
+      --blue2:#38bdf8;
+      --green:#22c55e;
+      --greenSoft:#bbf7d0;
+      --red:#fb7185;
+      --amber:#f59e0b;
 
-      --red: #fb7185;
-      --amber: #fb923c;
-
-      --stroke: rgba(255,255,255,0.10);
-      --stroke2: rgba(96,165,250,0.55);
-
-      --radiusXL: 18px;
-      --radiusLG: 14px;
-      --radiusMD: 12px;
-      --radiusSM: 10px;
-
-      --shadow: 0 10px 30px rgba(0,0,0,0.28);
+      --shadow: 0 18px 50px rgba(0,0,0,.45);
+      --radius:18px;
+      --radius2:14px;
     }
 
-    *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body{
-      height: 100%;
-      margin: 0;
-      background: radial-gradient(1200px 900px at 10% 0%, rgba(6,182,212,0.10), transparent 60%),
-                  radial-gradient(900px 700px at 90% 10%, rgba(29,78,216,0.12), transparent 55%),
-                  linear-gradient(135deg, var(--bgDeep), var(--bg));
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    *{
+      box-sizing:border-box;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,Segoe UI,Roboto,Arial;
+    }
+
+    body{
+      margin:0;
+      color:var(--text);
+      background: radial-gradient(1200px 1200px at 20% -10%, rgba(56,189,248,.22), transparent 55%),
+                  radial-gradient(1000px 1000px at 90% 10%, rgba(34,197,94,.14), transparent 55%),
+                  linear-gradient(135deg, var(--bg0), var(--bg1) 40%, var(--bg2));
+      min-height:100vh;
     }
 
     .wrap{
-      max-width: 900px;
+      max-width: 980px;
       margin: 0 auto;
-      padding: 16px 14px 28px;
-      padding-bottom: calc(28px + env(safe-area-inset-bottom));
+      padding: 16px;
+      padding-bottom: 40px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .brandIcon{
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow: 0 12px 28px rgba(0,0,0,.35);
+      background: rgba(255,255,255,.03);
+      flex: 0 0 auto;
+    }
+    .brandIcon img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    .brandText h1{
+      font-size:18px;
+      margin:0;
+      letter-spacing:.2px;
+    }
+    .brandText p{
+      margin:4px 0 0 0;
+      color:var(--soft);
+      font-size:12px;
+      line-height:1.2;
+    }
+
+    .monthNav{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .pillBtn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius: 14px;
+      font-weight: 800;
+      cursor:pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,.28);
+      transition: transform .06s ease, filter .15s ease;
+      user-select:none;
+    }
+    .pillBtn:active{ transform: translateY(1px); filter: brightness(1.05); }
+    .pillBtn.primary{
+      border-color: rgba(255,255,255,.18);
+      background: linear-gradient(135deg, rgba(29,78,216,.95), rgba(56,189,248,.75));
+    }
+    .pillBtn.danger{
+      border-color: rgba(251,113,133,.35);
+      background: rgba(251,113,133,.12);
+      color: var(--text);
+    }
+    .pillBtn.small{
+      padding:8px 10px;
+      font-size:12px;
+      border-radius: 12px;
+      box-shadow: none;
+    }
+    .pillBtn.ghost{
+      background: rgba(255,255,255,.04);
+      box-shadow:none;
     }
 
     .card{
-      background: var(--cardSoft);
-      border: 1px solid var(--stroke);
-      border-radius: var(--radiusXL);
+      background: rgba(15,23,42,.86);
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
       box-shadow: var(--shadow);
-    }
-
-    .cardInner{
       padding: 14px;
+      margin-bottom: 14px;
+      backdrop-filter: blur(10px);
     }
 
-    .header{
-      padding: 14px;
-      margin-bottom: 10px;
-    }
-
-    .headerTop{
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .titleBlock{
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .title{
-      font-weight: 700;
-      letter-spacing: 0.2px;
+    .cardTitle{
+      margin:0 0 10px 0;
       font-size: 18px;
+      letter-spacing: .2px;
+    }
+
+    .subtle{
       margin: 0;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .subtitle{
-      margin: 0;
-      font-size: 13px;
-      color: var(--textSoft);
-    }
-
-    .appIcon{
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
-      border: 1px solid var(--stroke);
-      overflow: hidden;
-      flex: 0 0 auto;
-      background: rgba(255,255,255,0.03);
-      display: grid;
-      place-items: center;
-    }
-    .appIcon img{
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .monthRow{
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .pill{
-      background: rgba(22,33,58,0.92);
-      border: 1px solid var(--stroke);
-      border-radius: 999px;
-      padding: 10px 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text);
-      font-size: 13px;
-      line-height: 1;
-      min-height: 42px;
-    }
-
-    .pillLabel{
-      color: var(--textMuted);
+      color: var(--soft);
       font-size: 12px;
-    }
-
-    .pillValue{
-      color: #c7d2fe;
-      font-weight: 700;
-      font-size: 13px;
-    }
-
-    .btn{
-      cursor: pointer;
-      user-select: none;
-      background: linear-gradient(135deg, rgba(29,78,216,0.95), rgba(6,182,212,0.92));
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 12px;
-      color: white;
-      font-weight: 700;
-      font-size: 13px;
-      padding: 10px 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
-      transition: transform 0.06s ease;
-    }
-    .btn:active{ transform: translateY(1px); }
-
-    .btnGhost{
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--stroke);
-      box-shadow: none;
-      color: var(--text);
-      font-weight: 700;
-    }
-
-    .btnDanger{
-      background: rgba(251,113,133,0.14);
-      border: 1px solid rgba(251,113,133,0.25);
-      color: var(--text);
-      box-shadow: none;
-    }
-
-    .btnTiny{
-      padding: 8px 10px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .section{
-      margin-top: 10px;
-    }
-
-    .sectionTitle{
-      font-size: 15px;
-      font-weight: 800;
-      margin: 0 0 10px 0;
-      color: var(--text);
+      line-height:1.3;
     }
 
     .grid2{
-      display: grid;
+      display:grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
-
-    @media (max-width: 680px){
+    @media (max-width: 720px){
       .grid2{ grid-template-columns: 1fr; }
+      .brandIcon{ width:56px; height:56px; border-radius:16px; }
     }
 
-    .summaryPill{
-      background: rgba(22,33,58,0.92);
-      border: 1px solid var(--stroke);
-      border-radius: var(--radiusLG);
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      min-height: 88px;
+    .pill{
+      background: rgba(18,31,58,.9);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      padding: 10px 10px;
+      min-height: 76px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap: 3px;
     }
 
-    .summaryTitle{
+    .pill .label{
       font-size: 12px;
-      color: var(--textSoft);
+      color: var(--soft);
       font-weight: 700;
     }
-
-    .summarySub{
+    .pill .hint{
       font-size: 11px;
-      color: var(--textMuted);
+      color: var(--muted);
     }
-
-    .summaryVal{
+    .pill .value{
       font-size: 16px;
       font-weight: 900;
-      letter-spacing: 0.2px;
+      letter-spacing: .2px;
+      margin-top: 2px;
     }
 
-    .row{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .muted{ color: var(--textMuted); }
-    .soft{ color: var(--textSoft); }
-
-    .donutCard{
-      cursor: pointer;
-      overflow: hidden;
-    }
+    .value.blue{ color: #93c5fd; }
+    .value.green{ color: var(--green); }
+    .value.red{ color: var(--red); }
+    .value.white{ color: var(--text); }
+    .value.amber{ color: #fbbf24; }
 
     .donutRow{
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 14px;
-      align-items: start;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      gap: 16px;
+      flex-wrap: wrap;
     }
-    @media (max-width: 680px){
-      .donutRow{
-        grid-template-columns: 1fr;
-      }
+
+    .donutCard{
+      width: 100%;
+      max-width: 880px;
+      border-radius: 22px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(16,27,51,.92), rgba(15,23,42,.86));
+      border: 1px solid rgba(255,255,255,.12);
+      cursor:pointer;
+      user-select:none;
+    }
+
+    .donutInner{
+      display:flex;
+      align-items:flex-start;
+      gap: 16px;
+    }
+    @media (max-width: 720px){
+      .donutInner{ flex-direction: column; align-items:center; }
     }
 
     .donutWrap{
-      display: grid;
-      place-items: center;
+      width: 190px;
+      height: 190px;
+      position: relative;
+      flex: 0 0 auto;
     }
 
-    .donutCanvas{
-      width: 150px;
-      height: 150px;
-      display: block;
+    .donutCenter{
+      position:absolute;
+      inset:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap: 3px;
+      text-align:center;
+      pointer-events:none;
+    }
+    .donutCenter .pct{
+      font-size: 34px;
+      font-weight: 1000;
+      letter-spacing:.3px;
+    }
+    .donutCenter .sub{
+      font-size: 12px;
+      color: var(--soft);
+      text-transform: uppercase;
+      letter-spacing: .18em;
     }
 
     .donutText{
-      position: relative;
-      margin-top: -122px;
-      display: grid;
-      place-items: center;
-      pointer-events: none;
+      flex: 1 1 auto;
+      min-width: 260px;
     }
 
-    .donutPct{
-      font-size: 24px;
-      font-weight: 900;
-      color: var(--text);
+    .donutText h3{
+      margin: 2px 0 6px 0;
+      font-size: 16px;
+      letter-spacing:.2px;
+    }
+    .donutText p{
       margin: 0;
-      line-height: 1;
-    }
-
-    .donutSub{
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--textSoft);
-      margin: 6px 0 0 0;
-    }
-
-    .statusTitle{
-      font-size: 14px;
-      font-weight: 900;
-      margin: 0;
-    }
-
-    .statusBody{
-      margin: 6px 0 0 0;
+      color: var(--soft);
       font-size: 13px;
-      color: var(--textSoft);
       line-height: 1.35;
     }
 
-    .graph{
-      width: 100%;
-      height: 78px;
-      border-radius: 12px;
-      border: 1px solid var(--stroke);
-      background: rgba(15,23,42,0.6);
-      overflow: hidden;
+    .miniGraph{
       margin-top: 10px;
-    }
-
-    .graph canvas{
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .whatif{
-      margin-top: 10px;
-      padding: 12px;
       border-radius: 14px;
-      border: 1px solid var(--stroke);
-      background: rgba(15,23,42,0.65);
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(2,6,23,.25);
+      padding: 10px;
     }
 
-    .whatifHead{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+    .miniGraph .title{
+      color: var(--soft);
+      font-size: 12px;
+      font-weight: 800;
       margin-bottom: 6px;
     }
 
-    .slider{
-      width: 100%;
-    }
-
     .formGrid{
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
+      margin-top: 10px;
     }
-
-    @media (max-width: 680px){
-      .formGrid{
-        grid-template-columns: 1fr 1fr;
-      }
+    @media (max-width: 720px){
+      .formGrid{ grid-template-columns: 1fr; }
     }
 
     .field{
-      background: rgba(15,23,42,0.85);
-      border: 1px solid rgba(96,165,250,0.40);
-      border-radius: 12px;
-      padding: 10px 12px;
-      min-height: 42px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text);
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
     }
-
-    .field input, .field select{
-      width: 100%;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 800;
-      appearance: none;
-    }
-
     .field label{
       font-size: 12px;
-      color: var(--textSoft);
+      color: var(--soft);
       font-weight: 800;
-      white-space: nowrap;
     }
-
-    .formActions{
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .listWindow{
-      margin-top: 10px;
+    .control{
+      width: 100%;
+      height: 44px;
       border-radius: 14px;
-      border: 1px solid var(--stroke);
-      background: rgba(15,23,42,0.65);
-      overflow: hidden;
+      border: 1px solid rgba(96,165,250,.45);
+      background: rgba(15,23,42,.55);
+      color: var(--text);
+      padding: 0 12px;
+      font-weight: 800;
+      outline: none;
+    }
+    .control:focus{
+      border-color: rgba(56,189,248,.75);
+      box-shadow: 0 0 0 3px rgba(56,189,248,.18);
+    }
+    .control::placeholder{
+      color: rgba(156,163,175,.7);
+      font-weight: 700;
     }
 
-    .listScroller{
-      max-height: 520px;
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
+    .rowBtns{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-start;
+      margin-top: 10px;
+    }
+
+    .listBox{
+      margin-top: 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(2,6,23,.20);
       padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      max-height: 520px; /* Taller so you see more items */
+      overflow:auto;
     }
 
-    .itemCard{
-      background: rgba(15,23,42,0.92);
-      border: 1px solid var(--stroke);
-      border-radius: 14px;
-      padding: 10px 12px;
-      display: flex;
-      align-items: center;
+    .listHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
       gap: 10px;
+      margin-bottom: 8px;
+    }
+    .listHead .title{
+      font-size: 13px;
+      color: var(--soft);
+      font-weight: 900;
     }
 
-    .itemLeft{
-      display: flex;
-      flex-direction: column;
+    .item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(15,23,42,.55);
+      margin-bottom: 8px;
+    }
+    .item:last-child{ margin-bottom: 0; }
+
+    .item .left{
+      display:flex;
+      flex-direction:column;
       gap: 3px;
-      flex: 1;
       min-width: 0;
     }
-
-    .itemTitle{
-      font-size: 13px;
+    .item .name{
       font-weight: 900;
-      margin: 0;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 16px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 440px;
+    }
+    .item .meta{
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: .2px;
     }
 
-    .itemMeta{
-      font-size: 11px;
-      margin: 0;
-      color: var(--textMuted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .itemRight{
-      display: flex;
-      align-items: center;
+    .item .right{
+      display:flex;
+      align-items:center;
       gap: 10px;
       flex: 0 0 auto;
     }
 
     .amount{
-      font-size: 13px;
-      font-weight: 900;
-      white-space: nowrap;
+      font-weight: 1000;
+      font-size: 18px;
+      min-width: 110px;
+      text-align:right;
+      letter-spacing:.2px;
     }
 
-    .tag{
-      font-size: 11px;
-      font-weight: 900;
-      padding: 5px 10px;
+    .badge{
+      padding: 6px 10px;
       border-radius: 999px;
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,0.03);
-      white-space: nowrap;
+      font-weight: 900;
+      font-size: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+    }
+    .badge.red{ border-color: rgba(251,113,133,.35); background: rgba(251,113,133,.12); color: var(--red); }
+    .badge.green{ border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.12); color: var(--greenSoft); }
+    .badge.blue{ border-color: rgba(96,165,250,.35); background: rgba(96,165,250,.12); color: #93c5fd; }
+
+    .mutedRow{
+      opacity: .75;
+      border-color: rgba(251,113,133,.24);
     }
 
-    .tagRed{
-      border-color: rgba(251,113,133,0.35);
-      background: rgba(251,113,133,0.10);
-      color: var(--red);
-    }
-
-    .tagGreen{
-      border-color: rgba(34,197,94,0.35);
-      background: rgba(34,197,94,0.10);
-      color: var(--greenSoft);
-    }
-
-    .footerActions{
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      margin-top: 10px;
-    }
-
-    .modalOverlay{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
+    /* Modal */
+    .modalBackdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
       padding: 14px;
-      padding-bottom: calc(14px + env(safe-area-inset-bottom));
-      z-index: 999;
+      z-index: 1000;
     }
-    .modalOverlay.show{ display: flex; }
+    .modalBackdrop.show{ display:flex; }
 
     .modal{
       width: 100%;
-      max-width: 900px;
-      background: var(--cardSoft);
-      border: 1px solid var(--stroke);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
+      max-width: 920px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(16,27,51,.98), rgba(15,23,42,.95));
+      box-shadow: 0 30px 70px rgba(0,0,0,.6);
+      overflow:hidden;
+      max-height: 88vh;
+      display:flex;
+      flex-direction:column;
     }
 
-    .modalHead{
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .modalHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
       gap: 10px;
-      border-bottom: 1px solid var(--stroke);
-      background: rgba(15,23,42,0.7);
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
     }
-
-    .modalTitle{
-      margin: 0;
-      font-size: 14px;
-      font-weight: 900;
+    .modalHeader .title{
+      font-weight: 1000;
+      letter-spacing: .2px;
     }
-
     .modalBody{
       padding: 14px;
-    }
-
-    .radioRow{
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .radio{
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,0.03);
-      cursor: pointer;
-      user-select: none;
-      font-weight: 900;
-      font-size: 12px;
-      color: var(--text);
-    }
-
-    .radio input{ display: none; }
-
-    .radio.active{
-      border-color: rgba(96,165,250,0.50);
-      background: rgba(96,165,250,0.10);
-    }
-
-    .note{
-      font-size: 12px;
-      color: var(--textSoft);
-      margin-top: 10px;
-      line-height: 1.35;
+      overflow:auto;
     }
 
     .hr{
       height: 1px;
-      background: var(--stroke);
+      background: rgba(255,255,255,.10);
       margin: 12px 0;
     }
+
+    a{ color: inherit; }
   </style>
 </head>
-
 <body>
   <div class="wrap">
-    <div class="card header">
-      <div class="headerTop">
-        <div class="titleBlock">
-          <h1 class="title">22 Bishop Road Budget</h1>
-          <p class="subtitle">Clear monthly view of income, direct debits and spending.</p>
+
+    <div class="topbar">
+      <div class="brand">
+        <div class="brandIcon" title="App Icon">
+          <!-- Replace path if needed -->
+          <img src="icon-512.png" alt="App Icon" />
         </div>
-        <div class="appIcon" aria-label="App icon">
-          <img src="icon-192.png" alt="App icon" />
+        <div class="brandText">
+          <h1>22 Bishop Road Budget</h1>
+          <p>Monthly snapshot budgeting. Direct debits are per-month, carry-forward is automatic.</p>
         </div>
       </div>
 
-      <div class="monthRow">
-        <div class="pill" style="flex: 1;">
-          <span class="pillLabel">Month</span>
-          <span class="pillValue" id="monthLabel">—</span>
-        </div>
-
-        <button class="btn btnGhost btnTiny" id="prevMonthBtn" type="button">◀</button>
-        <button class="btn btnGhost btnTiny" id="nextMonthBtn" type="button">▶</button>
+      <div class="monthNav">
+        <button class="pillBtn ghost" id="prevMonthBtn">◀</button>
+        <button class="pillBtn ghost" id="nextMonthBtn">▶</button>
       </div>
     </div>
 
-    <div class="card section" id="dashboardCard">
-      <div class="cardInner">
-        <h2 class="sectionTitle">Dashboard Snapshot</h2>
+    <div class="card">
+      <div class="grid2" style="align-items:stretch">
+        <div class="pill">
+          <div class="label">Month</div>
+          <div class="hint">Current view</div>
+          <div class="value blue" id="monthLabel">—</div>
+        </div>
+        <div class="pill">
+          <div class="label">Carry-forward</div>
+          <div class="hint">Opening balance (auto)</div>
+          <div class="value white" id="openingValue">—</div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px" id="copyDDBanner" class="pill" hidden>
+        <div class="label">Direct debits for this month</div>
+        <div class="hint">This month has no direct debits yet. Want to copy them from last month?</div>
+        <div class="rowBtns">
+          <button class="pillBtn primary" id="copyDDBtn">Copy last month’s direct debits</button>
+          <button class="pillBtn ghost" id="dismissCopyDDBtn">Not now</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="grid2">
+        <div class="pill">
+          <div class="label">Monthly income</div>
+          <div class="hint">Including opening balance</div>
+          <div class="value blue" id="incomeTotal">£0.00</div>
+        </div>
+        <div class="pill" style="background: rgba(18,31,58,.95)">
+          <div class="label">Direct Debits & Bills</div>
+          <div class="hint">This month only</div>
+          <div class="value white" id="ddTotal">£0.00</div>
+        </div>
+        <div class="pill">
+          <div class="label">Other Spending</div>
+          <div class="hint">This month</div>
+          <div class="value red" id="spendTotal">£0.00</div>
+        </div>
+        <div class="pill" id="leftPill">
+          <div class="label">Left after Spending</div>
+          <div class="hint">As of now</div>
+          <div class="value green" id="leftTotal">£0.00</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" class="donutRow">
+        <div class="donutCard" id="donutCard" title="Tap for details">
+          <div class="donutInner">
+            <div class="donutWrap">
+              <svg viewBox="0 0 120 120" width="190" height="190" style="display:block">
+                <defs>
+                  <linearGradient id="gLine" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#93c5fd"></stop>
+                    <stop offset="55%" stop-color="#22c55e"></stop>
+                    <stop offset="100%" stop-color="#38bdf8"></stop>
+                  </linearGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="2.2" result="blur"></feGaussianBlur>
+                    <feMerge>
+                      <feMergeNode in="blur"></feMergeNode>
+                      <feMergeNode in="SourceGraphic"></feMergeNode>
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                <circle cx="60" cy="60" r="44" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="10"></circle>
+                <circle id="donutArc"
+                        cx="60" cy="60" r="44"
+                        fill="none"
+                        stroke="url(#gLine)"
+                        stroke-width="10"
+                        stroke-linecap="round"
+                        stroke-dasharray="0 276"
+                        transform="rotate(-90 60 60)"
+                        filter="url(#glow)"></circle>
+              </svg>
+              <div class="donutCenter">
+                <div class="pct" id="donutPct">0%</div>
+                <div class="sub">income left</div>
+              </div>
+            </div>
+
+            <div class="donutText">
+              <h3 id="donutHeadline">Waiting for income</h3>
+              <p id="donutSubtext">Add salary and bills to see how much is left.</p>
+
+              <div class="miniGraph">
+                <div class="title">Daily balance this month</div>
+                <canvas id="miniCanvas" height="90"></canvas>
+              </div>
+
+              <div class="rowBtns" style="margin-top:10px">
+                <button class="pillBtn ghost" id="whatIfResetBtn">Reset “What if” to zero</button>
+              </div>
+
+              <div style="margin-top:10px">
+                <div class="subtle">What if the month changed by…</div>
+                <input id="whatIf" type="range" min="-5000" max="5000" step="10" value="0" style="width:100%; margin-top:8px">
+                <div class="subtle" id="whatIfLabel" style="margin-top:6px">Change: £0.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transactions -->
+    <div class="card">
+      <h2 class="cardTitle">Add transaction (one-off)</h2>
+
+      <div class="formGrid">
+        <div class="field">
+          <label>Date</label>
+          <input class="control" id="txDate" type="date" />
+        </div>
+
+        <div class="field">
+          <label>Type</label>
+          <select class="control" id="txType">
+            <option value="income">Income</option>
+            <option value="spend">Spending</option>
+          </select>
+        </div>
+
+        <div class="field" style="grid-column: 1 / -1">
+          <label>Description</label>
+          <input class="control" id="txDesc" type="text" placeholder="e.g. RN salary, Tesco shop" />
+        </div>
+
+        <div class="field" style="grid-column: 1 / -1">
+          <label>Amount</label>
+          <input class="control" id="txAmount" inputmode="decimal" type="text" placeholder="0.00" />
+        </div>
+      </div>
+
+      <div class="rowBtns">
+        <button class="pillBtn primary" id="addTxBtn">Add transaction</button>
+      </div>
+
+      <div class="listBox">
+        <div class="listHead">
+          <div class="title">Transactions this month</div>
+        </div>
+        <div id="txList"></div>
+      </div>
+    </div>
+
+    <!-- Direct debits -->
+    <div class="card">
+      <h2 class="cardTitle">Direct debits & regular bills</h2>
+
+      <div class="formGrid">
+        <div class="field" style="grid-column: 1 / -1">
+          <label>Name</label>
+          <input class="control" id="ddName" type="text" placeholder="e.g. Mortgage, Council tax" />
+        </div>
+
+        <div class="field">
+          <label>Amount (per month)</label>
+          <input class="control" id="ddAmount" inputmode="decimal" type="text" placeholder="0.00" />
+        </div>
+
+        <div class="field">
+          <label>Day of month (1–31)</label>
+          <input class="control" id="ddDay" inputmode="numeric" type="text" placeholder="1" />
+        </div>
+
+        <div class="field" style="grid-column: 1 / -1">
+          <label>Category</label>
+          <input class="control" id="ddCategory" type="text" placeholder="Utilities, Housing, Subscription..." />
+        </div>
+      </div>
+
+      <div class="rowBtns">
+        <button class="pillBtn ghost" id="addDDBtn">Add direct debit</button>
+      </div>
+
+      <div class="listBox">
+        <div class="listHead">
+          <div class="title">Direct debits this month</div>
+        </div>
+        <div id="ddList"></div>
+      </div>
+    </div>
+
+    <!-- Export / Reset -->
+    <div class="card">
+      <div class="rowBtns">
+        <button class="pillBtn" id="exportBtn">Export all data (CSV)</button>
+        <button class="pillBtn danger" id="resetBtn">Reset app (delete everything)</button>
+      </div>
+      <p class="subtle" style="margin-top:10px">
+        Export creates <b>BishopBudget-AllData.csv</b> in the exact column format you showed.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Donut detail modal -->
+  <div class="modalBackdrop" id="donutModalBackdrop" aria-hidden="true">
+    <div class="modal">
+      <div class="modalHeader">
+        <div class="title" id="donutModalTitle">Monthly Breakdown</div>
+        <button class="pillBtn ghost small" id="closeDonutModalBtn">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="grid2">
+          <div class="pill">
+            <div class="label">Income</div>
+            <div class="hint">This month</div>
+            <div class="value blue" id="mIncome">£0.00</div>
+          </div>
+          <div class="pill">
+            <div class="label">Direct Debits</div>
+            <div class="hint">Active this month</div>
+            <div class="value white" id="mDD">£0.00</div>
+          </div>
+          <div class="pill">
+            <div class="label">Spending</div>
+            <div class="hint">This month</div>
+            <div class="value red" id="mSpend">£0.00</div>
+          </div>
+          <div class="pill">
+            <div class="label">Left</div>
+            <div class="hint">After bills + spending</div>
+            <div class="value green" id="mLeft">£0.00</div>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="subtle" style="margin-bottom:10px">Tap items to edit (month-specific).</div>
 
         <div class="grid2">
-          <div class="summaryPill">
-            <div class="summaryTitle">Monthly income</div>
-            <div class="summarySub">For this month</div>
-            <div class="summaryVal" id="incomeTotal" style="color: var(--blueSoft);">£0.00</div>
+          <div class="card" style="margin:0; box-shadow:none">
+            <div class="listHead">
+              <div class="title">Transactions</div>
+            </div>
+            <div class="listBox" style="max-height: 240px">
+              <div id="modalTxList"></div>
+            </div>
           </div>
 
-          <div class="summaryPill">
-            <div class="summaryTitle">Direct Debits & Bills</div>
-            <div class="summarySub">Mortgage, utilities, tax</div>
-            <div class="summaryVal" id="ddTotal" style="color: var(--text);">£0.00</div>
-          </div>
-
-          <div class="summaryPill">
-            <div class="summaryTitle">Other Spending</div>
-            <div class="summarySub">Food, fuel, nights out</div>
-            <div class="summaryVal" id="spendTotal" style="color: var(--red);">£0.00</div>
-          </div>
-
-          <div class="summaryPill" id="leftPill">
-            <div class="summaryTitle">Left after Spending</div>
-            <div class="summarySub">If you stopped today</div>
-            <div class="summaryVal" id="leftAfterAll" style="color: var(--green);">£0.00</div>
-          </div>
-        </div>
-
-        <div class="whatif">
-          <div class="whatifHead">
-            <div class="soft" style="font-size: 12px; font-weight: 900;">What if this month changed by…</div>
-            <button class="btn btnGhost btnTiny" id="resetWhatIfBtn" type="button">Reset</button>
-          </div>
-          <input class="slider" id="whatIfSlider" type="range" min="-500" max="500" step="10" value="0" />
-          <div class="row" style="margin-top: 6px;">
-            <div class="muted" id="whatIfChange" style="font-size: 12px;">Change: £0.00</div>
-            <div id="whatIfAfter" style="font-size: 12px; font-weight: 900;">After change: £0.00</div>
-          </div>
-        </div>
-
-        <div class="card section donutCard" id="donutCard" style="margin-top: 12px;">
-          <div class="cardInner">
-            <div class="donutRow">
-              <div class="donutWrap">
-                <canvas class="donutCanvas" id="donutCanvas" width="150" height="150"></canvas>
-                <div class="donutText">
-                  <p class="donutPct" id="donutPct">0%</p>
-                  <p class="donutSub">income left</p>
-                </div>
-              </div>
-
-              <div>
-                <p class="statusTitle" id="statusTitle">Waiting for income</p>
-                <p class="statusBody" id="statusBody">Add your salary for this month to see how much is left after direct debits and spending.</p>
-
-                <div class="graph" aria-label="Mini line graph">
-                  <canvas id="miniGraph" width="600" height="180"></canvas>
-                </div>
-
-                <p class="note" style="margin-top:10px;">
-                  Tap this card for a full breakdown.
-                </p>
-              </div>
+          <div class="card" style="margin:0; box-shadow:none">
+            <div class="listHead">
+              <div class="title">Direct debits</div>
+            </div>
+            <div class="listBox" style="max-height: 240px">
+              <div id="modalDDList"></div>
             </div>
           </div>
         </div>
 
-        <div class="footerActions">
-          <button class="btn btnGhost" id="exportAllBtn" type="button">⬇ Export all data (CSV)</button>
-          <button class="btn btnDanger" id="resetAllBtn" type="button">Reset app (wipe data)</button>
-        </div>
-      </div>
-    </div>
+        <div class="hr"></div>
 
-    <div class="card section">
-      <div class="cardInner">
-        <h2 class="sectionTitle">Add transaction (one-off)</h2>
-
-        <div class="formGrid">
-          <div class="field">
-            <label for="txDate">Date</label>
-            <input id="txDate" type="date" />
-          </div>
-
-          <div class="field">
-            <label for="txType">Type</label>
-            <select id="txType">
-              <option value="income">Income</option>
-              <option value="spend">Spending</option>
-            </select>
-          </div>
-
-          <div class="field" style="grid-column: span 2;">
-            <label for="txDesc">Description</label>
-            <input id="txDesc" type="text" placeholder="RN salary, Tesco shop…" />
-          </div>
-
-          <div class="field" style="grid-column: span 2;">
-            <label for="txAmt">Amount</label>
-            <input id="txAmt" type="number" inputmode="decimal" placeholder="0.00" />
-          </div>
-
-          <div class="field" style="grid-column: span 2; border-color: rgba(255,255,255,0.14);">
-            <div class="row" style="width:100%;">
-              <div class="soft" style="font-size:12px; font-weight:900;">Quick add</div>
-              <button class="btn btnTiny" id="addTxBtn" type="button">Add transaction</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="listWindow" id="txListWrap">
-          <div class="listScroller" id="txList"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card section">
-      <div class="cardInner">
-        <h2 class="sectionTitle">Direct debits & regular bills</h2>
-
-        <div class="formGrid">
-          <div class="field" style="grid-column: span 2;">
-            <label for="ddName">Name</label>
-            <input id="ddName" type="text" placeholder="Mortgage, Council tax…" />
-          </div>
-
-          <div class="field">
-            <label for="ddDay">Day</label>
-            <input id="ddDay" type="number" inputmode="numeric" placeholder="1–31" />
-          </div>
-
-          <div class="field">
-            <label for="ddAmt">Amount</label>
-            <input id="ddAmt" type="number" inputmode="decimal" placeholder="0.00" />
-          </div>
-
-          <div class="field" style="grid-column: span 2;">
-            <label for="ddCat">Category</label>
-            <input id="ddCat" type="text" placeholder="(optional)" />
-          </div>
-
-          <div class="field" style="grid-column: span 2; border-color: rgba(255,255,255,0.14);">
-            <div class="row" style="width:100%;">
-              <div class="soft" style="font-size:12px; font-weight:900;">Add to this month</div>
-              <button class="btn btnTiny" id="addDdBtn" type="button">Add direct debit</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="listWindow">
-          <div class="listScroller" id="ddList"></div>
-        </div>
-
-        <p class="note">
-          Edits can apply just to this month (override) or from this month onwards (new version). Previous months won’t change.
-        </p>
-      </div>
-    </div>
-
-    <div class="modalOverlay" id="donutModal">
-      <div class="modal">
-        <div class="modalHead">
-          <h3 class="modalTitle">Monthly breakdown</h3>
-          <button class="btn btnGhost btnTiny" id="closeDonutModal" type="button">Close</button>
-        </div>
-        <div class="modalBody">
-          <div class="row" style="margin-bottom: 10px;">
-            <div class="pill" style="flex: 1;">
-              <span class="pillLabel">Month</span>
-              <span class="pillValue" id="modalMonthLabel">—</span>
-            </div>
-            <div class="pill" style="flex: 1;">
-              <span class="pillLabel">Carry in</span>
-              <span class="pillValue" id="modalCarryIn">£0.00</span>
-            </div>
-          </div>
-
-          <div class="row" style="gap: 12px; align-items: flex-start; flex-wrap: wrap;">
-            <div style="flex: 0 0 auto;">
-              <canvas id="bigDonut" width="240" height="240" style="border-radius: 18px; background: rgba(15,23,42,0.55); border:1px solid var(--stroke);"></canvas>
-              <div style="margin-top: -172px; text-align:center; pointer-events:none;">
-                <div style="font-size:34px; font-weight: 1000;" id="bigDonutPct">0%</div>
-                <div style="font-size:11px; letter-spacing: 1px; text-transform: uppercase; color: var(--textSoft); margin-top:6px;">starting funds left</div>
-              </div>
-            </div>
-
-            <div style="flex: 1; min-width: 240px;">
-              <div class="summaryPill" style="min-height: unset;">
-                <div class="row"><div class="soft" style="font-weight:900;">Started with</div><div id="bkStart" style="font-weight: 1000;">£0.00</div></div>
-                <div class="row"><div class="soft" style="font-weight:900;">Income</div><div id="bkIncome" style="font-weight: 1000;">£0.00</div></div>
-                <div class="row"><div class="soft" style="font-weight:900;">Direct Debits</div><div id="bkDD" style="font-weight: 1000;">£0.00</div></div>
-                <div class="row"><div class="soft" style="font-weight:900;">Spending</div><div id="bkSpend" style="font-weight: 1000;">£0.00</div></div>
-                <div class="hr"></div>
-                <div class="row"><div style="font-weight:1000;">Left after everything</div><div id="bkLeft" style="font-weight:1000;">£0.00</div></div>
-              </div>
-
-              <div class="note" style="margin-top: 10px;">
-                Tip: Edit a direct debit in the month you’re looking at, then choose “This month only” or “From this month onwards”.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modalOverlay" id="txModal">
-      <div class="modal">
-        <div class="modalHead">
-          <h3 class="modalTitle">Edit transaction</h3>
-          <button class="btn btnGhost btnTiny" id="closeTxModal" type="button">Close</button>
-        </div>
-        <div class="modalBody">
-          <div class="formGrid">
-            <div class="field">
-              <label>Date</label>
-              <input id="editTxDate" type="date" />
-            </div>
-
-            <div class="field">
-              <label>Type</label>
-              <select id="editTxType">
-                <option value="income">Income</option>
-                <option value="spend">Spending</option>
-              </select>
-            </div>
-
-            <div class="field" style="grid-column: span 2;">
-              <label>Description</label>
-              <input id="editTxDesc" type="text" />
-            </div>
-
-            <div class="field" style="grid-column: span 2;">
-              <label>Amount</label>
-              <input id="editTxAmt" type="number" inputmode="decimal" />
-            </div>
-          </div>
-
-          <div class="formActions">
-            <button class="btn" id="saveTxBtn" type="button">Save</button>
-            <button class="btn btnDanger" id="deleteTxBtn" type="button">Delete</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modalOverlay" id="ddModal">
-      <div class="modal">
-        <div class="modalHead">
-          <h3 class="modalTitle">Edit direct debit</h3>
-          <button class="btn btnGhost btnTiny" id="closeDdModal" type="button">Close</button>
-        </div>
-        <div class="modalBody">
-          <div class="formGrid">
-            <div class="field" style="grid-column: span 2;">
-              <label>Name</label>
-              <input id="editDdName" type="text" />
-            </div>
-
-            <div class="field">
-              <label>Day</label>
-              <input id="editDdDay" type="number" inputmode="numeric" />
-            </div>
-
-            <div class="field">
-              <label>Amount</label>
-              <input id="editDdAmt" type="number" inputmode="decimal" />
-            </div>
-
-            <div class="field" style="grid-column: span 2;">
-              <label>Category</label>
-              <input id="editDdCat" type="text" />
-            </div>
-
-            <div class="field" style="grid-column: span 2; border-color: rgba(251,146,60,0.35);">
-              <div class="row" style="width:100%;">
-                <div style="font-weight:1000; font-size:12px;">Paused</div>
-                <input id="editDdPaused" type="checkbox" style="transform: scale(1.2);" />
-              </div>
-            </div>
-          </div>
-
-          <div class="radioRow" style="margin-top: 12px;">
-            <div class="radio active" id="scopeThisMonth">
-              <input type="radio" name="ddScope" value="this" checked />
-              This month only
-            </div>
-            <div class="radio" id="scopeFromMonth">
-              <input type="radio" name="ddScope" value="from" />
-              From this month onwards
-            </div>
-          </div>
-
-          <div class="note">
-            “This month only” creates a one-month override. “From this month onwards” creates a new version starting this month and ends the previous version the month before.
-          </div>
-
-          <div class="formActions" style="margin-top: 12px;">
-            <button class="btn" id="saveDdBtn" type="button">Save</button>
-            <button class="btn btnDanger" id="deleteDdBtn" type="button">Delete (series)</button>
-          </div>
-        </div>
+        <div class="subtle">Tip: if your mortgage changes next month, edit the <b>next month</b> row only.</div>
       </div>
     </div>
   </div>
 
+  <!-- Editor modal (reused) -->
+  <div class="modalBackdrop" id="editModalBackdrop" aria-hidden="true">
+    <div class="modal">
+      <div class="modalHeader">
+        <div class="title" id="editTitle">Edit</div>
+        <button class="pillBtn ghost small" id="closeEditModalBtn">Close</button>
+      </div>
+      <div class="modalBody" id="editBody"></div>
+    </div>
+  </div>
+
   <script>
-    /**********************
-     * Storage + Models
-     **********************/
-    const STORAGE_KEY = "BishopBudget_HTML_v2";
-    const STORAGE_KEY_ALIASES = [
-      "BishopBudgetData",
-      "BishopBudget_HTML",
-      "BishopBudget_HTML_v1",
-      "BishopBudget",
-      "BishopBudgetApp",
-      "BishopBudgetData_v1",
-      "BishopBudgetData_v2",
-      "BishopBudget_HTML_working",
-      "BishopBudget_HTML_latest"
-    ];
+    // ========= Storage (Monthly Snapshot Model) =========
+    const STORAGE_KEY = "BishopBudget_Snapshot_v1";
 
+    const state = {
+      selectedMonth: monthKeyFromDate(new Date()),
+      data: {
+        transactions: [],
+        directDebits: []
+      },
+      dismissedCopyDDBanner: {}
+    };
+
+    function load(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(raw){
+          const parsed = JSON.parse(raw);
+          if(parsed && parsed.data){
+            state.selectedMonth = parsed.selectedMonth || state.selectedMonth;
+            state.data = parsed.data || state.data;
+            state.dismissedCopyDDBanner = parsed.dismissedCopyDDBanner || {};
+          }
+        }
+      }catch(e){
+        console.warn("Load failed:", e);
+      }
+    }
+
+    function save(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        selectedMonth: state.selectedMonth,
+        data: state.data,
+        dismissedCopyDDBanner: state.dismissedCopyDDBanner
+      }));
+    }
+
+    // ========= Utilities =========
     function uid(){
-      return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
+      return (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
     }
 
-    function today(){
-      return new Date();
-    }
-
-    function pad2(n){ return String(n).padStart(2,"0"); }
-
-    function toISODate(d){
+    function monthKeyFromDate(d){
       const y = d.getFullYear();
-      const m = pad2(d.getMonth()+1);
-      const day = pad2(d.getDate());
-      return `${y}-${m}-${day}`;
-    }
-
-    function monthKey(d){
-      const y = d.getFullYear();
-      const m = pad2(d.getMonth()+1);
+      const m = String(d.getMonth()+1).padStart(2,"0");
       return `${y}-${m}`;
     }
 
-    function parseMonthKey(mk){
+    function dateISOToMonthKey(iso){
+      // iso: YYYY-MM-DD
+      if(!iso || iso.length < 7) return "";
+      return iso.slice(0,7);
+    }
+
+    function monthKeyToLabel(mk){
+      // mk: YYYY-MM
       const [y,m] = mk.split("-").map(Number);
-      return new Date(y, (m-1), 1);
+      const d = new Date(y, (m||1)-1, 1);
+      const mmm = d.toLocaleString("en-GB",{month:"short"});
+      const yy = String(y).slice(-2);
+      return `${mmm} ${yy}`;
     }
 
-    function addMonths(mk, delta){
-      const d = parseMonthKey(mk);
-      d.setMonth(d.getMonth()+delta);
-      return monthKey(d);
-    }
-
-    function prevMonth(mk){
-      return addMonths(mk, -1);
-    }
-
-    function compareMonthKey(a,b){
-      if(a===b) return 0;
-      return a < b ? -1 : 1;
-    }
-
-    function monthLabel(mk){
-      const d = parseMonthKey(mk);
-      const fmt = new Intl.DateTimeFormat("en-GB",{ month:"short", year:"2-digit" });
-      return fmt.format(d).replace(" ","-");
-    }
-
-    function shortDateLabel(iso){
-      const d = new Date(iso+"T00:00:00");
-      const day = pad2(d.getDate());
-      const mon = new Intl.DateTimeFormat("en-GB",{ month:"short" }).format(d);
-      const yr = String(d.getFullYear()).slice(2);
-      return `${day}-${mon}-${yr}`;
-    }
-
-    function daysInMonth(mk){
-      const d = parseMonthKey(mk);
-      const y = d.getFullYear();
-      const m = d.getMonth();
-      return new Date(y, m+1, 0).getDate();
-    }
-
-    function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
-
-    function money(n){
+    function fmtMoney(n){
       const v = Number(n || 0);
-      return v.toLocaleString("en-GB",{ style:"currency", currency:"GBP", minimumFractionDigits:2, maximumFractionDigits:2 });
+      return v.toLocaleString("en-GB", { style:"currency", currency:"GBP", minimumFractionDigits:2, maximumFractionDigits:2 });
     }
 
-    function escapeHtml(s){
-      return String(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+    function fmtDateDisplay(iso){
+      // DD-Mmm-YY
+      if(!iso) return "";
+      const [y,m,d] = iso.split("-").map(Number);
+      const dt = new Date(y, (m||1)-1, d||1);
+      const dd = String(dt.getDate()).padStart(2,"0");
+      const mmm = dt.toLocaleString("en-GB",{month:"short"});
+      const yy = String(dt.getFullYear()).slice(-2);
+      return `${dd}-${mmm}-${yy}`;
     }
 
-    // Detect if an object looks like your old budget data
-    function looksLikeBudgetData(obj){
-      if(!obj || typeof obj !== "object") return false;
-      const hasTx = Array.isArray(obj.transactions);
-      const hasOldDD = Array.isArray(obj.directDebits);
-      const hasNewDD = Array.isArray(obj.ddSeries);
-      return hasTx && (hasOldDD || hasNewDD);
+    function parseAmount(str){
+      if(str == null) return NaN;
+      const s = String(str).trim().replaceAll(",", ".");
+      const v = Number(s);
+      return Number.isFinite(v) ? v : NaN;
     }
 
-    function scoreBudgetData(obj){
-      const txCount = Array.isArray(obj.transactions) ? obj.transactions.length : 0;
-      const ddCount = Array.isArray(obj.directDebits) ? obj.directDebits.length : 0;
-      const seriesCount = Array.isArray(obj.ddSeries) ? obj.ddSeries.length : 0;
-      return (txCount * 3) + (ddCount * 2) + (seriesCount * 2);
+    function parseIntSafe(str){
+      const v = parseInt(String(str).trim(), 10);
+      return Number.isFinite(v) ? v : NaN;
     }
 
-    function tryParseJSON(raw){
-      try{ return JSON.parse(raw); }catch{ return null; }
+    function prevMonthKey(mk){
+      const [y,m] = mk.split("-").map(Number);
+      const d = new Date(y, (m||1)-1, 1);
+      d.setMonth(d.getMonth()-1);
+      return monthKeyFromDate(d);
     }
 
-    // Find best previous save in localStorage
-    function findBestLegacySave(){
-      let best = null;
+    function nextMonthKey(mk){
+      const [y,m] = mk.split("-").map(Number);
+      const d = new Date(y, (m||1)-1, 1);
+      d.setMonth(d.getMonth()+1);
+      return monthKeyFromDate(d);
+    }
 
-      function consider(key){
-        const raw = localStorage.getItem(key);
-        if(!raw) return;
-        const obj = tryParseJSON(raw);
-        if(!looksLikeBudgetData(obj)) return;
-        const sc = scoreBudgetData(obj);
-        if(!best || sc > best.score){
-          best = { key, score: sc, obj };
-        }
+    function monthRangeKeys(minMK, maxMK){
+      // inclusive
+      const keys = [];
+      let cur = minMK;
+      while(true){
+        keys.push(cur);
+        if(cur === maxMK) break;
+        cur = nextMonthKey(cur);
+        if(keys.length > 600) break;
       }
-
-      // obvious candidates first
-      consider(STORAGE_KEY);
-      for(const k of STORAGE_KEY_ALIASES) consider(k);
-
-      // then scan everything (this is the important part)
-      for(let i=0;i<localStorage.length;i++){
-        const key = localStorage.key(i);
-        if(!key) continue;
-        // only parse likely keys to keep it snappy
-        const lower = key.toLowerCase();
-        if(lower.includes("bishop") || lower.includes("budget")){
-          consider(key);
-        }
-      }
-
-      return best;
+      return keys;
     }
 
-    // New model:
-    // data = {
-    //   transactions: [{id, dateISO, description, amount, type}],
-    //   ddSeries: [{id, name, category, periods: [{id, startMonth, endMonth|null, day, amount, paused}]}]
-    // }
-    function normaliseToNewModel(obj){
-      // Already new
-      if(obj && Array.isArray(obj.transactions) && Array.isArray(obj.ddSeries)){
-        return {
-          transactions: obj.transactions.map(t => ({
-            id: t.id || uid(),
-            dateISO: (t.dateISO || toISODate(today())),
-            description: t.description || "",
-            amount: Number(t.amount || 0),
-            type: t.type === "income" ? "income" : "spend"
-          })),
-          ddSeries: obj.ddSeries.map(s => ({
-            id: s.id || uid(),
-            name: s.name || "Direct Debit",
-            category: s.category || "",
-            periods: Array.isArray(s.periods) ? s.periods.map(p => ({
-              id: p.id || uid(),
-              startMonth: p.startMonth || monthKey(today()),
-              endMonth: p.endMonth ?? null,
-              day: Number(p.day || 1),
-              amount: Number(p.amount || 0),
-              paused: !!p.paused
-            })) : []
-          }))
-        };
-      }
-
-      // Old: {transactions:[...], directDebits:[...]}
-      if(obj && Array.isArray(obj.transactions) && Array.isArray(obj.directDebits)){
-        const transactions = obj.transactions.map(t => ({
-          id: t.id || uid(),
-          dateISO: (t.dateISO || t.date || toISODate(today())),
-          description: t.description || "",
-          amount: Number(t.amount || 0),
-          type: t.type === "income" ? "income" : "spend"
-        }));
-
-        const ddSeries = obj.directDebits.map(dd => ({
-          id: dd.id || uid(),
-          name: dd.name || "Direct Debit",
-          category: dd.category || "",
-          periods: [{
-            id: uid(),
-            startMonth: dd.monthKey || monthKey(today()),
-            endMonth: null,
-            day: Number(dd.day || 1),
-            amount: Number(dd.amount || 0),
-            paused: dd.active === false
-          }]
-        }));
-
-        return { transactions, ddSeries };
-      }
-
-      return { transactions: [], ddSeries: [] };
-    }
-
-    function loadData(){
-      const best = findBestLegacySave();
-      if(!best){
-        return { transactions: [], ddSeries: [] };
-      }
-
-      const data = normaliseToNewModel(best.obj);
-
-      // Important: save into the new key so app sees it from now on.
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      return data;
-    }
-
-    function saveData(){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
-    }
-
-    /**********************
-     * Direct Debits (versioned)
-     **********************/
-    function seriesApplicablePeriod(series, mk){
-      const periods = (series.periods || []).slice().sort((a,b)=> (a.startMonth < b.startMonth ? -1 : 1));
-      for(const p of periods){
-        const startOk = compareMonthKey(p.startMonth, mk) <= 0;
-        const endOk = (p.endMonth == null) ? true : (compareMonthKey(mk, p.endMonth) <= 0);
-        if(startOk && endOk) return p;
-      }
-      return null;
-    }
-
-    function listDirectDebitsForMonth(mk){
-      const rows = [];
-      for(const s of state.data.ddSeries){
-        const p = seriesApplicablePeriod(s, mk);
-        if(!p) continue;
-        rows.push({
-          seriesId: s.id,
-          seriesName: s.name,
-          seriesCategory: s.category || "",
-          periodId: p.id,
-          startMonth: p.startMonth,
-          endMonth: p.endMonth,
-          day: Number(p.day||1),
-          amount: Number(p.amount||0),
-          paused: !!p.paused
-        });
-      }
-      rows.sort((a,b)=> (a.day - b.day) || a.seriesName.localeCompare(b.seriesName));
-      return rows;
-    }
-
-    function ddTotalForMonth(mk){
-      const dds = listDirectDebitsForMonth(mk);
-      return dds.filter(x=>!x.paused).reduce((sum,x)=> sum + x.amount, 0);
-    }
-
-    /**********************
-     * Transactions
-     **********************/
-    function transactionsForMonth(mk){
-      return state.data.transactions
-        .filter(t => (t.dateISO || "").slice(0,7) === mk)
-        .slice()
-        .sort((a,b)=> (a.dateISO < b.dateISO ? -1 : 1));
-    }
-
-    function incomeTotalForMonth(mk){
-      return transactionsForMonth(mk).filter(t=>t.type==="income").reduce((s,t)=> s + Number(t.amount||0), 0);
-    }
-
-    function spendTotalForMonth(mk){
-      return transactionsForMonth(mk).filter(t=>t.type==="spend").reduce((s,t)=> s + Number(t.amount||0), 0);
-    }
-
-    /**********************
-     * Carry forward
-     **********************/
-    function allMonthKeysInData(){
+    function allMonthKeysFromData(){
       const set = new Set();
-      state.data.transactions.forEach(t=>{
-        if(t.dateISO && t.dateISO.length >= 7) set.add(t.dateISO.slice(0,7));
-      });
-      state.data.ddSeries.forEach(s=>{
-        (s.periods||[]).forEach(p=>{
-          if(p.startMonth) set.add(p.startMonth);
-          if(p.endMonth) set.add(p.endMonth);
-        });
-      });
+      state.data.transactions.forEach(t => set.add(t.monthKey));
+      state.data.directDebits.forEach(d => set.add(d.monthKey));
       return Array.from(set).sort();
     }
 
-    function earliestMonthKey(){
-      const all = allMonthKeysInData();
-      return all.length ? all[0] : state.selectedMonth;
+    // ========= Carry-forward chain (auto opening balances) =========
+    function monthTotals(mk){
+      const tx = state.data.transactions.filter(t => t.monthKey === mk);
+      const dds = state.data.directDebits.filter(d => d.monthKey === mk && d.active === true);
+
+      const income = tx.filter(t => t.type === "income").reduce((a,b)=>a + (Number(b.amount)||0), 0);
+      const spend  = tx.filter(t => t.type === "spend").reduce((a,b)=>a + (Number(b.amount)||0), 0);
+      const dd     = dds.reduce((a,b)=>a + (Number(b.amount)||0), 0);
+
+      const left = income - dd - spend;
+      return { income, spend, dd, left };
     }
 
-    function computeMonthSummary(mk, memo){
-      if(memo[mk]) return memo[mk];
+    function getOpeningTx(mk){
+      return state.data.transactions.find(t => t.monthKey === mk && t.isAutoOpening === true);
+    }
 
-      const first = earliestMonthKey();
+    function setOpeningTx(mk, amount){
+      const existing = getOpeningTx(mk);
+      if(existing){
+        existing.amount = amount;
+        existing.dateISO = `${mk}-01`;
+        existing.description = "Opening balance (auto)";
+        existing.type = "income";
+      }else{
+        state.data.transactions.push({
+          id: uid(),
+          monthKey: mk,
+          dateISO: `${mk}-01`,
+          type: "income",
+          description: "Opening balance (auto)",
+          amount: amount,
+          isAutoOpening: true
+        });
+      }
+    }
 
-      let carryIn = 0;
-      if(compareMonthKey(mk, first) > 0){
-        const pm = prevMonth(mk);
-        const prevSum = computeMonthSummary(pm, memo);
-        carryIn = prevSum.leftAfterAll;
+    function removeOpeningTx(mk){
+      state.data.transactions = state.data.transactions.filter(t => !(t.monthKey === mk && t.isAutoOpening === true));
+    }
+
+    function recomputeCarryChain(){
+      const keys = allMonthKeysFromData();
+      if(keys.length === 0) return;
+
+      const minMK = keys[0];
+      const maxMK = keys[keys.length - 1];
+
+      // Build continuous chain across months, even if some are "empty"
+      const chain = monthRangeKeys(minMK, maxMK);
+
+      // First month: no opening balance
+      removeOpeningTx(chain[0]);
+
+      for(let i=1;i<chain.length;i++){
+        const prev = chain[i-1];
+        const cur  = chain[i];
+
+        const prevTotals = monthTotals(prev);
+        const carry = prevTotals.left;
+
+        // Only create opening if there is ANY reason the month exists (has tx or dd) OR carry is non-zero
+        const hasAnyCur =
+          state.data.transactions.some(t => t.monthKey === cur && !t.isAutoOpening) ||
+          state.data.directDebits.some(d => d.monthKey === cur);
+
+        if(hasAnyCur || carry !== 0){
+          setOpeningTx(cur, carry);
+        }else{
+          // no data and nothing to carry, keep it clean
+          removeOpeningTx(cur);
+        }
+      }
+    }
+
+    // ========= UI state =========
+    const els = {};
+    function bindEls(){
+      const ids = [
+        "monthLabel","openingValue",
+        "incomeTotal","ddTotal","spendTotal","leftTotal","leftPill",
+        "donutArc","donutPct","donutHeadline","donutSubtext",
+        "miniCanvas","whatIf","whatIfLabel","whatIfResetBtn",
+        "txDate","txType","txDesc","txAmount","addTxBtn","txList",
+        "ddName","ddAmount","ddDay","ddCategory","addDDBtn","ddList",
+        "prevMonthBtn","nextMonthBtn",
+        "exportBtn","resetBtn",
+        "donutCard","donutModalBackdrop","closeDonutModalBtn",
+        "donutModalTitle","mIncome","mDD","mSpend","mLeft","modalTxList","modalDDList",
+        "editModalBackdrop","closeEditModalBtn","editTitle","editBody",
+        "copyDDBanner","copyDDBtn","dismissCopyDDBtn"
+      ];
+      ids.forEach(id => els[id] = document.getElementById(id));
+    }
+
+    // ========= What-if =========
+    let whatIfOffset = 0;
+
+    function applyWhatIfLabel(){
+      const sign = whatIfOffset === 0 ? "" : (whatIfOffset > 0 ? "+" : "−");
+      els.whatIfLabel.textContent = `Change: ${sign}${fmtMoney(Math.abs(whatIfOffset))}`;
+    }
+
+    function resetWhatIf(){
+      whatIfOffset = 0;
+      els.whatIf.value = "0";
+      applyWhatIfLabel();
+      render();
+    }
+
+    // ========= Data getters for current month =========
+    function currentTransactions(){
+      return state.data.transactions
+        .filter(t => t.monthKey === state.selectedMonth)
+        .slice()
+        .sort((a,b)=> (b.dateISO || "").localeCompare(a.dateISO || ""));
+    }
+
+    function currentDirectDebits(){
+      return state.data.directDebits
+        .filter(d => d.monthKey === state.selectedMonth)
+        .slice()
+        .sort((a,b)=> (a.day - b.day) || (a.name||"").localeCompare(b.name||""));
+    }
+
+    // ========= Copy DDs forward helper =========
+    function shouldShowCopyDDPrompt(){
+      const mk = state.selectedMonth;
+      const hasDD = state.data.directDebits.some(d => d.monthKey === mk);
+      if(hasDD) return false;
+
+      const prev = prevMonthKey(mk);
+      const prevHas = state.data.directDebits.some(d => d.monthKey === prev);
+      if(!prevHas) return false;
+
+      if(state.dismissedCopyDDBanner[mk]) return false;
+      return true;
+    }
+
+    function copyDDsFromPreviousMonth(){
+      const mk = state.selectedMonth;
+      const prev = prevMonthKey(mk);
+      const prevDDs = state.data.directDebits.filter(d => d.monthKey === prev);
+      if(prevDDs.length === 0) return;
+
+      // Prevent duplicates
+      if(state.data.directDebits.some(d => d.monthKey === mk)) return;
+
+      prevDDs.forEach(d => {
+        state.data.directDebits.push({
+          id: uid(),
+          monthKey: mk,
+          name: d.name,
+          amount: d.amount,
+          day: d.day,
+          category: d.category,
+          active: d.active
+        });
+      });
+
+      save();
+      render();
+    }
+
+    // ========= Rendering =========
+    function render(){
+      // Ensure carry-forward is correct after any changes
+      recomputeCarryChain();
+      save();
+
+      els.monthLabel.textContent = monthKeyToLabel(state.selectedMonth);
+
+      // Opening balance display
+      const openTx = getOpeningTx(state.selectedMonth);
+      els.openingValue.textContent = openTx ? fmtMoney(openTx.amount) : "—";
+
+      // Totals
+      const { income, spend, dd, left } = monthTotals(state.selectedMonth);
+
+      els.incomeTotal.textContent = fmtMoney(income);
+      els.spendTotal.textContent = fmtMoney(spend);
+      els.ddTotal.textContent = fmtMoney(dd);
+
+      const leftAfter = left - whatIfOffset;
+      els.leftTotal.textContent = fmtMoney(leftAfter);
+
+      // Colour pill
+      els.leftTotal.classList.remove("green","red","amber");
+      if(leftAfter > 0){
+        els.leftTotal.classList.add("green");
+        els.leftPill.style.background = "rgba(34,197,94,.14)";
+      }else if(leftAfter === 0){
+        els.leftTotal.classList.add("amber");
+        els.leftPill.style.background = "rgba(245,158,11,.14)";
+      }else{
+        els.leftTotal.classList.add("red");
+        els.leftPill.style.background = "rgba(251,113,133,.14)";
       }
 
-      const income = incomeTotalForMonth(mk);
-      const dd = ddTotalForMonth(mk);
-      const spend = spendTotalForMonth(mk);
+      // Donut percent = income left as % of income (guard)
+      let pct = 0;
+      if(income > 0){
+        pct = Math.max(0, Math.min(100, (leftAfter / income) * 100));
+      }
+      els.donutPct.textContent = `${Math.round(pct)}%`;
 
-      const startedWith = carryIn + income;
-      const leftAfterAll = startedWith - dd - spend;
+      // Donut arc (circumference approx 2πr with r=44 -> 276.46)
+      const C = 276;
+      const dash = (pct/100) * C;
+      els.donutArc.setAttribute("stroke-dasharray", `${dash} ${C - dash}`);
 
-      const res = { mk, carryIn, income, dd, spend, startedWith, leftAfterAll };
-      memo[mk] = res;
-      return res;
+      // Headline / text
+      if(income <= 0){
+        els.donutHeadline.textContent = "Waiting for income";
+        els.donutHeadline.style.color = "var(--text)";
+        els.donutSubtext.textContent = "Add salary and bills to see how much is left.";
+      }else if(leftAfter > 0){
+        els.donutHeadline.textContent = "You’re in the green";
+        els.donutHeadline.style.color = "var(--greenSoft)";
+        els.donutSubtext.textContent = `${fmtMoney(leftAfter)} left after this month’s direct debits and spending.`;
+      }else if(leftAfter === 0){
+        els.donutHeadline.textContent = "Every pound is allocated";
+        els.donutHeadline.style.color = "var(--text)";
+        els.donutSubtext.textContent = "You’ve used 100% of this month’s income.";
+      }else{
+        els.donutHeadline.textContent = "Spending over income";
+        els.donutHeadline.style.color = "var(--red)";
+        els.donutSubtext.textContent = `Over by ${fmtMoney(Math.abs(leftAfter))} this month.`;
+      }
+
+      // Transactions list
+      renderTransactions();
+
+      // DD list
+      renderDirectDebits();
+
+      // Copy-DD prompt
+      els.copyDDBanner.hidden = !shouldShowCopyDDPrompt();
+
+      // Mini graph
+      drawMiniGraph();
+
+      // Donut modal values (if open)
+      if(els.donutModalBackdrop.classList.contains("show")){
+        renderDonutModal();
+      }
     }
 
-    function monthSummary(mk){
-      const memo = {};
-      return computeMonthSummary(mk, memo);
+    function renderTransactions(targetEl = els.txList){
+      const txs = currentTransactions().filter(t => !t.isAutoOpening || true); // show opening too (useful)
+      if(txs.length === 0){
+        targetEl.innerHTML = `<div class="subtle">No transactions yet.</div>`;
+        return;
+      }
+
+      targetEl.innerHTML = txs.map(t => {
+        const amtClass = (t.type === "income") ? "green" : "red";
+        const typeLabel = (t.type === "income") ? "Income" : "Spending";
+        const meta = `${fmtDateDisplay(t.dateISO)} · ${typeLabel}${t.isAutoOpening ? " · Auto" : ""}`;
+        return `
+          <div class="item">
+            <div class="left">
+              <div class="name">${escapeHtml(t.description || "")}</div>
+              <div class="meta">${escapeHtml(meta)}</div>
+            </div>
+            <div class="right">
+              <div class="amount" style="color:${t.type === "income" ? "var(--green)" : "var(--red)"}">${fmtMoney(t.amount)}</div>
+              <button class="pillBtn small ghost" data-edit-tx="${t.id}" style="position:relative; top:-1px;">Edit</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      targetEl.querySelectorAll("[data-edit-tx]").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const id = btn.getAttribute("data-edit-tx");
+          openTxEditor(id);
+        });
+      });
     }
 
-    /**********************
-     * Donut + graph
-     **********************/
-    function drawDonut(canvas, percent){
+    function renderDirectDebits(targetEl = els.ddList){
+      const dds = currentDirectDebits();
+      if(dds.length === 0){
+        targetEl.innerHTML = `<div class="subtle">No direct debits yet for this month.</div>`;
+        return;
+      }
+
+      targetEl.innerHTML = dds.map(d => {
+        const isActive = d.active === true;
+        const meta = `${fmtMoney(d.amount)} · day ${d.day}${d.category ? " · " + d.category : ""}`;
+        return `
+          <div class="item ${isActive ? "" : "mutedRow"}">
+            <div class="left">
+              <div class="name">${escapeHtml(d.name || "")}</div>
+              <div class="meta">${escapeHtml(meta)}</div>
+            </div>
+            <div class="right">
+              <span class="badge ${isActive ? "green" : "red"}">${isActive ? "Active" : "Paused"}</span>
+              <button class="pillBtn small ghost" data-edit-dd="${d.id}">Edit</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      targetEl.querySelectorAll("[data-edit-dd]").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const id = btn.getAttribute("data-edit-dd");
+          openDDEditor(id);
+        });
+      });
+    }
+
+    // ========= Mini graph (can go negative, with visible x-axis) =========
+    function drawMiniGraph(){
+      const canvas = els.miniCanvas;
       const ctx = canvas.getContext("2d");
-      const w = canvas.width, h = canvas.height;
-      const cx = w/2, cy = h/2;
-      const r = Math.min(w,h)/2 - 10;
+
+      const w = canvas.clientWidth;
+      const h = canvas.height;
+      canvas.width = Math.floor(w * devicePixelRatio);
+      canvas.height = Math.floor(h * devicePixelRatio);
+      ctx.scale(devicePixelRatio, devicePixelRatio);
 
       ctx.clearRect(0,0,w,h);
 
-      ctx.beginPath();
-      ctx.arc(cx,cy,r,0,Math.PI*2);
-      ctx.strokeStyle = "rgba(31,41,55,0.9)";
-      ctx.lineWidth = 16;
-      ctx.lineCap = "round";
-      ctx.stroke();
-
-      const p = clamp(percent, 0, 100) / 100;
-      const start = -Math.PI/2;
-      const end = start + (Math.PI*2 * p);
-
-      const grad = ctx.createLinearGradient(0,0,w,h);
-      grad.addColorStop(0, "#60a5fa");
-      grad.addColorStop(0.55, "#22c55e");
-      grad.addColorStop(1, "#06b6d4");
-
-      ctx.beginPath();
-      ctx.arc(cx,cy,r,start,end);
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 16;
-      ctx.lineCap = "round";
-      ctx.stroke();
-    }
-
-    function drawLineGraph(canvas, mk, whatIfOffset){
-      const ctx = canvas.getContext("2d");
-      const W = canvas.width, H = canvas.height;
-      ctx.clearRect(0,0,W,H);
-
-      const sum = monthSummary(mk);
-      const days = daysInMonth(mk);
-
-      const txs = transactionsForMonth(mk);
-      const dds = listDirectDebitsForMonth(mk);
-
-      const spendByDay = new Array(days).fill(0);
-      for(const t of txs){
-        if(t.type !== "spend") continue;
-        const day = Number(t.dateISO.slice(8,10));
-        if(day>=1 && day<=days) spendByDay[day-1] += Number(t.amount||0);
-      }
-
-      const ddByDay = new Array(days).fill(0);
-      for(const dd of dds){
-        if(dd.paused) continue;
-        const d = clamp(Number(dd.day||1), 1, days);
-        ddByDay[d-1] += Number(dd.amount||0);
-      }
-
-      const baseStart = sum.startedWith;
-      const values = [];
-
-      for(let i=0;i<days;i++){
-        const factor = (i+1)/days;
-
-        let cur = baseStart - (whatIfOffset * factor);
-        let spendSoFar = 0, ddSoFar = 0;
-        for(let j=0;j<=i;j++){
-          spendSoFar += spendByDay[j];
-          ddSoFar += ddByDay[j];
-        }
-        cur = cur - spendSoFar - ddSoFar;
-        values.push(cur);
-      }
-
-      const left = 10, right = 10, top = 10, bottom = 18;
-      const plotW = W - left - right;
-      const plotH = H - top - bottom;
-
-      ctx.strokeStyle = "rgba(255,255,255,0.22)";
-      ctx.lineWidth = 1;
-
+      const values = dailyBalancesForMonth(state.selectedMonth, whatIfOffset);
       if(values.length < 2){
-        ctx.beginPath();
-        ctx.moveTo(left, H-18);
-        ctx.lineTo(W-right, H-18);
-        ctx.stroke();
+        // draw x-axis anyway
+        drawAxis(ctx, w, h, 0.6);
         return;
       }
 
@@ -1361,444 +1246,569 @@
       const maxV = Math.max(...values);
       const range = Math.max(1, maxV - minV);
 
-      let axisY;
-      if(minV <= 0 && maxV >= 0){
-        axisY = top + plotH * (maxV / range);
-      }else{
-        axisY = top + plotH;
+      // padding
+      const padX = 8;
+      const padY = 10;
+
+      const plotW = w - padX*2;
+      const plotH = h - padY*2;
+
+      // map value to y
+      function yFor(v){
+        const t = (v - minV) / range; // 0..1
+        return padY + (1 - t) * plotH;
       }
 
+      // x-axis should be y=0 line if 0 is within range, else bottom
+      let axisY;
+      if(minV <= 0 && maxV >= 0){
+        axisY = yFor(0);
+      }else{
+        axisY = padY + plotH; // bottom
+      }
+
+      // axis
+      ctx.strokeStyle = "rgba(255,255,255,.22)";
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(left, axisY);
-      ctx.lineTo(left + plotW, axisY);
+      ctx.moveTo(padX, axisY);
+      ctx.lineTo(padX + plotW, axisY);
       ctx.stroke();
 
-      const grad = ctx.createLinearGradient(0,0,W,0);
-      grad.addColorStop(0, "#60a5fa");
-      grad.addColorStop(0.6, "#22c55e");
-      grad.addColorStop(1, "#06b6d4");
+      // line
+      const step = plotW / (values.length - 1);
 
-      ctx.strokeStyle = grad;
       ctx.lineWidth = 3;
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
 
+      // gradient line
+      const grad = ctx.createLinearGradient(padX,0,padX+plotW,0);
+      grad.addColorStop(0, "#93c5fd");
+      grad.addColorStop(0.55, "#22c55e");
+      grad.addColorStop(1, "#38bdf8");
+      ctx.strokeStyle = grad;
+
       ctx.beginPath();
-      for(let i=0;i<values.length;i++){
-        const x = left + (plotW * (i/(values.length-1)));
-        const y = top + plotH * ((maxV - values[i]) / range);
+      values.forEach((v,i)=>{
+        const x = padX + i*step;
+        const y = yFor(v);
         if(i===0) ctx.moveTo(x,y);
         else ctx.lineTo(x,y);
-      }
+      });
       ctx.stroke();
     }
 
-    /**********************
-     * UI State
-     **********************/
-    const state = {
-      data: loadData(),
-      selectedMonth: monthKey(today()),
-      whatIfOffset: 0,
-      editingTxId: null,
-      editingDd: null,
-      ddEditScope: "this"
-    };
+    function drawAxis(ctx,w,h,opacity=0.25){
+      ctx.strokeStyle = `rgba(255,255,255,${opacity})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(8, h-12);
+      ctx.lineTo(w-8, h-12);
+      ctx.stroke();
+    }
 
-    /**********************
-     * DOM refs
-     **********************/
-    const el = {
-      monthLabel: document.getElementById("monthLabel"),
-      prevMonthBtn: document.getElementById("prevMonthBtn"),
-      nextMonthBtn: document.getElementById("nextMonthBtn"),
+    function dailyBalancesForMonth(mk, offset){
+      // Start from total income for month, then subtract DDs as days pass and spending by date
+      const txs = state.data.transactions.filter(t => t.monthKey === mk);
+      const dds = state.data.directDebits.filter(d => d.monthKey === mk && d.active === true);
 
-      incomeTotal: document.getElementById("incomeTotal"),
-      ddTotal: document.getElementById("ddTotal"),
-      spendTotal: document.getElementById("spendTotal"),
-      leftAfterAll: document.getElementById("leftAfterAll"),
-      leftPill: document.getElementById("leftPill"),
+      const income = txs.filter(t => t.type === "income").reduce((a,b)=>a + (Number(b.amount)||0),0);
 
-      whatIfSlider: document.getElementById("whatIfSlider"),
-      whatIfChange: document.getElementById("whatIfChange"),
-      whatIfAfter: document.getElementById("whatIfAfter"),
-      resetWhatIfBtn: document.getElementById("resetWhatIfBtn"),
+      // days in month
+      const [y,m] = mk.split("-").map(Number);
+      const days = new Date(y, m, 0).getDate();
 
-      donutCanvas: document.getElementById("donutCanvas"),
-      donutPct: document.getElementById("donutPct"),
-      statusTitle: document.getElementById("statusTitle"),
-      statusBody: document.getElementById("statusBody"),
-      miniGraph: document.getElementById("miniGraph"),
+      // group spending by day
+      const spendByDay = new Array(days+1).fill(0);
+      txs.filter(t=>t.type==="spend").forEach(t=>{
+        const day = Number((t.dateISO||"").slice(8,10)) || 1;
+        spendByDay[day] += Number(t.amount)||0;
+      });
 
-      txDate: document.getElementById("txDate"),
-      txType: document.getElementById("txType"),
-      txDesc: document.getElementById("txDesc"),
-      txAmt: document.getElementById("txAmt"),
-      addTxBtn: document.getElementById("addTxBtn"),
-      txList: document.getElementById("txList"),
+      const ddByDay = new Array(days+1).fill(0);
+      dds.forEach(d=>{
+        const day = Math.min(days, Math.max(1, Number(d.day)||1));
+        ddByDay[day] += Number(d.amount)||0;
+      });
 
-      ddName: document.getElementById("ddName"),
-      ddDay: document.getElementById("ddDay"),
-      ddAmt: document.getElementById("ddAmt"),
-      ddCat: document.getElementById("ddCat"),
-      addDdBtn: document.getElementById("addDdBtn"),
-      ddList: document.getElementById("ddList"),
+      // apply what-if gradually
+      const values = [];
+      let bal = income;
 
-      exportAllBtn: document.getElementById("exportAllBtn"),
-      resetAllBtn: document.getElementById("resetAllBtn"),
+      for(let day=1; day<=days; day++){
+        bal -= ddByDay[day];
+        bal -= spendByDay[day];
 
-      donutCard: document.getElementById("donutCard"),
-      donutModal: document.getElementById("donutModal"),
-      closeDonutModal: document.getElementById("closeDonutModal"),
-      modalMonthLabel: document.getElementById("modalMonthLabel"),
-      modalCarryIn: document.getElementById("modalCarryIn"),
-      bigDonut: document.getElementById("bigDonut"),
-      bigDonutPct: document.getElementById("bigDonutPct"),
-      bkStart: document.getElementById("bkStart"),
-      bkIncome: document.getElementById("bkIncome"),
-      bkDD: document.getElementById("bkDD"),
-      bkSpend: document.getElementById("bkSpend"),
-      bkLeft: document.getElementById("bkLeft"),
-
-      txModal: document.getElementById("txModal"),
-      closeTxModal: document.getElementById("closeTxModal"),
-      editTxDate: document.getElementById("editTxDate"),
-      editTxType: document.getElementById("editTxType"),
-      editTxDesc: document.getElementById("editTxDesc"),
-      editTxAmt: document.getElementById("editTxAmt"),
-      saveTxBtn: document.getElementById("saveTxBtn"),
-      deleteTxBtn: document.getElementById("deleteTxBtn"),
-
-      ddModal: document.getElementById("ddModal"),
-      closeDdModal: document.getElementById("closeDdModal"),
-      editDdName: document.getElementById("editDdName"),
-      editDdDay: document.getElementById("editDdDay"),
-      editDdAmt: document.getElementById("editDdAmt"),
-      editDdCat: document.getElementById("editDdCat"),
-      editDdPaused: document.getElementById("editDdPaused"),
-      scopeThisMonth: document.getElementById("scopeThisMonth"),
-      scopeFromMonth: document.getElementById("scopeFromMonth"),
-      saveDdBtn: document.getElementById("saveDdBtn"),
-      deleteDdBtn: document.getElementById("deleteDdBtn"),
-    };
-
-    /**********************
-     * Render
-     **********************/
-    function refresh(){
-      saveData();
-
-      el.monthLabel.textContent = monthLabel(state.selectedMonth);
-
-      if(!el.txDate.value){
-        el.txDate.value = toISODate(today());
-      }
-
-      const sum = monthSummary(state.selectedMonth);
-      const dd = sum.dd;
-      const income = sum.income;
-      const spend = sum.spend;
-
-      const whatIf = Number(state.whatIfOffset || 0);
-      const leftAfter = sum.leftAfterAll - whatIf;
-      const startedWith = sum.startedWith;
-
-      el.incomeTotal.textContent = money(income);
-      el.ddTotal.textContent = money(dd);
-      el.spendTotal.textContent = money(spend);
-      el.leftAfterAll.textContent = money(leftAfter);
-
-      if(leftAfter > 0){
-        el.leftAfterAll.style.color = "var(--green)";
-        el.leftPill.style.background = "rgba(34,197,94,0.12)";
-      }else if(leftAfter === 0){
-        el.leftAfterAll.style.color = "var(--amber)";
-        el.leftPill.style.background = "rgba(251,146,60,0.12)";
-      }else{
-        el.leftAfterAll.style.color = "var(--red)";
-        el.leftPill.style.background = "rgba(251,113,133,0.12)";
-      }
-
-      const base = Math.max(0.0001, startedWith);
-      const pctLeft = clamp((leftAfter / base) * 100, -9999, 9999);
-      el.donutPct.textContent = `${Math.round(pctLeft)}%`;
-
-      if(startedWith <= 0.0001){
-        el.statusTitle.textContent = "Waiting for income";
-        el.statusTitle.style.color = "var(--text)";
-        el.statusBody.textContent = "Add your salary for this month to see how much is left after direct debits and spending.";
-      }else{
-        if(leftAfter > 0){
-          el.statusTitle.textContent = "You’re in the green";
-          el.statusTitle.style.color = "var(--greenSoft)";
-          el.statusBody.textContent = `${money(leftAfter)} left after this month’s direct debits and spending.`;
-        }else if(leftAfter === 0){
-          el.statusTitle.textContent = "Every pound is allocated";
-          el.statusTitle.style.color = "var(--text)";
-          el.statusBody.textContent = "You’ve used 100% of this month’s starting funds.";
+        // spread offset across month
+        if(offset !== 0){
+          const factor = day / days;
+          const adj = offset * factor;
+          values.push(bal - adj);
         }else{
-          el.statusTitle.textContent = "Spending over income";
-          el.statusTitle.style.color = "var(--red)";
-          el.statusBody.textContent = `Over by ${money(Math.abs(leftAfter))} this month.`;
+          values.push(bal);
         }
       }
-
-      drawDonut(el.donutCanvas, clamp(pctLeft, 0, 100));
-      drawLineGraph(el.miniGraph, state.selectedMonth, whatIf);
-
-      const maxDelta = Math.max(500, Math.ceil(startedWith));
-      el.whatIfSlider.min = String(-maxDelta);
-      el.whatIfSlider.max = String(maxDelta);
-      el.whatIfSlider.value = String(state.whatIfOffset);
-
-      const absChange = Math.abs(whatIf);
-      const sign = whatIf === 0 ? "" : (whatIf > 0 ? "+" : "−");
-      el.whatIfChange.textContent = `Change: ${sign}${money(absChange)}`;
-      el.whatIfAfter.textContent = `After change: ${money(leftAfter)}`;
-
-      renderTransactions();
-      renderDirectDebits();
+      return values;
     }
 
-    function renderTransactions(){
-      const txs = transactionsForMonth(state.selectedMonth);
-      el.txList.innerHTML = "";
-      if(txs.length === 0){
-        el.txList.innerHTML = `<div class="note" style="padding: 8px;">No transactions yet. Add income and spending above.</div>`;
-        return;
-      }
-
-      for(const tx of txs){
-        const amtColor = tx.type === "income" ? "var(--green)" : "var(--red)";
-        const typeLabel = tx.type === "income" ? "Income" : "Spending";
-
-        const card = document.createElement("div");
-        card.className = "itemCard";
-        card.innerHTML = `
-          <div class="itemLeft">
-            <p class="itemTitle">${escapeHtml(tx.description || "(no description)")}</p>
-            <p class="itemMeta">${shortDateLabel(tx.dateISO)} · ${typeLabel}</p>
-          </div>
-          <div class="itemRight">
-            <div class="amount" style="color:${amtColor};">${money(tx.amount)}</div>
-          </div>
-        `;
-        el.txList.appendChild(card);
-      }
-    }
-
-    function renderDirectDebits(){
-      const rows = listDirectDebitsForMonth(state.selectedMonth);
-      el.ddList.innerHTML = "";
-      if(rows.length === 0){
-        el.ddList.innerHTML = `<div class="note" style="padding: 8px;">No direct debits yet. Start with mortgage, council tax and utilities.</div>`;
-        return;
-      }
-
-      for(const dd of rows){
-        const tagClass = dd.paused ? "tagRed" : "tagGreen";
-        const tagText = dd.paused ? "Paused" : "Active";
-        const metaBits = [
-          `${money(dd.amount)} · day ${dd.day}`,
-          dd.seriesCategory ? dd.seriesCategory : ""
-        ].filter(Boolean).join(" · ");
-
-        const card = document.createElement("div");
-        card.className = "itemCard";
-        if(dd.paused) card.style.opacity = "0.92";
-
-        card.innerHTML = `
-          <div class="itemLeft">
-            <p class="itemTitle">${escapeHtml(dd.seriesName)}</p>
-            <p class="itemMeta">${escapeHtml(metaBits)}</p>
-          </div>
-          <div class="itemRight">
-            <div class="tag ${tagClass}">${tagText}</div>
-          </div>
-        `;
-        el.ddList.appendChild(card);
-      }
-    }
-
-    function blurKeyboard(){
-      if(document.activeElement && typeof document.activeElement.blur === "function"){
-        document.activeElement.blur();
-      }
-    }
-
+    // ========= Add / Edit =========
     function addTransaction(){
-      const dateISO = el.txDate.value || toISODate(today());
-      const type = el.txType.value === "income" ? "income" : "spend";
-      const desc = (el.txDesc.value || "").trim();
-      const amt = Number(String(el.txAmt.value || "").replace(",", "."));
+      const dateISO = els.txDate.value || `${state.selectedMonth}-01`;
+      const monthKey = dateISOToMonthKey(dateISO) || state.selectedMonth;
+      const type = els.txType.value;
+      const desc = (els.txDesc.value || "").trim();
+      const amt = parseAmount(els.txAmount.value);
 
-      if(!desc) return alert("Please enter a description.");
-      if(!Number.isFinite(amt) || amt <= 0) return alert("Please enter a valid amount.");
+      if(!desc){
+        alert("Please add a description.");
+        return;
+      }
+      if(!Number.isFinite(amt)){
+        alert("Please enter a valid amount.");
+        return;
+      }
 
-      state.data.transactions.push({ id: uid(), dateISO, description: desc, amount: amt, type });
+      state.data.transactions.push({
+        id: uid(),
+        monthKey,
+        dateISO,
+        type,
+        description: desc,
+        amount: amt,
+        isAutoOpening: false
+      });
 
-      el.txDesc.value = "";
-      el.txAmt.value = "";
-      el.txType.value = "income";
-      el.txDate.value = toISODate(today());
+      // clear inputs + hide keyboard
+      els.txDesc.value = "";
+      els.txAmount.value = "";
+      els.txDesc.blur();
+      els.txAmount.blur();
 
-      blurKeyboard();
-      refresh();
+      save();
+      render();
     }
 
     function addDirectDebit(){
-      const name = (el.ddName.value || "").trim();
-      const day = Number(el.ddDay.value || 0);
-      const amt = Number(String(el.ddAmt.value || "").replace(",", "."));
-      const cat = (el.ddCat.value || "").trim();
+      const name = (els.ddName.value || "").trim();
+      const amount = parseAmount(els.ddAmount.value);
+      const day = parseIntSafe(els.ddDay.value);
+      const category = (els.ddCategory.value || "").trim();
 
-      if(!name) return alert("Please enter a name.");
-      if(!Number.isFinite(day) || day < 1 || day > 31) return alert("Please enter a valid day (1–31).");
-      if(!Number.isFinite(amt) || amt <= 0) return alert("Please enter a valid amount.");
+      if(!name){
+        alert("Please add a name.");
+        return;
+      }
+      if(!Number.isFinite(amount)){
+        alert("Please enter a valid amount.");
+        return;
+      }
+      if(!Number.isFinite(day) || day < 1 || day > 31){
+        alert("Please enter a day between 1 and 31.");
+        return;
+      }
 
-      state.data.ddSeries.push({
+      state.data.directDebits.push({
         id: uid(),
+        monthKey: state.selectedMonth,
         name,
-        category: cat,
-        periods: [{
-          id: uid(),
-          startMonth: state.selectedMonth,
-          endMonth: null,
-          day,
-          amount: amt,
-          paused: false
-        }]
+        amount,
+        day,
+        category,
+        active: true
       });
 
-      el.ddName.value = "";
-      el.ddDay.value = "";
-      el.ddAmt.value = "";
-      el.ddCat.value = "";
+      // clear inputs + hide keyboard
+      els.ddName.value = "";
+      els.ddAmount.value = "";
+      els.ddDay.value = "";
+      els.ddCategory.value = "";
+      els.ddName.blur();
+      els.ddAmount.blur();
+      els.ddDay.blur();
+      els.ddCategory.blur();
 
-      blurKeyboard();
-      refresh();
+      save();
+      render();
+    }
+
+    // ========= Editors =========
+    function openTxEditor(id){
+      const tx = state.data.transactions.find(t=>t.id===id);
+      if(!tx) return;
+
+      // Prevent editing auto opening date/type, but allow amount if needed (still auto gets recomputed)
+      const isAuto = tx.isAutoOpening === true;
+
+      els.editTitle.textContent = isAuto ? "Opening balance (auto)" : "Edit transaction";
+
+      els.editBody.innerHTML = `
+        <div class="formGrid">
+          <div class="field">
+            <label>Date</label>
+            <input class="control" type="date" id="eTxDate" ${isAuto ? "disabled" : ""} value="${escapeAttr(tx.dateISO)}" />
+          </div>
+
+          <div class="field">
+            <label>Type</label>
+            <select class="control" id="eTxType" ${isAuto ? "disabled" : ""}>
+              <option value="income" ${tx.type==="income"?"selected":""}>Income</option>
+              <option value="spend" ${tx.type==="spend"?"selected":""}>Spending</option>
+            </select>
+          </div>
+
+          <div class="field" style="grid-column:1/-1">
+            <label>Description</label>
+            <input class="control" type="text" id="eTxDesc" ${isAuto ? "disabled" : ""} value="${escapeAttr(tx.description||"")}" />
+          </div>
+
+          <div class="field" style="grid-column:1/-1">
+            <label>Amount</label>
+            <input class="control" type="text" inputmode="decimal" id="eTxAmt" value="${escapeAttr(String(tx.amount))}" />
+          </div>
+        </div>
+
+        <div class="rowBtns">
+          <button class="pillBtn primary" id="saveTxEditBtn">Save</button>
+          ${isAuto ? "" : `<button class="pillBtn danger" id="deleteTxBtn">Delete</button>`}
+        </div>
+
+        ${isAuto ? `<p class="subtle" style="margin-top:10px">This value is recomputed from the previous month. If you edit it, it may be overwritten when you change data in earlier months.</p>` : ""}
+      `;
+
+      showEditModal();
+
+      document.getElementById("saveTxEditBtn").addEventListener("click", ()=>{
+        const amt = parseAmount(document.getElementById("eTxAmt").value);
+        if(!Number.isFinite(amt)){
+          alert("Please enter a valid amount.");
+          return;
+        }
+
+        if(!isAuto){
+          const newDate = document.getElementById("eTxDate").value;
+          const newType = document.getElementById("eTxType").value;
+          const newDesc = (document.getElementById("eTxDesc").value || "").trim();
+          if(!newDesc){
+            alert("Please add a description.");
+            return;
+          }
+          tx.dateISO = newDate;
+          tx.monthKey = dateISOToMonthKey(newDate);
+          tx.type = newType;
+          tx.description = newDesc;
+        }
+        tx.amount = amt;
+
+        closeEditModal();
+        save();
+        render();
+      });
+
+      const delBtn = document.getElementById("deleteTxBtn");
+      if(delBtn){
+        delBtn.addEventListener("click", ()=>{
+          if(!confirm("Delete this transaction?")) return;
+          state.data.transactions = state.data.transactions.filter(t=>t.id!==id);
+          closeEditModal();
+          save();
+          render();
+        });
+      }
+    }
+
+    function openDDEditor(id){
+      const dd = state.data.directDebits.find(d=>d.id===id);
+      if(!dd) return;
+
+      els.editTitle.textContent = "Edit direct debit (this month only)";
+
+      els.editBody.innerHTML = `
+        <div class="formGrid">
+          <div class="field" style="grid-column:1/-1">
+            <label>Name</label>
+            <input class="control" type="text" id="eDDName" value="${escapeAttr(dd.name||"")}" />
+          </div>
+
+          <div class="field">
+            <label>Amount</label>
+            <input class="control" type="text" inputmode="decimal" id="eDDAmt" value="${escapeAttr(String(dd.amount))}" />
+          </div>
+
+          <div class="field">
+            <label>Day of month</label>
+            <input class="control" type="text" inputmode="numeric" id="eDDDay" value="${escapeAttr(String(dd.day))}" />
+          </div>
+
+          <div class="field" style="grid-column:1/-1">
+            <label>Category</label>
+            <input class="control" type="text" id="eDDCat" value="${escapeAttr(dd.category||"")}" />
+          </div>
+
+          <div class="field" style="grid-column:1/-1">
+            <label>Paused</label>
+            <select class="control" id="eDDPaused">
+              <option value="no" ${dd.active ? "selected" : ""}>No (Active)</option>
+              <option value="yes" ${!dd.active ? "selected" : ""}>Yes (Paused)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="rowBtns">
+          <button class="pillBtn primary" id="saveDDEditBtn">Save</button>
+          <button class="pillBtn danger" id="deleteDDBtn">Delete (this month)</button>
+        </div>
+
+        <p class="subtle" style="margin-top:10px">
+          This is a monthly snapshot. Editing here changes only <b>${monthKeyToLabel(dd.monthKey)}</b>.
+          If it changes next month, edit next month’s snapshot instead.
+        </p>
+      `;
+
+      showEditModal();
+
+      document.getElementById("saveDDEditBtn").addEventListener("click", ()=>{
+        const name = (document.getElementById("eDDName").value || "").trim();
+        const amt = parseAmount(document.getElementById("eDDAmt").value);
+        const day = parseIntSafe(document.getElementById("eDDDay").value);
+        const cat = (document.getElementById("eDDCat").value || "").trim();
+        const paused = document.getElementById("eDDPaused").value === "yes";
+
+        if(!name){
+          alert("Please add a name.");
+          return;
+        }
+        if(!Number.isFinite(amt)){
+          alert("Please enter a valid amount.");
+          return;
+        }
+        if(!Number.isFinite(day) || day < 1 || day > 31){
+          alert("Please enter a day between 1 and 31.");
+          return;
+        }
+
+        dd.name = name;
+        dd.amount = amt;
+        dd.day = day;
+        dd.category = cat;
+        dd.active = !paused;
+
+        closeEditModal();
+        save();
+        render();
+      });
+
+      document.getElementById("deleteDDBtn").addEventListener("click", ()=>{
+        if(!confirm("Delete this direct debit for this month only?")) return;
+        state.data.directDebits = state.data.directDebits.filter(d=>d.id!==id);
+        closeEditModal();
+        save();
+        render();
+      });
+    }
+
+    // ========= Donut detail modal =========
+    function openDonutModal(){
+      renderDonutModal();
+      els.donutModalBackdrop.classList.add("show");
+      els.donutModalBackdrop.setAttribute("aria-hidden","false");
+    }
+
+    function closeDonutModal(){
+      els.donutModalBackdrop.classList.remove("show");
+      els.donutModalBackdrop.setAttribute("aria-hidden","true");
+    }
+
+    function renderDonutModal(){
+      const mk = state.selectedMonth;
+      els.donutModalTitle.textContent = `Monthly Breakdown — ${monthKeyToLabel(mk)}`;
+
+      const { income, spend, dd, left } = monthTotals(mk);
+      const leftAfter = left - whatIfOffset;
+
+      els.mIncome.textContent = fmtMoney(income);
+      els.mSpend.textContent  = fmtMoney(spend);
+      els.mDD.textContent     = fmtMoney(dd);
+      els.mLeft.textContent   = fmtMoney(leftAfter);
+
+      els.mLeft.classList.remove("green","red","amber");
+      if(leftAfter > 0) els.mLeft.classList.add("green");
+      else if(leftAfter === 0) els.mLeft.classList.add("amber");
+      else els.mLeft.classList.add("red");
+
+      renderTransactions(els.modalTxList);
+      renderDirectDebits(els.modalDDList);
+    }
+
+    // ========= Modal helpers =========
+    function showEditModal(){
+      els.editModalBackdrop.classList.add("show");
+      els.editModalBackdrop.setAttribute("aria-hidden","false");
+    }
+    function closeEditModal(){
+      els.editModalBackdrop.classList.remove("show");
+      els.editModalBackdrop.setAttribute("aria-hidden","true");
+    }
+
+    // ========= Export / Reset =========
+    function csvEscape(v){
+      const s = (v == null) ? "" : String(v);
+      const e = s.replaceAll('"','""');
+      return `"${e}"`;
     }
 
     function exportAllCSV(){
-      const lines = [];
-      lines.push([
-        "RecordType",
-        "MonthKey",
-        "Date",
-        "Type",
-        "Description",
-        "Amount",
-        "DD_SeriesId",
-        "DD_Name",
-        "DD_Category",
-        "DD_DayOfMonth",
-        "DD_PeriodStartMonth",
-        "DD_PeriodEndMonth",
-        "DD_Paused"
-      ].join(","));
+      // Single file with your headers:
+      const headers = [
+        "RowType","MonthKey","Date","TxType","Description","TxAmount",
+        "DDName","DDAmount","DDDay","DDCategory","DDActive",
+        "OverrideMonth","OverrideType","OverrideAmount","OverrideDay","OverrideCategory","OverrideActive"
+      ];
 
-      for(const tx of state.data.transactions){
-        const mk = (tx.dateISO || "").slice(0,7);
-        lines.push(csvRow([
-          "Transaction",
-          mk,
-          tx.dateISO || "",
-          tx.type || "",
-          tx.description || "",
-          num2(tx.amount),
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
-        ]));
-      }
+      const rows = [];
+      // Transactions
+      state.data.transactions
+        .slice()
+        .sort((a,b)=> (a.monthKey.localeCompare(b.monthKey)) || (a.dateISO.localeCompare(b.dateISO)))
+        .forEach(t=>{
+          rows.push([
+            "TRANSACTION",
+            t.monthKey,
+            t.dateISO,
+            t.type,
+            t.description || "",
+            (Number(t.amount)||0).toFixed(2),
+            "", "", "", "", "",
+            "", "", "", "", "", ""
+          ]);
+        });
 
-      for(const s of state.data.ddSeries){
-        for(const p of (s.periods||[])){
-          lines.push(csvRow([
-            "DirectDebitPeriod",
-            p.startMonth || "",
+      // Direct debits (monthly snapshot)
+      state.data.directDebits
+        .slice()
+        .sort((a,b)=> (a.monthKey.localeCompare(b.monthKey)) || (a.day - b.day) || (a.name||"").localeCompare(b.name||""))
+        .forEach(d=>{
+          rows.push([
+            "DIRECT_DEB",
+            d.monthKey,
             "",
             "",
             "",
-            num2(p.amount),
-            s.id,
-            s.name || "",
-            s.category || "",
-            p.day,
-            p.startMonth || "",
-            (p.endMonth ?? ""),
-            p.paused ? "Yes" : "No"
-          ]));
-        }
-      }
+            "",
+            d.name || "",
+            (Number(d.amount)||0).toFixed(2),
+            String(d.day || ""),
+            d.category || "",
+            d.active ? "Yes" : "No",
+            "", "", "", "", "", ""
+          ]);
+        });
 
-      const csv = lines.join("\n");
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const csv = [
+        headers.join(","),
+        ...rows.map(r=>r.map(csvEscape).join(","))
+      ].join("\n");
 
+      const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = "BishopBudget-Master.csv";
+      a.download = "BishopBudget-AllData.csv";
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setTimeout(()=> URL.revokeObjectURL(a.href), 1000);
+      setTimeout(()=>URL.revokeObjectURL(a.href), 800);
     }
 
     function resetAll(){
-      if(!confirm("This will wipe ALL budget data from this device/browser. Continue?")) return;
+      if(!confirm("This will delete ALL data in the app on this device/browser. Are you sure?")) return;
       localStorage.removeItem(STORAGE_KEY);
-      state.data = { transactions: [], ddSeries: [] };
-      state.whatIfOffset = 0;
-      el.whatIfSlider.value = "0";
-      refresh();
+      // hard reset
+      state.selectedMonth = monthKeyFromDate(new Date());
+      state.data = { transactions: [], directDebits: [] };
+      state.dismissedCopyDDBanner = {};
+      whatIfOffset = 0;
+      render();
     }
 
-    function csvRow(arr){
-      return arr.map(v=>{
-        const s = String(v ?? "");
-        const escaped = s.replaceAll('"', '""');
-        return `"${escaped}"`;
-      }).join(",");
+    // ========= Safety HTML escaping =========
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#39;");
     }
-    function num2(n){
-      const v = Number(n || 0);
-      return v.toFixed(2);
+    function escapeAttr(s){ return escapeHtml(s).replaceAll("\n"," "); }
+
+    // ========= Events =========
+    function wire(){
+      els.prevMonthBtn.addEventListener("click", ()=>{
+        state.selectedMonth = prevMonthKey(state.selectedMonth);
+        save();
+        render();
+        window.scrollTo({top:0, behavior:"smooth"});
+      });
+
+      els.nextMonthBtn.addEventListener("click", ()=>{
+        state.selectedMonth = nextMonthKey(state.selectedMonth);
+        save();
+        render();
+        window.scrollTo({top:0, behavior:"smooth"});
+      });
+
+      els.addTxBtn.addEventListener("click", addTransaction);
+      els.addDDBtn.addEventListener("click", addDirectDebit);
+
+      els.exportBtn.addEventListener("click", exportAllCSV);
+      els.resetBtn.addEventListener("click", resetAll);
+
+      els.whatIf.addEventListener("input", ()=>{
+        whatIfOffset = Number(els.whatIf.value) || 0;
+        applyWhatIfLabel();
+        render();
+      });
+      els.whatIfResetBtn.addEventListener("click", resetWhatIf);
+
+      els.donutCard.addEventListener("click", openDonutModal);
+      els.closeDonutModalBtn.addEventListener("click", closeDonutModal);
+      els.donutModalBackdrop.addEventListener("click", (e)=>{
+        if(e.target === els.donutModalBackdrop) closeDonutModal();
+      });
+
+      els.closeEditModalBtn.addEventListener("click", closeEditModal);
+      els.editModalBackdrop.addEventListener("click", (e)=>{
+        if(e.target === els.editModalBackdrop) closeEditModal();
+      });
+
+      // Copy DD prompt
+      els.copyDDBtn.addEventListener("click", ()=>{
+        copyDDsFromPreviousMonth();
+        els.copyDDBanner.hidden = true;
+      });
+      els.dismissCopyDDBtn.addEventListener("click", ()=>{
+        state.dismissedCopyDDBanner[state.selectedMonth] = true;
+        save();
+        render();
+      });
     }
 
-    el.prevMonthBtn.addEventListener("click", ()=>{
-      state.selectedMonth = addMonths(state.selectedMonth, -1);
-      refresh();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+    // ========= Init =========
+    function init(){
+      bindEls();
+      load();
 
-    el.nextMonthBtn.addEventListener("click", ()=>{
-      state.selectedMonth = addMonths(state.selectedMonth, 1);
-      refresh();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+      // set default tx date to today
+      const today = new Date();
+      const iso = today.toISOString().slice(0,10);
+      els.txDate.value = iso;
 
-    el.whatIfSlider.addEventListener("input", ()=>{
-      state.whatIfOffset = Number(el.whatIfSlider.value || 0);
-      refresh();
-    });
+      applyWhatIfLabel();
+      wire();
+      render();
+    }
 
-    el.resetWhatIfBtn.addEventListener("click", ()=>{
-      state.whatIfOffset = 0;
-      el.whatIfSlider.value = "0";
-      refresh();
-    });
-
-    el.addTxBtn.addEventListener("click", addTransaction);
-    el.addDdBtn.addEventListener("click", addDirectDebit);
-
-    el.exportAllBtn.addEventListener("click", exportAllCSV);
-    el.resetAllBtn.addEventListener("click", resetAll);
-
-    refresh();
+    init();
   </script>
 </body>
 </html>
