@@ -39,9 +39,7 @@
       --shadow-strong: 0 22px 65px rgba(0, 0, 0, 0.75);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -76,9 +74,7 @@
     }
 
     @media (min-width: 700px) {
-      .app-container {
-        padding: 20px;
-      }
+      .app-container { padding: 20px; }
     }
 
     .section {
@@ -98,15 +94,8 @@
       margin-bottom: 6px;
     }
 
-    .section-title {
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .section-subtitle {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
+    .section-title { font-size: 15px; font-weight: 600; }
+    .section-subtitle { font-size: 11px; color: var(--text-muted); }
 
     .header-top {
       display: flex;
@@ -116,15 +105,8 @@
       margin-bottom: 10px;
     }
 
-    .header-title {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .header-subtitle {
-      font-size: 12px;
-      color: var(--text-soft);
-    }
+    .header-title { font-size: 18px; font-weight: 700; }
+    .header-subtitle { font-size: 12px; color: var(--text-soft); }
 
     .header-icon {
       width: 68px;
@@ -143,16 +125,8 @@
       gap: 6px;
     }
 
-    .header-month-label {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .header-month-value {
-      font-size: 13px;
-      font-weight: 600;
-      color: #cfd7ff;
-    }
+    .header-month-label { font-size: 12px; color: var(--text-muted); }
+    .header-month-value { font-size: 13px; font-weight: 600; color: #cfd7ff; }
 
     .btn {
       border-radius: 11px;
@@ -167,8 +141,7 @@
       align-items: center;
       justify-content: center;
       gap: 4px;
-      transition: transform 0.08s ease, box-shadow 0.08s ease,
-        filter 0.08s ease;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
     }
 
     .btn:hover {
@@ -182,41 +155,14 @@
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
     }
 
-    .btn-small {
-      font-size: 12px;
-      padding: 4px 9px;
-      border-radius: 9px;
-    }
+    .btn-small { font-size: 12px; padding: 4px 9px; border-radius: 9px; }
+    .btn-secondary { background: radial-gradient(circle at top, #27375f 0, #141d39 70%); }
+    .btn-ghost { background: rgba(18, 30, 66, 0.8); border-color: rgba(255, 255, 255, 0.18); }
+    .btn-danger { background: linear-gradient(180deg, #c53946, #8c2530); border-color: rgba(255, 175, 184, 0.5); }
+    .btn-full { width: 100%; }
+    .btn-subtle { background: rgba(9, 15, 33, 0.95); border-color: rgba(255, 255, 255, 0.18); font-size: 12px; }
 
-    .btn-secondary {
-      background: radial-gradient(circle at top, #27375f 0, #141d39 70%);
-    }
-
-    .btn-ghost {
-      background: rgba(18, 30, 66, 0.8);
-      border-color: rgba(255, 255, 255, 0.18);
-    }
-
-    .btn-danger {
-      background: linear-gradient(180deg, #c53946, #8c2530);
-      border-color: rgba(255, 175, 184, 0.5);
-    }
-
-    .btn-full {
-      width: 100%;
-    }
-
-    .btn-subtle {
-      background: rgba(9, 15, 33, 0.95);
-      border-color: rgba(255, 255, 255, 0.18);
-      font-size: 12px;
-    }
-
-    .input-label {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 3px;
-    }
+    .input-label { font-size: 12px; color: var(--text-muted); margin-bottom: 3px; }
 
     .input {
       width: 100%;
@@ -253,18 +199,9 @@
       );
     }
 
-    .inputs-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
+    .inputs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      margin-top: 6px;
-    }
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
 
     .dashboard-card {
       background: rgba(13, 21, 45, 0.95);
@@ -274,22 +211,9 @@
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     }
 
-    .dashboard-label {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .dashboard-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 1px;
-    }
-
-    .dashboard-value {
-      font-size: 14px;
-      font-weight: 700;
-      margin-top: 4px;
-    }
+    .dashboard-label { font-size: 11px; color: var(--text-soft); }
+    .dashboard-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .dashboard-value { font-size: 14px; font-weight: 700; margin-top: 4px; }
 
     .status-row {
       margin-top: 8px;
@@ -311,22 +235,10 @@
       box-shadow: 0 0 0 2px rgba(255, 106, 120, 0.3);
     }
 
-    .status-text-main {
-      font-size: 13px;
-      font-weight: 600;
-    }
+    .status-text-main { font-size: 13px; font-weight: 600; }
+    .status-text-sub { font-size: 11px; color: var(--text-soft); }
 
-    .status-text-sub {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .donut-row {
-      display: flex;
-      margin-top: 8px;
-      gap: 10px;
-      align-items: center;
-    }
+    .donut-row { display: flex; margin-top: 8px; gap: 10px; align-items: center; }
 
     .donut-wrapper {
       flex: 0 0 150px;
@@ -335,16 +247,9 @@
       align-items: center;
     }
 
-    .donut-wrapper canvas {
-      cursor: pointer;
-      border-radius: 999px;
-    }
+    .donut-wrapper canvas { cursor: pointer; border-radius: 999px; }
 
-    .donut-legend {
-      flex: 1;
-      font-size: 11px;
-      color: var(--text-soft);
-    }
+    .donut-legend { flex: 1; font-size: 11px; color: var(--text-soft); }
 
     .donut-legend-row {
       display: flex;
@@ -354,26 +259,11 @@
       gap: 6px;
     }
 
-    .donut-legend-label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
+    .donut-legend-label { display: flex; align-items: center; gap: 5px; }
 
-    .legend-swatch {
-      width: 10px;
-      height: 10px;
-      border-radius: 3px;
-      background: var(--green-soft);
-    }
-
-    .legend-swatch-red {
-      background: var(--red-soft);
-    }
-
-    .legend-swatch-carry {
-      background: var(--blue-soft);
-    }
+    .legend-swatch { width: 10px; height: 10px; border-radius: 3px; background: var(--green-soft); }
+    .legend-swatch-red { background: var(--red-soft); }
+    .legend-swatch-carry { background: var(--blue-soft); }
 
     .list-container {
       max-height: 340px;
@@ -382,11 +272,7 @@
       padding-right: 2px;
     }
 
-    .list-empty {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
+    .list-empty { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
     .list-item {
       background: rgba(9, 15, 33, 0.96);
@@ -400,78 +286,24 @@
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
     }
 
-    .list-main {
-      flex: 1;
-      min-width: 0;
-    }
+    .list-main { flex: 1; min-width: 0; }
+    .list-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .list-sub { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .list-title {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
+    .list-right { display: flex; align-items: center; gap: 6px; }
+    .list-amount { font-size: 14px; font-weight: 700; text-align: right; white-space: nowrap; }
 
-    .list-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    .dd-paused .list-title { color: var(--red-soft); }
+    .dd-paused .list-sub { color: #ff9fab; }
 
-    .list-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .summary-rows { margin-top: 4px; font-size: 12px; }
+    .summary-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+    .summary-row-label { color: var(--text-soft); }
+    .summary-row-value { font-weight: 500; }
 
-    .list-amount {
-      font-size: 14px;
-      font-weight: 700;
-      text-align: right;
-      white-space: nowrap;
-    }
-
-    .dd-paused .list-title {
-      color: var(--red-soft);
-    }
-
-    .dd-paused .list-sub {
-      color: #ff9fab;
-    }
-
-    .summary-rows {
-      margin-top: 4px;
-      font-size: 12px;
-    }
-
-    .summary-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 2px;
-    }
-
-    .summary-row-label {
-      color: var(--text-soft);
-    }
-
-    .summary-row-value {
-      font-weight: 500;
-    }
-
-    .summary-row-strong {
-      font-weight: 600;
-      margin-top: 3px;
-    }
-
-    .summary-row-strong .summary-row-label {
-      color: var(--text);
-    }
-
-    .summary-row-strong .summary-row-value {
-      font-weight: 700;
-    }
+    .summary-row-strong { font-weight: 600; margin-top: 3px; }
+    .summary-row-strong .summary-row-label { color: var(--text); }
+    .summary-row-strong .summary-row-value { font-weight: 700; }
 
     .summary-card-inner {
       background: rgba(9, 15, 33, 0.96);
@@ -501,24 +333,10 @@
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
     }
 
-    .line-graph-label {
-      font-size: 11px;
-      color: var(--text-soft);
-      margin-bottom: 4px;
-    }
+    .line-graph-label { font-size: 11px; color: var(--text-soft); margin-bottom: 4px; }
+    .line-graph-canvas { width: 100%; height: 70px; display: block; border-radius: 10px; }
 
-    .line-graph-canvas {
-      width: 100%;
-      height: 70px;
-      display: block;
-      border-radius: 10px;
-    }
-
-    .slider-row {
-      margin-top: 8px;
-      font-size: 11px;
-      color: var(--text-soft);
-    }
+    .slider-row { margin-top: 8px; font-size: 11px; color: var(--text-soft); }
 
     .slider-row-top {
       display: flex;
@@ -538,14 +356,8 @@
       color: var(--text-soft);
     }
 
-    .slider-reset-btn:hover {
-      filter: brightness(1.1);
-    }
-
-    .slider {
-      width: 100%;
-      accent-color: var(--blue-soft);
-    }
+    .slider-reset-btn:hover { filter: brightness(1.1); }
+    .slider { width: 100%; accent-color: var(--blue-soft); }
 
     .modal-overlay {
       position: fixed;
@@ -567,28 +379,11 @@
       box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.9);
     }
 
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .modal-title { font-size: 15px; font-weight: 600; }
+    .modal-row { margin-top: 6px; }
 
-    .modal-title {
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .modal-row {
-      margin-top: 6px;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: space-between;
-      gap: 6px;
-      margin-top: 10px;
-    }
+    .modal-actions { display: flex; justify-content: space-between; gap: 6px; margin-top: 10px; }
 
     .toggle-row {
       display: flex;
@@ -598,10 +393,7 @@
       margin-top: 8px;
     }
 
-    .toggle-label {
-      font-size: 12px;
-      color: var(--text-soft);
-    }
+    .toggle-label { font-size: 12px; color: var(--text-soft); }
 
     .toggle-pill {
       width: 44px;
@@ -631,9 +423,34 @@
       border-color: rgba(159, 255, 205, 0.9);
     }
 
-    .toggle-pill.on .toggle-thumb {
-      transform: translateX(18px);
+    .toggle-pill.on .toggle-thumb { transform: translateX(18px); }
+
+    /* Apply-scope modal (middle sheet) */
+    .scope-sheet {
+      width: 100%;
+      max-width: 520px;
+      background: radial-gradient(circle at top, #1a2142 0, #050713 70%);
+      border-radius: 18px 18px 0 0;
+      border-top: 1px solid rgba(255,255,255,0.16);
+      padding: 12px 14px 16px;
+      box-shadow: 0 -20px 60px rgba(0,0,0,0.9);
     }
+
+    .scope-text {
+      font-size: 12px;
+      color: var(--text-soft);
+      margin-top: 4px;
+      line-height: 1.35;
+    }
+
+    .scope-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .scope-actions .btn { width: 100%; }
 
     #donutBreakdown {
       display: none;
@@ -648,15 +465,8 @@
       color: var(--text);
     }
 
-    .bd-inner {
-      width: 100%;
-      max-width: 520px;
-      margin: 0 auto;
-    }
-
-    .bd-back-row {
-      margin-bottom: 8px;
-    }
+    .bd-inner { width: 100%; max-width: 520px; margin: 0 auto; }
+    .bd-back-row { margin-bottom: 8px; }
 
     .bd-card {
       background: var(--card-soft);
@@ -666,12 +476,7 @@
       box-shadow: 0 22px 70px rgba(0, 0, 0, 0.86);
     }
 
-    .bd-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 10px;
-    }
+    .bd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
 
     .bd-mini {
       background: rgba(9, 15, 33, 0.96);
@@ -681,33 +486,13 @@
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
     }
 
-    .bd-label {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
+    .bd-label { font-size: 11px; color: var(--text-soft); }
+    .bd-value { font-size: 14px; font-weight: 700; margin-top: 3px; }
 
-    .bd-value {
-      font-size: 14px;
-      font-weight: 700;
-      margin-top: 3px;
-    }
+    .bd-donut-wrap { display: flex; justify-content: center; margin-top: 10px; margin-bottom: 6px; }
+    .bd-donut-wrap canvas { border-radius: 999px; }
 
-    .bd-donut-wrap {
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
-      margin-bottom: 6px;
-    }
-
-    .bd-donut-wrap canvas {
-      border-radius: 999px;
-    }
-
-    .bd-subtext {
-      font-size: 12px;
-      color: var(--text-soft);
-      margin-top: 2px;
-    }
+    .bd-subtext { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
 
     .compare-card {
       background: rgba(9, 15, 33, 0.96);
@@ -719,21 +504,12 @@
       font-size: 12px;
     }
 
-    .compare-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 3px;
-    }
-
-    .compare-label {
-      color: var(--text-soft);
-    }
-
-    .compare-value {
-      font-weight: 600;
-    }
+    .compare-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
+    .compare-label { color: var(--text-soft); }
+    .compare-value { font-weight: 600; }
   </style>
 </head>
+
 <body>
   <div class="app-shell">
     <div class="app-container">
@@ -1037,17 +813,35 @@
       </div>
 
       <div class="toggle-row">
-        <span class="toggle-label">Paused for this month</span>
+        <span class="toggle-label">Paused</span>
         <div id="ddPausedToggle" class="toggle-pill">
           <div class="toggle-thumb"></div>
         </div>
       </div>
 
       <div class="modal-actions">
-        <button id="deleteDdBtn" class="btn btn-danger">Delete this month</button>
+        <button id="deleteDdBtn" class="btn btn-danger">Delete</button>
         <button id="saveDdBtn" class="btn btn-secondary" style="flex:1;">
           Save changes
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLY SCOPE MODAL (for DD Save/Delete) -->
+  <div id="ddScopeModal" class="modal-overlay" style="align-items:flex-end;">
+    <div class="scope-sheet">
+      <div class="modal-header">
+        <div class="modal-title" id="scopeTitle">Apply changes</div>
+        <button class="btn btn-small btn-ghost" id="scopeCancelBtn">Cancel</button>
+      </div>
+      <div class="scope-text" id="scopeText">
+        Choose whether this change affects only the selected month, or this month and all future months.
+      </div>
+
+      <div class="scope-actions">
+        <button class="btn btn-ghost" id="scopeThisMonthBtn">This month only</button>
+        <button class="btn btn-secondary" id="scopeThisAndFutureBtn">This month and future</button>
       </div>
     </div>
   </div>
@@ -1127,6 +921,15 @@
     let directDebits = [];
     let ddOverrides = [];
 
+    // DD model (series versioning):
+    // {
+    //   id, month (startMonthKey), endMonth (nullable, last month key it applies to),
+    //   name, amount, day, category, active
+    // }
+    //
+    // Overrides remain month-specific:
+    // { baseId, month, type: "modified"|"skipped", name, amount, day, category, active }
+
     function loadFromStorage() {
       try {
         const txRaw = localStorage.getItem("bb_tx");
@@ -1135,6 +938,15 @@
         transactions = txRaw ? JSON.parse(txRaw) : [];
         directDebits = ddRaw ? JSON.parse(ddRaw) : [];
         ddOverrides = ovRaw ? JSON.parse(ovRaw) : [];
+
+        // Migration: add endMonth if missing (keeps existing data intact)
+        directDebits = (directDebits || []).map(dd => {
+          if (dd && typeof dd === "object" && !("endMonth" in dd)) {
+            return { ...dd, endMonth: null };
+          }
+          return dd;
+        });
+
       } catch (e) {
         transactions = [];
         directDebits = [];
@@ -1153,18 +965,30 @@
       return "id-" + Math.random().toString(16).slice(2);
     }
 
-    function firstOfMonth(d) {
-      return new Date(d.getFullYear(), d.getMonth(), 1);
-    }
+    function firstOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
 
     function monthKey(d) {
       return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
     }
 
     function parseMonthKey(mk) {
-      const [y, m] = mk.split("-").map(Number);
+      const [y, m] = String(mk || "").split("-").map(Number);
       if (!y || !m) return null;
       return new Date(y, m - 1, 1);
+    }
+
+    function compareMonthKey(a, b) {
+      const da = parseMonthKey(a);
+      const db = parseMonthKey(b);
+      if (!da || !db) return 0;
+      return da.getTime() - db.getTime();
+    }
+
+    function prevMonthKey(mk) {
+      const d = parseMonthKey(mk);
+      if (!d) return mk;
+      const prev = new Date(d.getFullYear(), d.getMonth() - 1, 1);
+      return monthKey(prev);
     }
 
     function monthLabel(d) {
@@ -1188,10 +1012,7 @@
 
     // Ignore old auto-opening incomes from previous versions
     function isAutoOpening(tx) {
-      return (
-        tx.type === "income" &&
-        tx.description === "Opening balance (auto)"
-      );
+      return (tx.type === "income" && tx.description === "Opening balance (auto)");
     }
 
     // ------------ DONUT & GRAPH DRAWING ------------
@@ -1217,7 +1038,6 @@
       ctx.lineWidth = ringWidth;
       ctx.stroke();
 
-      // Left / outgoing + percentage
       const total = Math.max(openingPlusIncome, outgoing, 1);
       const rawLeft = openingPlusIncome - outgoing;
       const left = Math.max(0, rawLeft);
@@ -1229,7 +1049,6 @@
       const leftAngle = (left / total) * Math.PI * 2;
       const startAngle = -Math.PI / 2;
 
-      // Outgoing segment
       if (outgoing > 0) {
         ctx.beginPath();
         ctx.arc(cx, cy, radius, startAngle, startAngle + outAngle);
@@ -1242,22 +1061,10 @@
         ctx.stroke();
       }
 
-      // Left segment
       if (left > 0) {
         ctx.beginPath();
-        ctx.arc(
-          cx,
-          cy,
-          radius,
-          startAngle + outAngle,
-          startAngle + outAngle + leftAngle
-        );
-        const gradGreen = ctx.createLinearGradient(
-          cx - radius,
-          cy,
-          cx + radius,
-          cy
-        );
+        ctx.arc(cx, cy, radius, startAngle + outAngle, startAngle + outAngle + leftAngle);
+        const gradGreen = ctx.createLinearGradient(cx - radius, cy, cx + radius, cy);
         gradGreen.addColorStop(0, "#9af7c7");
         gradGreen.addColorStop(1, "#40e38a");
         ctx.strokeStyle = gradGreen;
@@ -1266,7 +1073,7 @@
         ctx.stroke();
       }
 
-      // Centre text: XX% + "income left"
+      // Centre text
       ctx.fillStyle = "#e8edf8";
       ctx.font = "600 22px -apple-system, system-ui, sans-serif";
       ctx.textAlign = "center";
@@ -1284,9 +1091,7 @@
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
-      if (!dailyBalances || dailyBalances.length === 0) {
-        return;
-      }
+      if (!dailyBalances || dailyBalances.length === 0) return;
 
       const maxVal = Math.max(...dailyBalances, 0);
       const minVal = Math.min(...dailyBalances, 0);
@@ -1305,6 +1110,7 @@
       const zeroY =
         topPadding + usableHeight - ((0 - minVal) / range) * usableHeight;
 
+      // X-axis line (0)
       ctx.strokeStyle = "rgba(255,255,255,0.16)";
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -1318,11 +1124,8 @@
         const norm = (val - minVal) / range;
         const y = topPadding + usableHeight - norm * usableHeight;
 
-        if (idx === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
       });
 
       const grad = ctx.createLinearGradient(leftPadding, 0, w - rightPadding, 0);
@@ -1334,6 +1137,80 @@
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
       ctx.stroke();
+    }
+
+    // ------------ DIRECT DEBIT RESOLUTION (SERIES + OVERRIDES) ------------
+
+    function ddAppliesToMonth(dd, monthDate) {
+      if (!dd || !dd.month) return false;
+      const startDate = parseMonthKey(dd.month);
+      if (!startDate) return false;
+
+      if (startDate > monthDate) return false;
+
+      if (dd.endMonth) {
+        const endDate = parseMonthKey(dd.endMonth);
+        if (endDate && monthDate > endDate) return false;
+      }
+
+      return true;
+    }
+
+    function getMonthDirectDebits(monthDate) {
+      const mk = monthKey(monthDate);
+
+      // Base DDs that apply this month
+      const monthBaseDDs = directDebits.filter(dd => ddAppliesToMonth(dd, monthDate));
+
+      // Apply overrides (month-specific)
+      const actual = monthBaseDDs.map(dd => {
+        const override = ddOverrides.find(ov => ov.baseId === dd.id && ov.month === mk);
+
+        if (!override || override.type === "none") {
+          const active = override ? override.active : dd.active;
+          return {
+            baseId: dd.id,
+            name: dd.name,
+            amount: dd.amount,
+            day: dd.day,
+            category: dd.category,
+            active: active !== false
+          };
+        }
+
+        if (override.type === "modified") {
+          return {
+            baseId: dd.id,
+            name: override.name,
+            amount: override.amount,
+            day: override.day,
+            category: override.category,
+            active: override.active !== false
+          };
+        }
+
+        if (override.type === "skipped") {
+          return {
+            baseId: dd.id,
+            name: dd.name,
+            amount: dd.amount,
+            day: dd.day,
+            category: dd.category,
+            active: false
+          };
+        }
+
+        return {
+          baseId: dd.id,
+          name: dd.name,
+          amount: dd.amount,
+          day: dd.day,
+          category: dd.category,
+          active: dd.active !== false
+        };
+      });
+
+      return actual;
     }
 
     // ------------ MONTH CALC WITH CARRY ------------
@@ -1349,8 +1226,11 @@
         set.add(monthKey(d));
       }
 
+      // Include DD start/end months + any months between are handled by logic,
+      // but for carry calculation we only need to ensure iteration reaches target.
       for (const dd of directDebits) {
         if (dd.month) set.add(dd.month);
+        if (dd.endMonth) set.add(dd.endMonth);
       }
 
       for (const ov of ddOverrides) {
@@ -1359,9 +1239,7 @@
 
       set.add(targetMK);
 
-      if (set.size === 0) {
-        set.add(targetMK);
-      }
+      if (set.size === 0) set.add(targetMK);
 
       return Array.from(set).sort();
     }
@@ -1376,104 +1254,36 @@
         return monthKey(d) === mk;
       });
 
-      // CHANGED: any DD whose "start month" <= this month is considered part of the series
-      const monthBaseDDs = directDebits.filter((dd) => {
-        if (!dd.month) return false;
-        const baseDate = parseMonthKey(dd.month);
-        if (!baseDate) return false;
-        return baseDate <= monthDate;   // repeats for this and all future months
-      });
+      const actualDDs = getMonthDirectDebits(monthDate);
+      const activeDDs = actualDDs.filter(d => d.active);
 
-      const actualDDs = monthBaseDDs.map((dd) => {
-        const override = ddOverrides.find(
-          (ov) => ov.baseId === dd.id && ov.month === mk
-        );
-        if (!override || override.type === "none") {
-          const active = override ? override.active : dd.active;
-          return {
-            baseId: dd.id,
-            name: dd.name,
-            amount: dd.amount,
-            day: dd.day,
-            category: dd.category,
-            active: active !== false
-          };
-        }
-        if (override.type === "modified") {
-          return {
-            baseId: dd.id,
-            name: override.name,
-            amount: override.amount,
-            day: override.day,
-            category: override.category,
-            active: override.active !== false
-          };
-        }
-        if (override.type === "skipped") {
-          return {
-            baseId: dd.id,
-            name: dd.name,
-            amount: dd.amount,
-            day: dd.day,
-            category: dd.category,
-            active: false
-          };
-        }
-        return {
-          baseId: dd.id,
-          name: dd.name,
-          amount: dd.amount,
-          day: dd.day,
-          category: dd.category,
-          active: dd.active
-        };
-      });
+      const income = monthTx.filter(t => t.type === "income").reduce((s, t) => s + (t.amount || 0), 0);
+      const spend  = monthTx.filter(t => t.type === "spend").reduce((s, t) => s + (t.amount || 0), 0);
+      const ddTotal = activeDDs.reduce((s, d) => s + (d.amount || 0), 0);
 
-      const activeDDs = actualDDs.filter((d) => d.active);
-
-      const income = monthTx
-        .filter((t) => t.type === "income")
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-      const spend = monthTx
-        .filter((t) => t.type === "spend")
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-      const ddTotal = activeDDs.reduce(
-        (sum, d) => sum + (d.amount || 0),
-        0
-      );
-
-      const daysInMonth = new Date(
-        monthDate.getFullYear(),
-        monthDate.getMonth() + 1,
-        0
-      ).getDate();
-
+      const daysInMonth = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate();
       const dailyBalances = [];
 
       for (let day = 1; day <= daysInMonth; day++) {
-        const ddUpToDay = activeDDs
-          .filter((d) => d.day <= day)
-          .reduce((sum, d) => sum + (d.amount || 0), 0);
+        const ddUpToDay = activeDDs.filter(d => d.day <= day).reduce((s, d) => s + (d.amount || 0), 0);
 
         const spendUpToDay = monthTx
-          .filter((t) => {
+          .filter(t => {
             if (t.type !== "spend") return false;
             const d = new Date(t.date);
             if (Number.isNaN(d.getTime())) return false;
             return d.getDate() <= day;
           })
-          .reduce((sum, t) => sum + (t.amount || 0), 0);
+          .reduce((s, t) => s + (t.amount || 0), 0);
 
         const incomeUpToDay = monthTx
-          .filter((t) => {
+          .filter(t => {
             if (t.type !== "income") return false;
             const d = new Date(t.date);
             if (Number.isNaN(d.getTime())) return false;
             return d.getDate() <= day;
           })
-          .reduce((sum, t) => sum + (t.amount || 0), 0);
+          .reduce((s, t) => s + (t.amount || 0), 0);
 
         const bal = carryIn + incomeUpToDay - ddUpToDay - spendUpToDay;
         dailyBalances.push(bal);
@@ -1512,21 +1322,24 @@
         }
       }
 
-      if (!result) {
-        const fallback = computeRawMonthTotals(targetMonth, 0);
-        return fallback;
-      }
-
+      if (!result) return computeRawMonthTotals(targetMonth, 0);
       return result;
     }
 
-    // ------------ UI RENDERING ------------
+    // ------------ UI STATE ------------
 
     let selectedMonth = firstOfMonth(new Date());
     let whatIfOffset = 0;
+
     let currentEditingTxId = null;
-    let currentEditingDdBaseId = null;
-    let currentEditingDdMonthKey = null;
+
+    let currentEditingDdBaseId = null;       // the base DD record id
+    let currentEditingDdMonthKey = null;     // selected month key
+
+    // pending DD action
+    let pendingDdAction = null; // { kind: "save"|"delete", data?: {...} }
+
+    // ------------ UI RENDERING ------------
 
     function refreshUI() {
       const monthLabelEl = document.getElementById("monthLabel");
@@ -1654,15 +1467,12 @@
       if (filtered.length === 0) {
         const empty = document.createElement("div");
         empty.className = "list-empty";
-        empty.textContent =
-          "No transactions yet. Add income and spending above.";
+        empty.textContent = "No transactions yet. Add income and spending above.";
         txList.appendChild(empty);
         return;
       }
 
-      const sorted = filtered
-        .slice()
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
+      const sorted = filtered.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
 
       for (const tx of sorted) {
         const row = document.createElement("div");
@@ -1677,9 +1487,7 @@
 
         const sub = document.createElement("div");
         sub.className = "list-sub";
-        sub.textContent = `${formatDisplayDate(tx.date)} · ${
-          tx.type === "income" ? "Income" : "Spending"
-        }`;
+        sub.textContent = `${formatDisplayDate(tx.date)} · ${tx.type === "income" ? "Income" : "Spending"}`;
 
         main.appendChild(title);
         main.appendChild(sub);
@@ -1689,8 +1497,7 @@
 
         const amt = document.createElement("div");
         amt.className = "list-amount";
-        amt.style.color =
-          tx.type === "income" ? "var(--green-soft)" : "var(--red-soft)";
+        amt.style.color = tx.type === "income" ? "var(--green-soft)" : "var(--red-soft)";
         amt.textContent = formatMoney(tx.amount);
 
         const editBtn = document.createElement("button");
@@ -1710,75 +1517,20 @@
     }
 
     function renderDirectDebitList() {
-      const mk = monthKey(selectedMonth);
       const ddList = document.getElementById("ddList");
       ddList.innerHTML = "";
 
-      // CHANGED: treat DDs whose start month <= this month as part of the series
-      const monthBaseDDs = directDebits.filter((dd) => {
-        if (!dd.month) return false;
-        const baseDate = parseMonthKey(dd.month);
-        if (!baseDate) return false;
-        return baseDate <= selectedMonth;
-      });
-
-      const actualDDs = monthBaseDDs.map((dd) => {
-        const override = ddOverrides.find(
-          (ov) => ov.baseId === dd.id && ov.month === mk
-        );
-        if (!override || override.type === "none") {
-          const active = override ? override.active : dd.active;
-          return {
-            baseId: dd.id,
-            name: dd.name,
-            amount: dd.amount,
-            day: dd.day,
-            category: dd.category,
-            active: active !== false
-          };
-        }
-        if (override.type === "modified") {
-          return {
-            baseId: dd.id,
-            name: override.name,
-            amount: override.amount,
-            day: override.day,
-            category: override.category,
-            active: override.active !== false
-          };
-        }
-        if (override.type === "skipped") {
-          return {
-            baseId: dd.id,
-            name: dd.name,
-            amount: dd.amount,
-            day: dd.day,
-            category: dd.category,
-            active: false
-          };
-        }
-        return {
-          baseId: dd.id,
-          name: dd.name,
-          amount: dd.amount,
-          day: dd.day,
-          category: dd.category,
-          active: dd.active
-        };
-      });
+      const actualDDs = getMonthDirectDebits(selectedMonth);
 
       if (actualDDs.length === 0) {
         const empty = document.createElement("div");
         empty.className = "list-empty";
-        empty.textContent =
-          "No direct debits yet. Start with mortgage, council tax and utilities.";
+        empty.textContent = "No direct debits yet. Start with mortgage, council tax and utilities.";
         ddList.appendChild(empty);
         return;
       }
 
-      const sorted = actualDDs
-        .slice()
-        .sort((a, b) => a.day - b.day || a.name.localeCompare(b.name));
+      const sorted = actualDDs.slice().sort((a, b) => a.day - b.day || a.name.localeCompare(b.name));
 
       for (const dd of sorted) {
         const row = document.createElement("div");
@@ -1794,9 +1546,7 @@
 
         const sub = document.createElement("div");
         sub.className = "list-sub";
-        sub.textContent = `${formatMoney(dd.amount)} · day ${
-          dd.day
-        }${dd.category ? " · " + dd.category : ""}`;
+        sub.textContent = `${formatMoney(dd.amount)} · day ${dd.day}${dd.category ? " · " + dd.category : ""}`;
 
         main.appendChild(title);
         main.appendChild(sub);
@@ -1804,9 +1554,7 @@
         const editBtn = document.createElement("button");
         editBtn.className = "btn btn-small btn-ghost";
         editBtn.textContent = "Edit";
-        editBtn.addEventListener("click", () =>
-          openDirectDebitEditModal(dd.baseId)
-        );
+        editBtn.addEventListener("click", () => openDirectDebitEditModal(dd.baseId));
 
         row.appendChild(main);
         row.appendChild(editBtn);
@@ -1815,20 +1563,16 @@
       }
     }
 
-    // ------------ ADD / EDIT / DELETE ------------
+    // ------------ ADD / EDIT / DELETE (TRANSACTIONS) ------------
 
     function addTransaction() {
       const dateVal = document.getElementById("txDate").value;
       const typeVal = document.getElementById("txType").value;
       const descVal = document.getElementById("txDesc").value.trim();
-      const amtStr = document
-        .getElementById("txAmt")
-        .value.replace(",", ".");
+      const amtStr = document.getElementById("txAmt").value.replace(",", ".");
       const amt = parseFloat(amtStr);
 
-      if (!dateVal || !descVal || !isFinite(amt)) {
-        return;
-      }
+      if (!dateVal || !descVal || !isFinite(amt)) return;
 
       transactions.push({
         id: uuid(),
@@ -1843,41 +1587,6 @@
       document.getElementById("txAmt").value = "";
       document.getElementById("txType").value = "income";
       document.getElementById("txDate").value = "";
-
-      if (document.activeElement) document.activeElement.blur();
-      refreshUI();
-    }
-
-    function addDirectDebit() {
-      const nameVal = document.getElementById("ddName").value.trim();
-      const amtStr = document
-        .getElementById("ddAmt")
-        .value.replace(",", ".");
-      const amt = parseFloat(amtStr);
-      const dayVal = parseInt(
-        document.getElementById("ddDay").value,
-        10
-      );
-      const catVal = document.getElementById("ddCat").value.trim();
-
-      if (!nameVal || !isFinite(amt) || !isFinite(dayVal)) return;
-      if (dayVal < 1 || dayVal > 31) return;
-
-      directDebits.push({
-        id: uuid(),
-        month: monthKey(selectedMonth),
-        name: nameVal,
-        amount: amt,
-        day: dayVal,
-        category: catVal,
-        active: true
-      });
-
-      saveToStorage();
-      document.getElementById("ddName").value = "";
-      document.getElementById("ddAmt").value = "";
-      document.getElementById("ddDay").value = "";
-      document.getElementById("ddCat").value = "";
 
       if (document.activeElement) document.activeElement.blur();
       refreshUI();
@@ -1907,9 +1616,7 @@
       const dateVal = document.getElementById("editTxDate").value;
       const typeVal = document.getElementById("editTxType").value;
       const descVal = document.getElementById("editTxDesc").value.trim();
-      const amtStr = document
-        .getElementById("editTxAmt")
-        .value.replace(",", ".");
+      const amtStr = document.getElementById("editTxAmt").value.replace(",", ".");
       const amt = parseFloat(amtStr);
 
       if (!dateVal || !descVal || !isFinite(amt)) return;
@@ -1932,6 +1639,39 @@
       closeTransactionEditModal();
     }
 
+    // ------------ ADD / EDIT / DELETE (DIRECT DEBITS) ------------
+
+    function addDirectDebit() {
+      const nameVal = document.getElementById("ddName").value.trim();
+      const amtStr = document.getElementById("ddAmt").value.replace(",", ".");
+      const amt = parseFloat(amtStr);
+      const dayVal = parseInt(document.getElementById("ddDay").value, 10);
+      const catVal = document.getElementById("ddCat").value.trim();
+
+      if (!nameVal || !isFinite(amt) || !isFinite(dayVal)) return;
+      if (dayVal < 1 || dayVal > 31) return;
+
+      directDebits.push({
+        id: uuid(),
+        month: monthKey(selectedMonth),   // start month
+        endMonth: null,                  // ongoing
+        name: nameVal,
+        amount: amt,
+        day: dayVal,
+        category: catVal,
+        active: true
+      });
+
+      saveToStorage();
+      document.getElementById("ddName").value = "";
+      document.getElementById("ddAmt").value = "";
+      document.getElementById("ddDay").value = "";
+      document.getElementById("ddCat").value = "";
+
+      if (document.activeElement) document.activeElement.blur();
+      refreshUI();
+    }
+
     function openDirectDebitEditModal(baseId) {
       currentEditingDdBaseId = baseId;
       currentEditingDdMonthKey = monthKey(selectedMonth);
@@ -1939,17 +1679,15 @@
       const base = directDebits.find((d) => d.id === baseId);
       if (!base) return;
 
-      const mk = monthKey(selectedMonth);
-      const override = ddOverrides.find(
-        (ov) => ov.baseId === baseId && ov.month === mk
-      );
+      const mk = currentEditingDdMonthKey;
+      const override = ddOverrides.find((ov) => ov.baseId === baseId && ov.month === mk);
 
       let effective = {
         name: base.name,
         amount: base.amount,
         day: base.day,
         category: base.category,
-        active: base.active
+        active: base.active !== false
       };
 
       if (override) {
@@ -1959,7 +1697,7 @@
             amount: override.amount,
             day: override.day,
             category: override.category,
-            active: override.active
+            active: override.active !== false
           };
         } else if (override.type === "skipped") {
           effective.active = false;
@@ -1967,7 +1705,7 @@
       }
 
       document.getElementById("editDdName").value = effective.name;
-      document.getElementById("editDdAmt").value = effective.amount.toFixed(2);
+      document.getElementById("editDdAmt").value = Number(effective.amount || 0).toFixed(2);
       document.getElementById("editDdDay").value = effective.day;
       document.getElementById("editDdCat").value = effective.category || "";
 
@@ -1988,96 +1726,183 @@
       toggle.classList.toggle("on");
     }
 
-    function saveDirectDebitEdit() {
-      if (!currentEditingDdBaseId || !currentEditingDdMonthKey) return;
+    function openDdScopeModal(kind, payload) {
+      pendingDdAction = { kind, payload };
 
-      const base = directDebits.find((d) => d.id === currentEditingDdBaseId);
-      if (!base) return;
+      const title = document.getElementById("scopeTitle");
+      const text = document.getElementById("scopeText");
+      const mk = currentEditingDdMonthKey || monthKey(selectedMonth);
 
-      const nameVal = document.getElementById("editDdName").value.trim();
-      const amtStr = document
-        .getElementById("editDdAmt")
-        .value.replace(",", ".");
-      const amt = parseFloat(amtStr);
-      const dayVal = parseInt(
-        document.getElementById("editDdDay").value,
-        10
-      );
-      const catVal = document.getElementById("editDdCat").value.trim();
-      const paused = document
-        .getElementById("ddPausedToggle")
-        .classList.contains("on");
-
-      if (!nameVal || !isFinite(amt) || !isFinite(dayVal)) return;
-      if (dayVal < 1 || dayVal > 31) return;
-
-      let override = ddOverrides.find(
-        (ov) =>
-          ov.baseId === currentEditingDdBaseId &&
-          ov.month === currentEditingDdMonthKey
-      );
-
-      if (!override) {
-        override = {
-          baseId: currentEditingDdBaseId,
-          month: currentEditingDdMonthKey,
-          type: "none",
-          active: base.active
-        };
-        ddOverrides.push(override);
+      if (kind === "save") {
+        title.textContent = "Apply changes";
+        text.textContent = `Edit direct debit for ${mk} only, or for ${mk} and all future months?`;
+      } else {
+        title.textContent = "Delete direct debit";
+        text.textContent = `Delete for ${mk} only, or for ${mk} and all future months?`;
       }
 
-      override.type = "modified";
-      override.name = nameVal;
-      override.amount = amt;
-      override.day = dayVal;
-      override.category = catVal;
-      override.active = !paused;
+      document.getElementById("ddScopeModal").style.display = "flex";
+    }
 
-      if (
-        override.name === base.name &&
-        override.amount === base.amount &&
-        override.day === base.day &&
-        (override.category || "") === (base.category || "") &&
-        override.active === base.active
-      ) {
-        ddOverrides = ddOverrides.filter(
-          (ov) =>
-            !(
-              ov.baseId === currentEditingDdBaseId &&
-              ov.month === currentEditingDdMonthKey
-            )
-        );
+    function closeDdScopeModal() {
+      document.getElementById("ddScopeModal").style.display = "none";
+      pendingDdAction = null;
+    }
+
+    function readDdEditForm() {
+      const nameVal = document.getElementById("editDdName").value.trim();
+      const amtStr = document.getElementById("editDdAmt").value.replace(",", ".");
+      const amt = parseFloat(amtStr);
+      const dayVal = parseInt(document.getElementById("editDdDay").value, 10);
+      const catVal = document.getElementById("editDdCat").value.trim();
+      const paused = document.getElementById("ddPausedToggle").classList.contains("on");
+
+      if (!nameVal || !isFinite(amt) || !isFinite(dayVal)) return null;
+      if (dayVal < 1 || dayVal > 31) return null;
+
+      return {
+        name: nameVal,
+        amount: amt,
+        day: dayVal,
+        category: catVal,
+        active: !paused
+      };
+    }
+
+    function saveDdClicked() {
+      if (!currentEditingDdBaseId || !currentEditingDdMonthKey) return;
+      const data = readDdEditForm();
+      if (!data) return;
+      openDdScopeModal("save", data);
+    }
+
+    function deleteDdClicked() {
+      if (!currentEditingDdBaseId || !currentEditingDdMonthKey) return;
+      openDdScopeModal("delete", null);
+    }
+
+    function applyScopeThisMonth() {
+      if (!pendingDdAction || !currentEditingDdBaseId || !currentEditingDdMonthKey) {
+        closeDdScopeModal();
+        return;
+      }
+
+      const baseId = currentEditingDdBaseId;
+      const mk = currentEditingDdMonthKey;
+      const base = directDebits.find(d => d.id === baseId);
+      if (!base) { closeDdScopeModal(); return; }
+
+      if (pendingDdAction.kind === "save") {
+        const data = pendingDdAction.payload;
+
+        // Month-only change is an override
+        let override = ddOverrides.find(ov => ov.baseId === baseId && ov.month === mk);
+        if (!override) {
+          override = { baseId, month: mk, type: "none", active: base.active !== false };
+          ddOverrides.push(override);
+        }
+
+        override.type = "modified";
+        override.name = data.name;
+        override.amount = data.amount;
+        override.day = data.day;
+        override.category = data.category;
+        override.active = data.active;
+
+        // If identical to base, delete override
+        const sameAsBase =
+          override.name === base.name &&
+          Number(override.amount) === Number(base.amount) &&
+          Number(override.day) === Number(base.day) &&
+          String(override.category || "") === String(base.category || "") &&
+          (override.active !== false) === (base.active !== false);
+
+        if (sameAsBase) {
+          ddOverrides = ddOverrides.filter(ov => !(ov.baseId === baseId && ov.month === mk));
+        }
+
+      } else if (pendingDdAction.kind === "delete") {
+        // Month-only delete is "skipped" override
+        let override = ddOverrides.find(ov => ov.baseId === baseId && ov.month === mk);
+        if (!override) {
+          override = { baseId, month: mk, type: "skipped", active: false };
+          ddOverrides.push(override);
+        } else {
+          override.type = "skipped";
+          override.active = false;
+        }
       }
 
       saveToStorage();
+      closeDdScopeModal();
       closeDirectDebitEditModal();
       refreshUI();
     }
 
-    function deleteDirectDebitForMonth() {
-      if (!currentEditingDdBaseId || !currentEditingDdMonthKey) return;
+    function applyScopeThisAndFuture() {
+      if (!pendingDdAction || !currentEditingDdBaseId || !currentEditingDdMonthKey) {
+        closeDdScopeModal();
+        return;
+      }
 
-      let override = ddOverrides.find(
-        (ov) =>
-          ov.baseId === currentEditingDdBaseId &&
-          ov.month === currentEditingDdMonthKey
-      );
+      const baseId = currentEditingDdBaseId;
+      const mk = currentEditingDdMonthKey;
+      const base = directDebits.find(d => d.id === baseId);
+      if (!base) { closeDdScopeModal(); return; }
 
-      if (!override) {
-        override = {
-          baseId: currentEditingDdBaseId,
-          month: currentEditingDdMonthKey,
-          type: "skipped",
-          active: false
+      // Split the series:
+      // base ends at previous month, new record starts at mk (unless mk is before base start)
+      const baseStart = base.month;
+      if (compareMonthKey(mk, baseStart) < 0) {
+        // You're editing before the series existed. Treat as month-only.
+        applyScopeThisMonth();
+        return;
+      }
+
+      const prevMk = prevMonthKey(mk);
+
+      // 1) Cap existing base
+      base.endMonth = prevMk;
+
+      if (pendingDdAction.kind === "save") {
+        const data = pendingDdAction.payload;
+
+        // 2) New base starting mk onward
+        const newId = uuid();
+        const newBase = {
+          id: newId,
+          month: mk,
+          endMonth: null,
+          name: data.name,
+          amount: data.amount,
+          day: data.day,
+          category: data.category,
+          active: data.active !== false
         };
-        ddOverrides.push(override);
-      } else {
-        override.type = "skipped";
-        override.active = false;
+        directDebits.push(newBase);
+
+        // 3) Move any overrides for months >= mk from old base to new base (so future tweaks don't vanish)
+        ddOverrides = ddOverrides.map(ov => {
+          if (ov.baseId === baseId && compareMonthKey(ov.month, mk) >= 0) {
+            return { ...ov, baseId: newId };
+          }
+          return ov;
+        });
+
+      } else if (pendingDdAction.kind === "delete") {
+        // Future delete: cap base and remove overrides for >= mk
+        ddOverrides = ddOverrides.filter(ov => !(ov.baseId === baseId && compareMonthKey(ov.month, mk) >= 0));
+      }
+
+      // Clean up: if base.endMonth is before base.month, series effectively disappears
+      if (base.endMonth && compareMonthKey(base.endMonth, base.month) < 0) {
+        // base shouldn't exist at all
+        directDebits = directDebits.filter(d => d.id !== baseId);
+        ddOverrides = ddOverrides.filter(ov => ov.baseId !== baseId);
       }
 
       saveToStorage();
+      closeDdScopeModal();
       closeDirectDebitEditModal();
       refreshUI();
     }
@@ -2092,11 +1917,7 @@
       const thisDd = thisTotals.ddTotal;
       const thisAfter = thisTotals.afterAll;
 
-      const prevMonth = new Date(
-        selectedMonth.getFullYear(),
-        selectedMonth.getMonth() - 1,
-        1
-      );
+      const prevMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1);
       const prevTotals = computeMonthWithCarry(prevMonth);
       const lastMonthAfter = prevTotals.afterAll;
       const lastMonthIncomeTotal = prevTotals.income + prevTotals.carryIn;
@@ -2162,6 +1983,7 @@
         "DDDay",
         "DDCategory",
         "DDActive",
+        "DDEndMonth",
         "OverrideMonth",
         "OverrideType",
         "OverrideAmount",
@@ -2180,7 +2002,8 @@
           t.date || "",
           t.type || "",
           esc(t.description || ""),
-          t.amount != null ? t.amount.toFixed(2) : "",
+          t.amount != null ? Number(t.amount).toFixed(2) : "",
+          "",
           "",
           "",
           "",
@@ -2204,10 +2027,11 @@
           "",
           "",
           esc(dd.name || ""),
-          dd.amount != null ? dd.amount.toFixed(2) : "",
+          dd.amount != null ? Number(dd.amount).toFixed(2) : "",
           dd.day != null ? String(dd.day) : "",
           esc(dd.category || ""),
-          dd.active ? "Yes" : "No",
+          (dd.active !== false) ? "Yes" : "No",
+          dd.endMonth || "",
           "",
           "",
           "",
@@ -2230,9 +2054,10 @@
           "",
           "",
           "",
+          "",
           ov.month || "",
           ov.type || "",
-          ov.amount != null ? ov.amount.toFixed(2) : "",
+          ov.amount != null ? Number(ov.amount).toFixed(2) : "",
           ov.day != null ? String(ov.day) : "",
           esc(ov.category || ""),
           ov.active === false ? "No" : "Yes"
@@ -2275,26 +2100,16 @@
       selectedMonth = firstOfMonth(new Date());
 
       const today = new Date();
-      document.getElementById("txDate").value = today
-        .toISOString()
-        .slice(0, 10);
+      document.getElementById("txDate").value = today.toISOString().slice(0, 10);
 
       document.getElementById("prevMonthBtn").addEventListener("click", () => {
-        selectedMonth = new Date(
-          selectedMonth.getFullYear(),
-          selectedMonth.getMonth() - 1,
-          1
-        );
+        selectedMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1);
         whatIfOffset = 0;
         refreshUI();
       });
 
       document.getElementById("nextMonthBtn").addEventListener("click", () => {
-        selectedMonth = new Date(
-          selectedMonth.getFullYear(),
-          selectedMonth.getMonth() + 1,
-          1
-        );
+        selectedMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 1);
         whatIfOffset = 0;
         refreshUI();
       });
@@ -2302,38 +2117,25 @@
       document.getElementById("addTxBtn").addEventListener("click", addTransaction);
       document.getElementById("addDdBtn").addEventListener("click", addDirectDebit);
 
-      const donutCanvas = document.getElementById("donutCanvas");
-      donutCanvas.addEventListener("click", openDonutBreakdown);
+      document.getElementById("donutCanvas").addEventListener("click", openDonutBreakdown);
+      document.getElementById("seeMoreDonut").addEventListener("click", openDonutBreakdown);
+      document.getElementById("closeDonutBreakdown").addEventListener("click", closeDonutBreakdown);
 
-      document
-        .getElementById("seeMoreDonut")
-        .addEventListener("click", openDonutBreakdown);
-      document
-        .getElementById("closeDonutBreakdown")
-        .addEventListener("click", closeDonutBreakdown);
+      document.getElementById("txModalDone").addEventListener("click", closeTransactionEditModal);
+      document.getElementById("saveTxBtn").addEventListener("click", saveTransactionEdit);
+      document.getElementById("deleteTxBtn").addEventListener("click", deleteTransaction);
 
-      document
-        .getElementById("txModalDone")
-        .addEventListener("click", closeTransactionEditModal);
-      document
-        .getElementById("saveTxBtn")
-        .addEventListener("click", saveTransactionEdit);
-      document
-        .getElementById("deleteTxBtn")
-        .addEventListener("click", deleteTransaction);
+      document.getElementById("ddModalDone").addEventListener("click", closeDirectDebitEditModal);
+      document.getElementById("ddPausedToggle").addEventListener("click", toggleDdPaused);
 
-      document
-        .getElementById("ddModalDone")
-        .addEventListener("click", closeDirectDebitEditModal);
-      document
-        .getElementById("ddPausedToggle")
-        .addEventListener("click", toggleDdPaused);
-      document
-        .getElementById("saveDdBtn")
-        .addEventListener("click", saveDirectDebitEdit);
-      document
-        .getElementById("deleteDdBtn")
-        .addEventListener("click", deleteDirectDebitForMonth);
+      // IMPORTANT: DD save/delete now goes through scope modal
+      document.getElementById("saveDdBtn").addEventListener("click", saveDdClicked);
+      document.getElementById("deleteDdBtn").addEventListener("click", deleteDdClicked);
+
+      // Scope modal buttons
+      document.getElementById("scopeCancelBtn").addEventListener("click", closeDdScopeModal);
+      document.getElementById("scopeThisMonthBtn").addEventListener("click", applyScopeThisMonth);
+      document.getElementById("scopeThisAndFutureBtn").addEventListener("click", applyScopeThisAndFuture);
 
       const whatIfSlider = document.getElementById("whatIfSlider");
       whatIfSlider.addEventListener("input", (e) => {
@@ -2341,20 +2143,14 @@
         refreshUI();
       });
 
-      document
-        .getElementById("resetWhatIf")
-        .addEventListener("click", () => {
-          whatIfOffset = 0;
-          document.getElementById("whatIfSlider").value = "0";
-          refreshUI();
-        });
+      document.getElementById("resetWhatIf").addEventListener("click", () => {
+        whatIfOffset = 0;
+        document.getElementById("whatIfSlider").value = "0";
+        refreshUI();
+      });
 
-      document
-        .getElementById("exportCsvBtn")
-        .addEventListener("click", exportAllData);
-      document
-        .getElementById("resetAppBtn")
-        .addEventListener("click", resetApp);
+      document.getElementById("exportCsvBtn").addEventListener("click", exportAllData);
+      document.getElementById("resetAppBtn").addEventListener("click", resetApp);
 
       refreshUI();
     }
