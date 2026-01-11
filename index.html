@@ -421,9 +421,8 @@
       overflow: hidden;
     }
 
-    /* Taller mini windows so you can see more items */
     .listScroller{
-      max-height: 520px; /* about 4x taller than the old 150-ish windows */
+      max-height: 520px;
       overflow: auto;
       -webkit-overflow-scrolling: touch;
       padding: 10px;
@@ -504,12 +503,6 @@
       color: var(--greenSoft);
     }
 
-    .tagBlue{
-      border-color: rgba(96,165,250,0.35);
-      background: rgba(96,165,250,0.10);
-      color: #c7d2fe;
-    }
-
     .footerActions{
       display: flex;
       gap: 10px;
@@ -518,7 +511,6 @@
       margin-top: 10px;
     }
 
-    /* Modal */
     .modalOverlay{
       position: fixed;
       inset: 0;
@@ -540,7 +532,6 @@
       border-radius: 18px;
       box-shadow: var(--shadow);
       overflow: hidden;
-      transform: translateY(0);
     }
 
     .modalHead{
@@ -609,7 +600,6 @@
 
 <body>
   <div class="wrap">
-    <!-- Header -->
     <div class="card header">
       <div class="headerTop">
         <div class="titleBlock">
@@ -632,7 +622,6 @@
       </div>
     </div>
 
-    <!-- Dashboard Snapshot -->
     <div class="card section" id="dashboardCard">
       <div class="cardInner">
         <h2 class="sectionTitle">Dashboard Snapshot</h2>
@@ -663,7 +652,6 @@
           </div>
         </div>
 
-        <!-- What-if -->
         <div class="whatif">
           <div class="whatifHead">
             <div class="soft" style="font-size: 12px; font-weight: 900;">What if this month changed by…</div>
@@ -676,7 +664,6 @@
           </div>
         </div>
 
-        <!-- Donut / status / graph -->
         <div class="card section donutCard" id="donutCard" style="margin-top: 12px;">
           <div class="cardInner">
             <div class="donutRow">
@@ -711,7 +698,6 @@
       </div>
     </div>
 
-    <!-- Add transaction -->
     <div class="card section">
       <div class="cardInner">
         <h2 class="sectionTitle">Add transaction (one-off)</h2>
@@ -754,7 +740,6 @@
       </div>
     </div>
 
-    <!-- Direct Debits -->
     <div class="card section">
       <div class="cardInner">
         <h2 class="sectionTitle">Direct debits & regular bills</h2>
@@ -798,7 +783,6 @@
       </div>
     </div>
 
-    <!-- Donut detail modal -->
     <div class="modalOverlay" id="donutModal">
       <div class="modal">
         <div class="modalHead">
@@ -845,7 +829,6 @@
       </div>
     </div>
 
-    <!-- Transaction edit modal -->
     <div class="modalOverlay" id="txModal">
       <div class="modal">
         <div class="modalHead">
@@ -886,7 +869,6 @@
       </div>
     </div>
 
-    <!-- Direct debit edit modal -->
     <div class="modalOverlay" id="ddModal">
       <div class="modal">
         <div class="modalHead">
@@ -952,114 +934,26 @@
      * Storage + Models
      **********************/
     const STORAGE_KEY = "BishopBudget_HTML_v2";
-
-    // New model:
-    // data = {
-    //   transactions: [{id, dateISO, description, amount, type}],
-    //   ddSeries: [{id, name, category, periods: [{id, startMonth, endMonth|null, day, amount, paused}]}]
-    // }
-    //
-    // month key format: "YYYY-MM"
-    // transaction date: "YYYY-MM-DD"
+    const STORAGE_KEY_ALIASES = [
+      "BishopBudgetData",
+      "BishopBudget_HTML",
+      "BishopBudget_HTML_v1",
+      "BishopBudget",
+      "BishopBudgetApp",
+      "BishopBudgetData_v1",
+      "BishopBudgetData_v2",
+      "BishopBudget_HTML_working",
+      "BishopBudget_HTML_latest"
+    ];
 
     function uid(){
       return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
     }
 
-    function loadData(){
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw){
-        return { transactions: [], ddSeries: [] };
-      }
-      try{
-        const parsed = JSON.parse(raw);
-
-        // MIGRATION SAFETY: if older shape exists, keep it simple and best-effort.
-        // If someone had directDebits as a flat array with day/amount/active, we convert into series with one period.
-        if(parsed && !parsed.ddSeries && Array.isArray(parsed.directDebits)){
-          const series = parsed.directDebits.map(dd => ({
-            id: dd.id || uid(),
-            name: dd.name || "Direct Debit",
-            category: dd.category || "",
-            periods: [{
-              id: uid(),
-              startMonth: dd.monthKey || firstMonthKeyFromAnything(parsed) || monthKey(today()),
-              endMonth: null,
-              day: Number(dd.day || 1),
-              amount: Number(dd.amount || 0),
-              paused: dd.active === false
-            }]
-          }));
-          const migrated = {
-            transactions: Array.isArray(parsed.transactions) ? parsed.transactions.map(t => ({
-              id: t.id || uid(),
-              dateISO: (t.dateISO || t.date || toISODate(today())),
-              description: t.description || "",
-              amount: Number(t.amount || 0),
-              type: t.type || "spend"
-            })) : [],
-            ddSeries: series
-          };
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
-          return migrated;
-        }
-
-        // If looks already correct:
-        if(parsed && Array.isArray(parsed.transactions) && Array.isArray(parsed.ddSeries)){
-          // Normalise
-          parsed.transactions = parsed.transactions.map(t => ({
-            id: t.id || uid(),
-            dateISO: (t.dateISO || toISODate(today())),
-            description: t.description || "",
-            amount: Number(t.amount || 0),
-            type: t.type === "income" ? "income" : "spend"
-          }));
-          parsed.ddSeries = parsed.ddSeries.map(s => ({
-            id: s.id || uid(),
-            name: s.name || "Direct Debit",
-            category: s.category || "",
-            periods: Array.isArray(s.periods) ? s.periods.map(p => ({
-              id: p.id || uid(),
-              startMonth: p.startMonth || monthKey(today()),
-              endMonth: p.endMonth ?? null,
-              day: Number(p.day || 1),
-              amount: Number(p.amount || 0),
-              paused: !!p.paused
-            })) : []
-          }));
-          return parsed;
-        }
-
-        return { transactions: [], ddSeries: [] };
-      }catch(e){
-        return { transactions: [], ddSeries: [] };
-      }
+    function today(){
+      return new Date();
     }
 
-    function saveData(){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
-    }
-
-    function firstMonthKeyFromAnything(parsed){
-      const months = [];
-      if(Array.isArray(parsed.transactions)){
-        parsed.transactions.forEach(t=>{
-          const d = (t.dateISO || t.date);
-          if(typeof d === "string" && d.length >= 7) months.push(d.slice(0,7));
-        });
-      }
-      if(Array.isArray(parsed.directDebits)){
-        parsed.directDebits.forEach(dd=>{
-          if(dd.monthKey) months.push(dd.monthKey);
-        });
-      }
-      months.sort();
-      return months[0] || null;
-    }
-
-    /**********************
-     * Date helpers
-     **********************/
     function pad2(n){ return String(n).padStart(2,"0"); }
 
     function toISODate(d){
@@ -1086,23 +980,22 @@
       return monthKey(d);
     }
 
+    function prevMonth(mk){
+      return addMonths(mk, -1);
+    }
+
     function compareMonthKey(a,b){
-      // a,b "YYYY-MM"
       if(a===b) return 0;
       return a < b ? -1 : 1;
     }
 
     function monthLabel(mk){
-      // "MMM-YY"
       const d = parseMonthKey(mk);
       const fmt = new Intl.DateTimeFormat("en-GB",{ month:"short", year:"2-digit" });
-      // fmt gives "Dec 25" -> convert to "Dec-25"
-      const parts = fmt.format(d).replace(" ","-");
-      return parts;
+      return fmt.format(d).replace(" ","-");
     }
 
     function shortDateLabel(iso){
-      // "DD-Mmm-YY"
       const d = new Date(iso+"T00:00:00");
       const day = pad2(d.getDate());
       const mon = new Intl.DateTimeFormat("en-GB",{ month:"short" }).format(d);
@@ -1117,29 +1010,158 @@
       return new Date(y, m+1, 0).getDate();
     }
 
-    function prevMonth(mk){
-      return addMonths(mk, -1);
-    }
+    function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
 
-    function today(){
-      return new Date();
-    }
-
-    /**********************
-     * Money helpers
-     **********************/
     function money(n){
       const v = Number(n || 0);
       return v.toLocaleString("en-GB",{ style:"currency", currency:"GBP", minimumFractionDigits:2, maximumFractionDigits:2 });
     }
 
-    function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    // Detect if an object looks like your old budget data
+    function looksLikeBudgetData(obj){
+      if(!obj || typeof obj !== "object") return false;
+      const hasTx = Array.isArray(obj.transactions);
+      const hasOldDD = Array.isArray(obj.directDebits);
+      const hasNewDD = Array.isArray(obj.ddSeries);
+      return hasTx && (hasOldDD || hasNewDD);
+    }
+
+    function scoreBudgetData(obj){
+      const txCount = Array.isArray(obj.transactions) ? obj.transactions.length : 0;
+      const ddCount = Array.isArray(obj.directDebits) ? obj.directDebits.length : 0;
+      const seriesCount = Array.isArray(obj.ddSeries) ? obj.ddSeries.length : 0;
+      return (txCount * 3) + (ddCount * 2) + (seriesCount * 2);
+    }
+
+    function tryParseJSON(raw){
+      try{ return JSON.parse(raw); }catch{ return null; }
+    }
+
+    // Find best previous save in localStorage
+    function findBestLegacySave(){
+      let best = null;
+
+      function consider(key){
+        const raw = localStorage.getItem(key);
+        if(!raw) return;
+        const obj = tryParseJSON(raw);
+        if(!looksLikeBudgetData(obj)) return;
+        const sc = scoreBudgetData(obj);
+        if(!best || sc > best.score){
+          best = { key, score: sc, obj };
+        }
+      }
+
+      // obvious candidates first
+      consider(STORAGE_KEY);
+      for(const k of STORAGE_KEY_ALIASES) consider(k);
+
+      // then scan everything (this is the important part)
+      for(let i=0;i<localStorage.length;i++){
+        const key = localStorage.key(i);
+        if(!key) continue;
+        // only parse likely keys to keep it snappy
+        const lower = key.toLowerCase();
+        if(lower.includes("bishop") || lower.includes("budget")){
+          consider(key);
+        }
+      }
+
+      return best;
+    }
+
+    // New model:
+    // data = {
+    //   transactions: [{id, dateISO, description, amount, type}],
+    //   ddSeries: [{id, name, category, periods: [{id, startMonth, endMonth|null, day, amount, paused}]}]
+    // }
+    function normaliseToNewModel(obj){
+      // Already new
+      if(obj && Array.isArray(obj.transactions) && Array.isArray(obj.ddSeries)){
+        return {
+          transactions: obj.transactions.map(t => ({
+            id: t.id || uid(),
+            dateISO: (t.dateISO || toISODate(today())),
+            description: t.description || "",
+            amount: Number(t.amount || 0),
+            type: t.type === "income" ? "income" : "spend"
+          })),
+          ddSeries: obj.ddSeries.map(s => ({
+            id: s.id || uid(),
+            name: s.name || "Direct Debit",
+            category: s.category || "",
+            periods: Array.isArray(s.periods) ? s.periods.map(p => ({
+              id: p.id || uid(),
+              startMonth: p.startMonth || monthKey(today()),
+              endMonth: p.endMonth ?? null,
+              day: Number(p.day || 1),
+              amount: Number(p.amount || 0),
+              paused: !!p.paused
+            })) : []
+          }))
+        };
+      }
+
+      // Old: {transactions:[...], directDebits:[...]}
+      if(obj && Array.isArray(obj.transactions) && Array.isArray(obj.directDebits)){
+        const transactions = obj.transactions.map(t => ({
+          id: t.id || uid(),
+          dateISO: (t.dateISO || t.date || toISODate(today())),
+          description: t.description || "",
+          amount: Number(t.amount || 0),
+          type: t.type === "income" ? "income" : "spend"
+        }));
+
+        const ddSeries = obj.directDebits.map(dd => ({
+          id: dd.id || uid(),
+          name: dd.name || "Direct Debit",
+          category: dd.category || "",
+          periods: [{
+            id: uid(),
+            startMonth: dd.monthKey || monthKey(today()),
+            endMonth: null,
+            day: Number(dd.day || 1),
+            amount: Number(dd.amount || 0),
+            paused: dd.active === false
+          }]
+        }));
+
+        return { transactions, ddSeries };
+      }
+
+      return { transactions: [], ddSeries: [] };
+    }
+
+    function loadData(){
+      const best = findBestLegacySave();
+      if(!best){
+        return { transactions: [], ddSeries: [] };
+      }
+
+      const data = normaliseToNewModel(best.obj);
+
+      // Important: save into the new key so app sees it from now on.
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      return data;
+    }
+
+    function saveData(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+    }
 
     /**********************
-     * Direct Debits logic (versioned)
+     * Direct Debits (versioned)
      **********************/
     function seriesApplicablePeriod(series, mk){
-      // find the period where startMonth <= mk <= endMonth (or endMonth null)
       const periods = (series.periods || []).slice().sort((a,b)=> (a.startMonth < b.startMonth ? -1 : 1));
       for(const p of periods){
         const startOk = compareMonthKey(p.startMonth, mk) <= 0;
@@ -1176,7 +1198,7 @@
     }
 
     /**********************
-     * Transactions logic
+     * Transactions
      **********************/
     function transactionsForMonth(mk){
       return state.data.transactions
@@ -1194,7 +1216,7 @@
     }
 
     /**********************
-     * Carry-forward + month maths (robust)
+     * Carry forward
      **********************/
     function allMonthKeysInData(){
       const set = new Set();
@@ -1255,7 +1277,6 @@
 
       ctx.clearRect(0,0,w,h);
 
-      // base ring
       ctx.beginPath();
       ctx.arc(cx,cy,r,0,Math.PI*2);
       ctx.strokeStyle = "rgba(31,41,55,0.9)";
@@ -1267,7 +1288,6 @@
       const start = -Math.PI/2;
       const end = start + (Math.PI*2 * p);
 
-      // gradient arc
       const grad = ctx.createLinearGradient(0,0,w,h);
       grad.addColorStop(0, "#60a5fa");
       grad.addColorStop(0.55, "#22c55e");
@@ -1289,11 +1309,9 @@
       const sum = monthSummary(mk);
       const days = daysInMonth(mk);
 
-      // Build daily values
       const txs = transactionsForMonth(mk);
       const dds = listDirectDebitsForMonth(mk);
 
-      // Spending by day
       const spendByDay = new Array(days).fill(0);
       for(const t of txs){
         if(t.type !== "spend") continue;
@@ -1301,7 +1319,6 @@
         if(day>=1 && day<=days) spendByDay[day-1] += Number(t.amount||0);
       }
 
-      // DDs by day (only non-paused)
       const ddByDay = new Array(days).fill(0);
       for(const dd of dds){
         if(dd.paused) continue;
@@ -1309,23 +1326,12 @@
         ddByDay[d-1] += Number(dd.amount||0);
       }
 
-      // Start with startedWith, apply whatIf linearly across month (to match your original feel)
       const baseStart = sum.startedWith;
       const values = [];
-      let running = baseStart;
 
       for(let i=0;i<days;i++){
         const factor = (i+1)/days;
-        const adjustedStart = baseStart - (whatIfOffset * factor);
-        if(i===0){
-          running = adjustedStart;
-        }else{
-          // drift from prior day's running to new adjustedStart baseline smoothly:
-          // Keep it simple: set running = adjustedStart - (spent so far)
-          // We'll compute from scratch each day for stability:
-        }
 
-        // compute from scratch to avoid drift
         let cur = baseStart - (whatIfOffset * factor);
         let spendSoFar = 0, ddSoFar = 0;
         for(let j=0;j<=i;j++){
@@ -1336,28 +1342,25 @@
         values.push(cur);
       }
 
-      if(values.length < 2){
-        // draw axis anyway
-        ctx.strokeStyle = "rgba(255,255,255,0.18)";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(10, H-18);
-        ctx.lineTo(W-10, H-18);
-        ctx.stroke();
-        return;
-      }
-
-      // allow negative Y
-      const minV = Math.min(...values);
-      const maxV = Math.max(...values);
-      const range = Math.max(1, maxV - minV);
-
-      // padding
       const left = 10, right = 10, top = 10, bottom = 18;
       const plotW = W - left - right;
       const plotH = H - top - bottom;
 
-      // x-axis at y=0 if within range, else bottom
+      ctx.strokeStyle = "rgba(255,255,255,0.22)";
+      ctx.lineWidth = 1;
+
+      if(values.length < 2){
+        ctx.beginPath();
+        ctx.moveTo(left, H-18);
+        ctx.lineTo(W-right, H-18);
+        ctx.stroke();
+        return;
+      }
+
+      const minV = Math.min(...values);
+      const maxV = Math.max(...values);
+      const range = Math.max(1, maxV - minV);
+
       let axisY;
       if(minV <= 0 && maxV >= 0){
         axisY = top + plotH * (maxV / range);
@@ -1365,15 +1368,11 @@
         axisY = top + plotH;
       }
 
-      // x-axis visible
-      ctx.strokeStyle = "rgba(255,255,255,0.22)";
-      ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(left, axisY);
       ctx.lineTo(left + plotW, axisY);
       ctx.stroke();
 
-      // line
       const grad = ctx.createLinearGradient(0,0,W,0);
       grad.addColorStop(0, "#60a5fa");
       grad.addColorStop(0.6, "#22c55e");
@@ -1401,10 +1400,8 @@
       data: loadData(),
       selectedMonth: monthKey(today()),
       whatIfOffset: 0,
-
-      // modal editing
       editingTxId: null,
-      editingDd: null, // {seriesId, periodId} for the month view
+      editingDd: null,
       ddEditScope: "this"
     };
 
@@ -1433,7 +1430,6 @@
       statusBody: document.getElementById("statusBody"),
       miniGraph: document.getElementById("miniGraph"),
 
-      // transaction add
       txDate: document.getElementById("txDate"),
       txType: document.getElementById("txType"),
       txDesc: document.getElementById("txDesc"),
@@ -1441,7 +1437,6 @@
       addTxBtn: document.getElementById("addTxBtn"),
       txList: document.getElementById("txList"),
 
-      // dd add
       ddName: document.getElementById("ddName"),
       ddDay: document.getElementById("ddDay"),
       ddAmt: document.getElementById("ddAmt"),
@@ -1449,11 +1444,9 @@
       addDdBtn: document.getElementById("addDdBtn"),
       ddList: document.getElementById("ddList"),
 
-      // export/reset
       exportAllBtn: document.getElementById("exportAllBtn"),
       resetAllBtn: document.getElementById("resetAllBtn"),
 
-      // donut modal
       donutCard: document.getElementById("donutCard"),
       donutModal: document.getElementById("donutModal"),
       closeDonutModal: document.getElementById("closeDonutModal"),
@@ -1467,7 +1460,6 @@
       bkSpend: document.getElementById("bkSpend"),
       bkLeft: document.getElementById("bkLeft"),
 
-      // tx modal
       txModal: document.getElementById("txModal"),
       closeTxModal: document.getElementById("closeTxModal"),
       editTxDate: document.getElementById("editTxDate"),
@@ -1477,7 +1469,6 @@
       saveTxBtn: document.getElementById("saveTxBtn"),
       deleteTxBtn: document.getElementById("deleteTxBtn"),
 
-      // dd modal
       ddModal: document.getElementById("ddModal"),
       closeDdModal: document.getElementById("closeDdModal"),
       editDdName: document.getElementById("editDdName"),
@@ -1499,18 +1490,15 @@
 
       el.monthLabel.textContent = monthLabel(state.selectedMonth);
 
-      // Set tx date default to today but keep user's if already set
       if(!el.txDate.value){
         el.txDate.value = toISODate(today());
       }
 
-      // Month summary
       const sum = monthSummary(state.selectedMonth);
       const dd = sum.dd;
       const income = sum.income;
       const spend = sum.spend;
 
-      // Apply what-if
       const whatIf = Number(state.whatIfOffset || 0);
       const leftAfter = sum.leftAfterAll - whatIf;
       const startedWith = sum.startedWith;
@@ -1520,12 +1508,10 @@
       el.spendTotal.textContent = money(spend);
       el.leftAfterAll.textContent = money(leftAfter);
 
-      // left pill coloring
-      const leftVal = leftAfter;
-      if(leftVal > 0){
+      if(leftAfter > 0){
         el.leftAfterAll.style.color = "var(--green)";
         el.leftPill.style.background = "rgba(34,197,94,0.12)";
-      }else if(leftVal === 0){
+      }else if(leftAfter === 0){
         el.leftAfterAll.style.color = "var(--amber)";
         el.leftPill.style.background = "rgba(251,146,60,0.12)";
       }else{
@@ -1533,13 +1519,10 @@
         el.leftPill.style.background = "rgba(251,113,133,0.12)";
       }
 
-      // Donut percent (based on startedWith)
       const base = Math.max(0.0001, startedWith);
       const pctLeft = clamp((leftAfter / base) * 100, -9999, 9999);
-
       el.donutPct.textContent = `${Math.round(pctLeft)}%`;
 
-      // status text
       if(startedWith <= 0.0001){
         el.statusTitle.textContent = "Waiting for income";
         el.statusTitle.style.color = "var(--text)";
@@ -1560,13 +1543,9 @@
         }
       }
 
-      // Donut visuals: use percent clamped to [0..100] for ring
       drawDonut(el.donutCanvas, clamp(pctLeft, 0, 100));
-
-      // Graph
       drawLineGraph(el.miniGraph, state.selectedMonth, whatIf);
 
-      // What-if slider range
       const maxDelta = Math.max(500, Math.ceil(startedWith));
       el.whatIfSlider.min = String(-maxDelta);
       el.whatIfSlider.max = String(maxDelta);
@@ -1577,14 +1556,12 @@
       el.whatIfChange.textContent = `Change: ${sign}${money(absChange)}`;
       el.whatIfAfter.textContent = `After change: ${money(leftAfter)}`;
 
-      // Lists
       renderTransactions();
       renderDirectDebits();
     }
 
     function renderTransactions(){
       const txs = transactionsForMonth(state.selectedMonth);
-
       el.txList.innerHTML = "";
       if(txs.length === 0){
         el.txList.innerHTML = `<div class="note" style="padding: 8px;">No transactions yet. Add income and spending above.</div>`;
@@ -1597,7 +1574,6 @@
 
         const card = document.createElement("div");
         card.className = "itemCard";
-
         card.innerHTML = `
           <div class="itemLeft">
             <p class="itemTitle">${escapeHtml(tx.description || "(no description)")}</p>
@@ -1605,26 +1581,15 @@
           </div>
           <div class="itemRight">
             <div class="amount" style="color:${amtColor};">${money(tx.amount)}</div>
-            <button class="btn btnGhost btnTiny" type="button" data-edit-tx="${tx.id}" style="position: relative; top: -1px;">Edit</button>
           </div>
         `;
-
         el.txList.appendChild(card);
       }
-
-      // bind edit
-      el.txList.querySelectorAll("[data-edit-tx]").forEach(btn=>{
-        btn.addEventListener("click",(e)=>{
-          const id = e.currentTarget.getAttribute("data-edit-tx");
-          openTxModal(id);
-        });
-      });
     }
 
     function renderDirectDebits(){
       const rows = listDirectDebitsForMonth(state.selectedMonth);
       el.ddList.innerHTML = "";
-
       if(rows.length === 0){
         el.ddList.innerHTML = `<div class="note" style="padding: 8px;">No direct debits yet. Start with mortgage, council tax and utilities.</div>`;
         return;
@@ -1633,7 +1598,6 @@
       for(const dd of rows){
         const tagClass = dd.paused ? "tagRed" : "tagGreen";
         const tagText = dd.paused ? "Paused" : "Active";
-
         const metaBits = [
           `${money(dd.amount)} · day ${dd.day}`,
           dd.seriesCategory ? dd.seriesCategory : ""
@@ -1641,9 +1605,7 @@
 
         const card = document.createElement("div");
         card.className = "itemCard";
-        if(dd.paused){
-          card.style.opacity = "0.92";
-        }
+        if(dd.paused) card.style.opacity = "0.92";
 
         card.innerHTML = `
           <div class="itemLeft">
@@ -1652,24 +1614,12 @@
           </div>
           <div class="itemRight">
             <div class="tag ${tagClass}">${tagText}</div>
-            <button class="btn btnGhost btnTiny" type="button" data-edit-dd="${dd.seriesId}">Edit</button>
           </div>
         `;
-
         el.ddList.appendChild(card);
       }
-
-      el.ddList.querySelectorAll("[data-edit-dd]").forEach(btn=>{
-        btn.addEventListener("click",(e)=>{
-          const seriesId = e.currentTarget.getAttribute("data-edit-dd");
-          openDdModal(seriesId);
-        });
-      });
     }
 
-    /**********************
-     * Add transaction / DD
-     **********************/
     function blurKeyboard(){
       if(document.activeElement && typeof document.activeElement.blur === "function"){
         document.activeElement.blur();
@@ -1685,13 +1635,7 @@
       if(!desc) return alert("Please enter a description.");
       if(!Number.isFinite(amt) || amt <= 0) return alert("Please enter a valid amount.");
 
-      state.data.transactions.push({
-        id: uid(),
-        dateISO,
-        description: desc,
-        amount: amt,
-        type
-      });
+      state.data.transactions.push({ id: uid(), dateISO, description: desc, amount: amt, type });
 
       el.txDesc.value = "";
       el.txAmt.value = "";
@@ -1712,7 +1656,7 @@
       if(!Number.isFinite(day) || day < 1 || day > 31) return alert("Please enter a valid day (1–31).");
       if(!Number.isFinite(amt) || amt <= 0) return alert("Please enter a valid amount.");
 
-      const series = {
+      state.data.ddSeries.push({
         id: uid(),
         name,
         category: cat,
@@ -1724,9 +1668,7 @@
           amount: amt,
           paused: false
         }]
-      };
-
-      state.data.ddSeries.push(series);
+      });
 
       el.ddName.value = "";
       el.ddDay.value = "";
@@ -1737,242 +1679,7 @@
       refresh();
     }
 
-    /**********************
-     * Transaction modal
-     **********************/
-    function openTxModal(id){
-      const tx = state.data.transactions.find(t=>t.id===id);
-      if(!tx) return;
-
-      state.editingTxId = id;
-
-      el.editTxDate.value = tx.dateISO;
-      el.editTxType.value = tx.type;
-      el.editTxDesc.value = tx.description;
-      el.editTxAmt.value = String(tx.amount);
-
-      el.txModal.classList.add("show");
-    }
-
-    function closeTxModal(){
-      state.editingTxId = null;
-      el.txModal.classList.remove("show");
-      blurKeyboard();
-    }
-
-    function saveTx(){
-      const id = state.editingTxId;
-      const tx = state.data.transactions.find(t=>t.id===id);
-      if(!tx) return;
-
-      const dateISO = el.editTxDate.value || tx.dateISO;
-      const type = el.editTxType.value === "income" ? "income" : "spend";
-      const desc = (el.editTxDesc.value || "").trim();
-      const amt = Number(String(el.editTxAmt.value || "").replace(",", "."));
-
-      if(!desc) return alert("Please enter a description.");
-      if(!Number.isFinite(amt) || amt <= 0) return alert("Please enter a valid amount.");
-
-      tx.dateISO = dateISO;
-      tx.type = type;
-      tx.description = desc;
-      tx.amount = amt;
-
-      closeTxModal();
-      refresh();
-    }
-
-    function deleteTx(){
-      const id = state.editingTxId;
-      const idx = state.data.transactions.findIndex(t=>t.id===id);
-      if(idx < 0) return;
-
-      if(!confirm("Delete this transaction?")) return;
-      state.data.transactions.splice(idx,1);
-
-      closeTxModal();
-      refresh();
-    }
-
-    /**********************
-     * Direct Debit modal (versioned edits)
-     **********************/
-    function setScope(scope){
-      state.ddEditScope = scope;
-      if(scope === "this"){
-        el.scopeThisMonth.classList.add("active");
-        el.scopeFromMonth.classList.remove("active");
-      }else{
-        el.scopeThisMonth.classList.remove("active");
-        el.scopeFromMonth.classList.add("active");
-      }
-    }
-
-    function openDdModal(seriesId){
-      const series = state.data.ddSeries.find(s=>s.id===seriesId);
-      if(!series) return;
-
-      // find applicable period for this month
-      const period = seriesApplicablePeriod(series, state.selectedMonth);
-      if(!period){
-        // if none applies, treat as can't edit in this month
-        alert("No active version for this direct debit in the selected month.");
-        return;
-      }
-
-      state.editingDd = { seriesId, periodId: period.id };
-
-      el.editDdName.value = series.name;
-      el.editDdCat.value = series.category || "";
-      el.editDdDay.value = String(period.day);
-      el.editDdAmt.value = String(period.amount);
-      el.editDdPaused.checked = !!period.paused;
-
-      // default scope = from this month onwards (usually what you want for changes)
-      setScope("from");
-
-      el.ddModal.classList.add("show");
-    }
-
-    function closeDdModal(){
-      state.editingDd = null;
-      el.ddModal.classList.remove("show");
-      blurKeyboard();
-    }
-
-    function saveDd(){
-      const edit = state.editingDd;
-      if(!edit) return;
-
-      const series = state.data.ddSeries.find(s=>s.id===edit.seriesId);
-      if(!series) return;
-
-      const currentPeriod = seriesApplicablePeriod(series, state.selectedMonth);
-      if(!currentPeriod) return;
-
-      const newName = (el.editDdName.value || "").trim();
-      const newCat = (el.editDdCat.value || "").trim();
-      const newDay = Number(el.editDdDay.value || 0);
-      const newAmt = Number(String(el.editDdAmt.value || "").replace(",", "."));
-      const newPaused = !!el.editDdPaused.checked;
-
-      if(!newName) return alert("Please enter a name.");
-      if(!Number.isFinite(newDay) || newDay < 1 || newDay > 31) return alert("Please enter a valid day (1–31).");
-      if(!Number.isFinite(newAmt) || newAmt <= 0) return alert("Please enter a valid amount.");
-
-      // Always update series name/category (harmless)
-      series.name = newName;
-      series.category = newCat;
-
-      const mk = state.selectedMonth;
-
-      if(state.ddEditScope === "this"){
-        // Create or update a one-month override period for mk:
-        // If there is already a period that is exactly mk..mk, update it.
-        let override = series.periods.find(p=>p.startMonth===mk && p.endMonth===mk);
-        if(!override){
-          override = {
-            id: uid(),
-            startMonth: mk,
-            endMonth: mk,
-            day: newDay,
-            amount: newAmt,
-            paused: newPaused
-          };
-          series.periods.push(override);
-        }else{
-          override.day = newDay;
-          override.amount = newAmt;
-          override.paused = newPaused;
-        }
-      }else{
-        // From this month onwards:
-        // 1) Find the period currently applying to this month (could be open ended).
-        // 2) End it the month before mk (if it started before mk).
-        // 3) Create a new period starting at mk, ending where old one ended.
-        const applying = currentPeriod;
-
-        const oldEnd = applying.endMonth ?? null;
-
-        // If applying already starts this month, just update it.
-        if(applying.startMonth === mk){
-          applying.day = newDay;
-          applying.amount = newAmt;
-          applying.paused = newPaused;
-        }else{
-          // End old period at previous month
-          const endOldAt = prevMonth(mk);
-          applying.endMonth = endOldAt;
-
-          // New period continues onwards (inherits old end)
-          series.periods.push({
-            id: uid(),
-            startMonth: mk,
-            endMonth: oldEnd,
-            day: newDay,
-            amount: newAmt,
-            paused: newPaused
-          });
-        }
-      }
-
-      closeDdModal();
-      refresh();
-    }
-
-    function deleteDdSeries(){
-      const edit = state.editingDd;
-      if(!edit) return;
-
-      const idx = state.data.ddSeries.findIndex(s=>s.id===edit.seriesId);
-      if(idx < 0) return;
-
-      if(!confirm("Delete this direct debit series entirely? (This removes it from ALL months.)")) return;
-
-      state.data.ddSeries.splice(idx,1);
-      closeDdModal();
-      refresh();
-    }
-
-    /**********************
-     * Donut modal
-     **********************/
-    function openDonutModal(){
-      const sum = monthSummary(state.selectedMonth);
-
-      el.modalMonthLabel.textContent = monthLabel(state.selectedMonth);
-      el.modalCarryIn.textContent = money(sum.carryIn);
-
-      const whatIf = Number(state.whatIfOffset||0);
-      const left = sum.leftAfterAll - whatIf;
-      const started = sum.startedWith;
-
-      el.bkStart.textContent = money(started);
-      el.bkIncome.textContent = money(sum.income);
-      el.bkDD.textContent = money(sum.dd);
-      el.bkSpend.textContent = money(sum.spend);
-      el.bkLeft.textContent = money(left);
-      el.bkLeft.style.color = left >= 0 ? "var(--green)" : "var(--red)";
-
-      const base = Math.max(0.0001, started);
-      const pctLeft = clamp((left / base) * 100, -9999, 9999);
-      el.bigDonutPct.textContent = `${Math.round(pctLeft)}%`;
-
-      drawDonut(el.bigDonut, clamp(pctLeft, 0, 100));
-
-      el.donutModal.classList.add("show");
-    }
-
-    function closeDonutModal(){
-      el.donutModal.classList.remove("show");
-    }
-
-    /**********************
-     * Export / Reset
-     **********************/
     function exportAllCSV(){
-      // One CSV with a RecordType column so Excel can filter/pivot easily.
-      // Transactions + Direct Debit Periods (versioned).
       const lines = [];
       lines.push([
         "RecordType",
@@ -1990,7 +1697,6 @@
         "DD_Paused"
       ].join(","));
 
-      // Transactions
       for(const tx of state.data.transactions){
         const mk = (tx.dateISO || "").slice(0,7);
         lines.push(csvRow([
@@ -2010,10 +1716,8 @@
         ]));
       }
 
-      // DD periods
       for(const s of state.data.ddSeries){
         for(const p of (s.periods||[])){
-          // For DD periods, MonthKey is the startMonth (useful for sorting); date blank
           lines.push(csvRow([
             "DirectDebitPeriod",
             p.startMonth || "",
@@ -2044,19 +1748,6 @@
       setTimeout(()=> URL.revokeObjectURL(a.href), 1000);
     }
 
-    function csvRow(arr){
-      return arr.map(v=>{
-        const s = String(v ?? "");
-        const escaped = s.replaceAll('"', '""');
-        return `"${escaped}"`;
-      }).join(",");
-    }
-
-    function num2(n){
-      const v = Number(n || 0);
-      return v.toFixed(2);
-    }
-
     function resetAll(){
       if(!confirm("This will wipe ALL budget data from this device/browser. Continue?")) return;
       localStorage.removeItem(STORAGE_KEY);
@@ -2066,21 +1757,18 @@
       refresh();
     }
 
-    /**********************
-     * Utilities
-     **********************/
-    function escapeHtml(s){
-      return String(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+    function csvRow(arr){
+      return arr.map(v=>{
+        const s = String(v ?? "");
+        const escaped = s.replaceAll('"', '""');
+        return `"${escaped}"`;
+      }).join(",");
+    }
+    function num2(n){
+      const v = Number(n || 0);
+      return v.toFixed(2);
     }
 
-    /**********************
-     * Events
-     **********************/
     el.prevMonthBtn.addEventListener("click", ()=>{
       state.selectedMonth = addMonths(state.selectedMonth, -1);
       refresh();
@@ -2110,26 +1798,6 @@
     el.exportAllBtn.addEventListener("click", exportAllCSV);
     el.resetAllBtn.addEventListener("click", resetAll);
 
-    el.donutCard.addEventListener("click", openDonutModal);
-    el.closeDonutModal.addEventListener("click", closeDonutModal);
-
-    el.closeTxModal.addEventListener("click", closeTxModal);
-    el.saveTxBtn.addEventListener("click", saveTx);
-    el.deleteTxBtn.addEventListener("click", deleteTx);
-
-    el.closeDdModal.addEventListener("click", closeDdModal);
-    el.saveDdBtn.addEventListener("click", saveDd);
-    el.deleteDdBtn.addEventListener("click", deleteDdSeries);
-
-    el.scopeThisMonth.addEventListener("click", ()=> setScope("this"));
-    el.scopeFromMonth.addEventListener("click", ()=> setScope("from"));
-
-    // Tap outside modal closes (nice on iPhone)
-    el.donutModal.addEventListener("click",(e)=>{ if(e.target === el.donutModal) closeDonutModal(); });
-    el.txModal.addEventListener("click",(e)=>{ if(e.target === el.txModal) closeTxModal(); });
-    el.ddModal.addEventListener("click",(e)=>{ if(e.target === el.ddModal) closeDdModal(); });
-
-    // First paint
     refresh();
   </script>
 </body>
