@@ -1,1119 +1,946 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>22 Bishop Road Budget</title>
-
-  <!-- No pinch zoom -->
+  <meta charset="utf-8" />
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
   />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#020617" />
 
-  <!-- Icons -->
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+
+  <title>Monthly Budget</title>
 
   <style>
-    :root {
-      --bg: #050713;
-      --bg2: #070b16;
-      --bg3: #080d1b;
-      --card: #0e172c;
-      --card-soft: #131f3a;
-      --pill: #182648;
-      --pill-soft: #1d2d55;
-      --blue: #5fa9ff;
-      --blue-soft: #8ec5ff;
-      --green: #40e38a;
-      --green-soft: #9af7c7;
-      --red: #ff6a78;
-      --red-soft: #ff8a94;
-      --amber: #ffb24a;
-      --text: #e6e8ee;
-      --text-soft: #9aa3b5;
-      --text-muted: #6f7888;
-      --border-subtle: rgba(255, 255, 255, 0.04);
-      --border-strong: rgba(255, 255, 255, 0.12);
-      --shadow-strong: 0 22px 65px rgba(0, 0, 0, 0.75);
+    :root{
+      --bgDeep: #020617;
+      --bg: #0b1120;
+      --bgMid: #1f2937;
+
+      --card: #0f172a;
+      --cardSoft: #121b33;
+      --pill: #16213a;
+
+      --text: #e5e7eb;
+      --textSoft: #9ca3af;
+      --textMuted: #6b7280;
+
+      --blueA: #1d4ed8;
+      --blueB: #06b6d4;
+      --blueSoft: #60a5fa;
+
+      --green: #22c55e;
+      --greenSoft: #bbf7d0;
+
+      --red: #fb7185;
+      --amber: #fb923c;
+
+      --stroke: rgba(255,255,255,0.10);
+      --stroke2: rgba(96,165,250,0.55);
+
+      --radiusXL: 18px;
+      --radiusLG: 14px;
+      --radiusMD: 12px;
+      --radiusSM: 10px;
+
+      --shadow: 0 10px 30px rgba(0,0,0,0.28);
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
+    *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body{
+      height: 100%;
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, system-ui, -apple-system,
-        "SF Pro Text", Segoe UI, Inter, Arial, sans-serif;
-      background:
-        radial-gradient(circle at top left, #161c3f 0, #050713 55%),
-        radial-gradient(circle at bottom right, #050713 0, #020409 45%);
-      background-attachment: fixed;
+      background: radial-gradient(1200px 900px at 10% 0%, rgba(6,182,212,0.10), transparent 60%),
+                  radial-gradient(900px 700px at 90% 10%, rgba(29,78,216,0.12), transparent 55%),
+                  linear-gradient(135deg, var(--bgDeep), var(--bg));
       color: var(--text);
-      -webkit-font-smoothing: antialiased;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    .app-shell {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 12px 10px 26px;
+    .wrap{
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px 14px 28px;
+      padding-bottom: calc(28px + env(safe-area-inset-bottom));
     }
 
-    .app-container {
-      width: 100%;
-      max-width: 520px;
-      background: radial-gradient(circle at top, #151d3f 0, #050713 60%);
-      border-radius: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: var(--shadow-strong);
-      padding: 16px;
-      position: relative;
-      overflow: hidden;
+    .card{
+      background: var(--cardSoft);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radiusXL);
+      box-shadow: var(--shadow);
     }
 
-    @media (min-width: 700px) {
-      .app-container {
-        padding: 20px;
-      }
+    .cardInner{
+      padding: 14px;
     }
 
-    .section {
-      background: var(--card-soft);
-      border-radius: 18px;
+    .header{
       padding: 14px;
       margin-bottom: 10px;
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
     }
 
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .section-title {
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .section-subtitle {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .header-title {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .header-subtitle {
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .header-icon {
-      width: 68px;
-      height: 68px;
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      object-fit: cover;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-      background: radial-gradient(circle at 20% 0, #3b86ff 0, #040615 55%);
-    }
-
-    .header-month-row {
+    .headerTop{
       display: flex;
       align-items: center;
-      margin-top: 4px;
-      gap: 6px;
+      gap: 12px;
     }
 
-    .header-month-label {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .header-month-value {
-      font-size: 13px;
-      font-weight: 600;
-      color: #cfd7ff;
-    }
-
-    .btn {
-      border-radius: 11px;
-      padding: 6px 11px;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      background: radial-gradient(circle at top, #223461 0, #141e3e 65%);
-      color: #ffffff;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    .titleBlock{
+      display: flex;
+      flex-direction: column;
       gap: 4px;
-      transition: transform 0.08s ease, box-shadow 0.08s ease,
-        filter 0.08s ease;
-    }
-
-    .btn:hover {
-      filter: brightness(1.05);
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
-      transform: translateY(-0.5px);
-    }
-
-    .btn:active {
-      transform: translateY(0.5px) scale(0.98);
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
-    }
-
-    .btn-small {
-      font-size: 12px;
-      padding: 4px 9px;
-      border-radius: 9px;
-    }
-
-    .btn-secondary {
-      background: radial-gradient(circle at top, #27375f 0, #141d39 70%);
-    }
-
-    .btn-ghost {
-      background: rgba(18, 30, 66, 0.8);
-      border-color: rgba(255, 255, 255, 0.18);
-    }
-
-    .btn-danger {
-      background: linear-gradient(180deg, #c53946, #8c2530);
-      border-color: rgba(255, 175, 184, 0.5);
-    }
-
-    .btn-full {
-      width: 100%;
-    }
-
-    .btn-subtle {
-      background: rgba(9, 15, 33, 0.95);
-      border-color: rgba(255, 255, 255, 0.18);
-      font-size: 12px;
-    }
-
-    .input-label {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 3px;
-    }
-
-    .input {
-      width: 100%;
-      background: rgba(10, 17, 37, 0.9);
-      border-radius: 10px;
-      border: 1px solid rgba(92, 141, 255, 0.8);
-      padding: 7px 9px;
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 600;
-      outline: none;
-      margin-bottom: 6px;
-    }
-
-    .input::placeholder {
-      color: rgba(154, 163, 181, 0.82);
-      font-weight: 500;
-    }
-
-    input[type="date"].input {
-      -webkit-appearance: none;
-      appearance: none;
-      padding: 7px 9px;
-      background-color: rgba(10, 17, 37, 0.9);
-      border-radius: 10px;
-    }
-
-    select.input {
-      padding-right: 28px;
-      background-image: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.06),
-        rgba(255, 255, 255, 0)
-      );
-    }
-
-    .inputs-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      margin-top: 6px;
-    }
-
-    .dashboard-card {
-      background: rgba(13, 21, 45, 0.95);
-      border-radius: 13px;
-      padding: 8px 9px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    }
-
-    .dashboard-label {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .dashboard-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 1px;
-    }
-
-    .dashboard-value {
-      font-size: 14px;
-      font-weight: 700;
-      margin-top: 4px;
-    }
-
-    .status-row {
-      margin-top: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--green-soft);
-      box-shadow: 0 0 0 2px rgba(64, 227, 138, 0.25);
-    }
-
-    .status-dot-red {
-      background: var(--red-soft);
-      box-shadow: 0 0 0 2px rgba(255, 106, 120, 0.3);
-    }
-
-    .status-text-main {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .status-text-sub {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .donut-row {
-      display: flex;
-      margin-top: 8px;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .donut-wrapper {
-      flex: 0 0 150px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .donut-wrapper canvas {
-      cursor: pointer;
-      border-radius: 999px;
-    }
-
-    .donut-legend {
-      flex: 1;
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .donut-legend-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 4px;
-      gap: 6px;
-    }
-
-    .donut-legend-label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .legend-swatch {
-      width: 10px;
-      height: 10px;
-      border-radius: 3px;
-      background: var(--green-soft);
-    }
-
-    .legend-swatch-red {
-      background: var(--red-soft);
-    }
-
-    .legend-swatch-carry {
-      background: var(--blue-soft);
-    }
-
-    .list-container {
-      max-height: 340px;
-      overflow-y: auto;
-      margin-top: 6px;
-      padding-right: 2px;
-    }
-
-    .list-empty {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .list-item {
-      background: rgba(9, 15, 33, 0.96);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 8px 9px;
-      margin-bottom: 6px;
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
-    }
-
-    .list-main {
       flex: 1;
       min-width: 0;
     }
 
-    .list-title {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-
-    .list-sub {
-      font-size: 11px;
-      color: var(--text-muted);
+    .title{
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      font-size: 18px;
+      margin: 0;
+      color: var(--text);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .list-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .subtitle{
+      margin: 0;
+      font-size: 13px;
+      color: var(--textSoft);
     }
 
-    .list-amount {
-      font-size: 14px;
+    .appIcon{
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      border: 1px solid var(--stroke);
+      overflow: hidden;
+      flex: 0 0 auto;
+      background: rgba(255,255,255,0.03);
+      display: grid;
+      place-items: center;
+    }
+    .appIcon img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .monthRow{
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pill{
+      background: rgba(22,33,58,0.92);
+      border: 1px solid var(--stroke);
+      border-radius: 999px;
+      padding: 10px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1;
+      min-height: 42px;
+    }
+
+    .pillLabel{
+      color: var(--textMuted);
+      font-size: 12px;
+    }
+
+    .pillValue{
+      color: #c7d2fe;
       font-weight: 700;
-      text-align: right;
+      font-size: 13px;
+    }
+
+    .btn{
+      cursor: pointer;
+      user-select: none;
+      background: linear-gradient(135deg, rgba(29,78,216,0.95), rgba(6,182,212,0.92));
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 10px 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+      transition: transform 0.06s ease;
+    }
+    .btn:active{ transform: translateY(1px); }
+
+    .btnGhost{
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--stroke);
+      box-shadow: none;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .btnDanger{
+      background: rgba(251,113,133,0.14);
+      border: 1px solid rgba(251,113,133,0.25);
+      color: var(--text);
+      box-shadow: none;
+    }
+
+    .btnTiny{
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .section{
+      margin-top: 10px;
+    }
+
+    .sectionTitle{
+      font-size: 15px;
+      font-weight: 800;
+      margin: 0 0 10px 0;
+      color: var(--text);
+    }
+
+    .grid2{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 680px){
+      .grid2{ grid-template-columns: 1fr; }
+    }
+
+    .summaryPill{
+      background: rgba(22,33,58,0.92);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radiusLG);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 88px;
+    }
+
+    .summaryTitle{
+      font-size: 12px;
+      color: var(--textSoft);
+      font-weight: 700;
+    }
+
+    .summarySub{
+      font-size: 11px;
+      color: var(--textMuted);
+    }
+
+    .summaryVal{
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+    }
+
+    .row{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .muted{ color: var(--textMuted); }
+    .soft{ color: var(--textSoft); }
+
+    .donutCard{
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .donutRow{
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    @media (max-width: 680px){
+      .donutRow{
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .donutWrap{
+      display: grid;
+      place-items: center;
+    }
+
+    .donutCanvas{
+      width: 150px;
+      height: 150px;
+      display: block;
+    }
+
+    .donutText{
+      position: relative;
+      margin-top: -122px;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+
+    .donutPct{
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--text);
+      margin: 0;
+      line-height: 1;
+    }
+
+    .donutSub{
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--textSoft);
+      margin: 6px 0 0 0;
+    }
+
+    .statusTitle{
+      font-size: 14px;
+      font-weight: 900;
+      margin: 0;
+    }
+
+    .statusBody{
+      margin: 6px 0 0 0;
+      font-size: 13px;
+      color: var(--textSoft);
+      line-height: 1.35;
+    }
+
+    .graph{
+      width: 100%;
+      height: 78px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: rgba(15,23,42,0.6);
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .graph canvas{
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .whatif{
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      background: rgba(15,23,42,0.65);
+    }
+
+    .whatifHead{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .slider{
+      width: 100%;
+    }
+
+    .formGrid{
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 680px){
+      .formGrid{
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .field{
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(96,165,250,0.40);
+      border-radius: 12px;
+      padding: 10px 12px;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+    }
+
+    .field input, .field select{
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+      appearance: none;
+    }
+
+    .field label{
+      font-size: 12px;
+      color: var(--textSoft);
+      font-weight: 800;
       white-space: nowrap;
     }
 
-    .dd-paused .list-title {
-      color: var(--red-soft);
-    }
-
-    .dd-paused .list-sub {
-      color: #ff9fab;
-    }
-
-    .summary-rows {
-      margin-top: 4px;
-      font-size: 12px;
-    }
-
-    .summary-row {
+    .formActions{
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 2px;
+      gap: 10px;
+      margin-top: 10px;
     }
 
-    .summary-row-label {
-      color: var(--text-soft);
-    }
-
-    .summary-row-value {
-      font-weight: 500;
-    }
-
-    .summary-row-strong {
-      font-weight: 600;
-      margin-top: 3px;
-    }
-
-    .summary-row-strong .summary-row-label {
-      color: var(--text);
-    }
-
-    .summary-row-strong .summary-row-value {
-      font-weight: 700;
-    }
-
-    .summary-card-inner {
-      background: rgba(9, 15, 33, 0.96);
+    .listWindow{
+      margin-top: 10px;
       border-radius: 14px;
-      padding: 8px 9px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--stroke);
+      background: rgba(15,23,42,0.65);
+      overflow: hidden;
     }
 
-    .subtle-divider {
-      height: 1px;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.18),
-        transparent
-      );
-      margin: 4px 0;
-    }
-
-    .line-graph-container {
-      margin-top: 8px;
-      background: rgba(9, 15, 33, 0.98);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 8px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
-    }
-
-    .line-graph-label {
-      font-size: 11px;
-      color: var(--text-soft);
-      margin-bottom: 4px;
-    }
-
-    .line-graph-canvas {
-      width: 100%;
-      height: 70px;
-      display: block;
-      border-radius: 10px;
-    }
-
-    .slider-row {
-      margin-top: 8px;
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .slider-row-top {
+    /* Taller mini windows so you can see more items */
+    .listScroller{
+      max-height: 520px; /* about 4x taller than the old 150-ish windows */
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 10px;
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-      align-items: center;
+      flex-direction: column;
       gap: 8px;
     }
 
-    .slider-reset-btn {
+    .itemCard{
+      background: rgba(15,23,42,0.92);
+      border: 1px solid var(--stroke);
+      border-radius: 14px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .itemLeft{
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .itemTitle{
+      font-size: 13px;
+      font-weight: 900;
+      margin: 0;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .itemMeta{
       font-size: 11px;
-      background: rgba(9, 15, 33, 0.9);
+      margin: 0;
+      color: var(--textMuted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .itemRight{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+
+    .amount{
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .tag{
+      font-size: 11px;
+      font-weight: 900;
+      padding: 5px 10px;
       border-radius: 999px;
-      padding: 3px 7px;
-      border: 1px solid rgba(255, 255, 255, 0.26);
-      cursor: pointer;
-      color: var(--text-soft);
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.03);
+      white-space: nowrap;
     }
 
-    .slider-reset-btn:hover {
-      filter: brightness(1.1);
+    .tagRed{
+      border-color: rgba(251,113,133,0.35);
+      background: rgba(251,113,133,0.10);
+      color: var(--red);
     }
 
-    .slider {
-      width: 100%;
-      accent-color: var(--blue-soft);
+    .tagGreen{
+      border-color: rgba(34,197,94,0.35);
+      background: rgba(34,197,94,0.10);
+      color: var(--greenSoft);
     }
 
-    .modal-overlay {
+    .tagBlue{
+      border-color: rgba(96,165,250,0.35);
+      background: rgba(96,165,250,0.10);
+      color: #c7d2fe;
+    }
+
+    .footerActions{
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    /* Modal */
+    .modalOverlay{
       position: fixed;
       inset: 0;
-      background: rgba(1, 2, 8, 0.65);
+      background: rgba(0,0,0,0.55);
       display: none;
       align-items: flex-end;
       justify-content: center;
-      z-index: 20;
+      padding: 14px;
+      padding-bottom: calc(14px + env(safe-area-inset-bottom));
+      z-index: 999;
     }
+    .modalOverlay.show{ display: flex; }
 
-    .modal-sheet {
+    .modal{
       width: 100%;
-      max-width: 520px;
-      background: radial-gradient(circle at top, #191f3e 0, #050713 65%);
-      border-radius: 20px 20px 0 0;
-      border-top: 1px solid rgba(255, 255, 255, 0.16);
-      padding: 14px 14px 18px;
-      box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.9);
+      max-width: 900px;
+      background: var(--cardSoft);
+      border: 1px solid var(--stroke);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transform: translateY(0);
     }
 
-    .modal-header {
+    .modalHead{
+      padding: 12px 14px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
-    }
-
-    .modal-title {
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .modal-row {
-      margin-top: 6px;
-    }
-
-    .modal-actions {
-      display: flex;
       justify-content: space-between;
-      gap: 6px;
+      gap: 10px;
+      border-bottom: 1px solid var(--stroke);
+      background: rgba(15,23,42,0.7);
+    }
+
+    .modalTitle{
+      margin: 0;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .modalBody{
+      padding: 14px;
+    }
+
+    .radioRow{
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
       margin-top: 10px;
     }
 
-    .toggle-row {
-      display: flex;
+    .radio{
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
       gap: 8px;
-      margin-top: 8px;
-    }
-
-    .toggle-label {
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .toggle-pill {
-      width: 44px;
-      height: 24px;
+      padding: 10px 12px;
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.08);
-      position: relative;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.03);
       cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      transition: background 0.12s ease, border-color 0.12s ease;
-    }
-
-    .toggle-thumb {
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #ffffff;
-      transition: transform 0.12s ease;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
-
-    .toggle-pill.on {
-      background: linear-gradient(140deg, var(--green), var(--green-soft));
-      border-color: rgba(159, 255, 205, 0.9);
-    }
-
-    .toggle-pill.on .toggle-thumb {
-      transform: translateX(18px);
-    }
-
-    #donutBreakdown {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(circle at top, #191f3e 0, #050713 70%),
-        radial-gradient(circle at bottom, #050713 0, #000000 55%);
-      z-index: 15;
-      overflow-y: auto;
-      padding: 12px 10px 24px;
+      user-select: none;
+      font-weight: 900;
+      font-size: 12px;
       color: var(--text);
     }
 
-    .bd-inner {
-      width: 100%;
-      max-width: 520px;
-      margin: 0 auto;
+    .radio input{ display: none; }
+
+    .radio.active{
+      border-color: rgba(96,165,250,0.50);
+      background: rgba(96,165,250,0.10);
     }
 
-    .bd-back-row {
-      margin-bottom: 8px;
-    }
-
-    .bd-card {
-      background: var(--card-soft);
-      border-radius: 20px;
-      border: 1px solid var(--border-strong);
-      padding: 14px;
-      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.86);
-    }
-
-    .bd-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .bd-mini {
-      background: rgba(9, 15, 33, 0.96);
-      border-radius: 14px;
-      padding: 8px 9px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
-    }
-
-    .bd-label {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .bd-value {
-      font-size: 14px;
-      font-weight: 700;
-      margin-top: 3px;
-    }
-
-    .bd-donut-wrap {
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
-      margin-bottom: 6px;
-    }
-
-    .bd-donut-wrap canvas {
-      border-radius: 999px;
-    }
-
-    .bd-subtext {
+    .note{
       font-size: 12px;
-      color: var(--text-soft);
-      margin-top: 2px;
-    }
-
-    .compare-card {
-      background: rgba(9, 15, 33, 0.96);
-      border-radius: 16px;
-      padding: 8px 9px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--textSoft);
       margin-top: 10px;
-      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7);
-      font-size: 12px;
+      line-height: 1.35;
     }
 
-    .compare-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 3px;
-    }
-
-    .compare-label {
-      color: var(--text-soft);
-    }
-
-    .compare-value {
-      font-weight: 600;
+    .hr{
+      height: 1px;
+      background: var(--stroke);
+      margin: 12px 0;
     }
   </style>
 </head>
+
 <body>
-  <div class="app-shell">
-    <div class="app-container">
-      <div class="section">
-        <div class="header-top">
-          <div>
-            <div class="header-title">Monthly Budget</div>
-            <div class="header-subtitle">22 Bishop Road</div>
-          </div>
-          <img src="icon-192.png" alt="App Icon" class="header-icon" />
+  <div class="wrap">
+    <!-- Header -->
+    <div class="card header">
+      <div class="headerTop">
+        <div class="titleBlock">
+          <h1 class="title">22 Bishop Road Budget</h1>
+          <p class="subtitle">Clear monthly view of income, direct debits and spending.</p>
         </div>
-
-        <div class="header-month-row">
-          <span class="header-month-label">Month:</span>
-          <span id="monthLabel" class="header-month-value">Jan 26</span>
-
-          <div style="margin-left:auto;display:flex;gap:6px;">
-            <button class="btn btn-small btn-secondary" id="prevMonthBtn">‹</button>
-            <button class="btn btn-small btn-secondary" id="nextMonthBtn">›</button>
-          </div>
+        <div class="appIcon" aria-label="App icon">
+          <img src="icon-192.png" alt="App icon" />
         </div>
       </div>
 
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <div class="section-title">Dashboard Snapshot</div>
-            <div class="section-subtitle">High-level view of this month's money.</div>
+      <div class="monthRow">
+        <div class="pill" style="flex: 1;">
+          <span class="pillLabel">Month</span>
+          <span class="pillValue" id="monthLabel">—</span>
+        </div>
+
+        <button class="btn btnGhost btnTiny" id="prevMonthBtn" type="button">◀</button>
+        <button class="btn btnGhost btnTiny" id="nextMonthBtn" type="button">▶</button>
+      </div>
+    </div>
+
+    <!-- Dashboard Snapshot -->
+    <div class="card section" id="dashboardCard">
+      <div class="cardInner">
+        <h2 class="sectionTitle">Dashboard Snapshot</h2>
+
+        <div class="grid2">
+          <div class="summaryPill">
+            <div class="summaryTitle">Monthly income</div>
+            <div class="summarySub">For this month</div>
+            <div class="summaryVal" id="incomeTotal" style="color: var(--blueSoft);">£0.00</div>
+          </div>
+
+          <div class="summaryPill">
+            <div class="summaryTitle">Direct Debits & Bills</div>
+            <div class="summarySub">Mortgage, utilities, tax</div>
+            <div class="summaryVal" id="ddTotal" style="color: var(--text);">£0.00</div>
+          </div>
+
+          <div class="summaryPill">
+            <div class="summaryTitle">Other Spending</div>
+            <div class="summarySub">Food, fuel, nights out</div>
+            <div class="summaryVal" id="spendTotal" style="color: var(--red);">£0.00</div>
+          </div>
+
+          <div class="summaryPill" id="leftPill">
+            <div class="summaryTitle">Left after Spending</div>
+            <div class="summarySub">If you stopped today</div>
+            <div class="summaryVal" id="leftAfterAll" style="color: var(--green);">£0.00</div>
           </div>
         </div>
 
-        <div class="dashboard-grid">
-          <div class="dashboard-card">
-            <div class="dashboard-label">Monthly income</div>
-            <div class="dashboard-sub">Sum of all income transactions</div>
-            <div id="incomeValue" class="dashboard-value">£0.00</div>
+        <!-- What-if -->
+        <div class="whatif">
+          <div class="whatifHead">
+            <div class="soft" style="font-size: 12px; font-weight: 900;">What if this month changed by…</div>
+            <button class="btn btnGhost btnTiny" id="resetWhatIfBtn" type="button">Reset</button>
           </div>
-          <div class="dashboard-card">
-            <div class="dashboard-label">Direct Debits & Bills</div>
-            <div class="dashboard-sub">Mortgage, utilities, tax</div>
-            <div id="ddValue" class="dashboard-value" style="color:#ffffff;">£0.00</div>
-          </div>
-          <div class="dashboard-card">
-            <div class="dashboard-label">Other spending</div>
-            <div class="dashboard-sub">Food, fuel, nights out</div>
-            <div id="spendValue" class="dashboard-value">£0.00</div>
-          </div>
-          <div id="leftCard" class="dashboard-card">
-            <div class="dashboard-label">Left after spending</div>
-            <div class="dashboard-sub">After DDs and other spend</div>
-            <div id="leftValue" class="dashboard-value">£0.00</div>
+          <input class="slider" id="whatIfSlider" type="range" min="-500" max="500" step="10" value="0" />
+          <div class="row" style="margin-top: 6px;">
+            <div class="muted" id="whatIfChange" style="font-size: 12px;">Change: £0.00</div>
+            <div id="whatIfAfter" style="font-size: 12px; font-weight: 900;">After change: £0.00</div>
           </div>
         </div>
 
-        <div class="status-row">
-          <div id="statusDot" class="status-dot"></div>
-          <div>
-            <div id="statusMain" class="status-text-main">Waiting for income</div>
-            <div id="statusSub" class="status-text-sub">
-              Add your salary to see how much is left after direct debits and spending.
-            </div>
-          </div>
-        </div>
-
-        <div class="donut-row">
-          <div class="donut-wrapper">
-            <canvas id="donutCanvas" width="150" height="150"></canvas>
-          </div>
-          <div class="donut-legend">
-            <div class="donut-legend-row">
-              <div class="donut-legend-label">
-                <div class="legend-swatch legend-swatch-carry"></div>
-                <span>Opening balance + income</span>
+        <!-- Donut / status / graph -->
+        <div class="card section donutCard" id="donutCard" style="margin-top: 12px;">
+          <div class="cardInner">
+            <div class="donutRow">
+              <div class="donutWrap">
+                <canvas class="donutCanvas" id="donutCanvas" width="150" height="150"></canvas>
+                <div class="donutText">
+                  <p class="donutPct" id="donutPct">0%</p>
+                  <p class="donutSub">income left</p>
+                </div>
               </div>
-              <span id="legendIncome" style="font-weight:600;">£0.00</span>
-            </div>
-            <div class="donut-legend-row">
-              <div class="donut-legend-label">
-                <div class="legend-swatch legend-swatch-red"></div>
-                <span>DDs & spending</span>
-              </div>
-              <span id="legendOut" style="font-weight:600;">£0.00</span>
-            </div>
-            <div class="donut-legend-row">
-              <div class="donut-legend-label">
-                <div class="legend-swatch"></div>
-                <span>Left after everything</span>
-              </div>
-              <span id="legendLeft" style="font-weight:600;">£0.00</span>
-            </div>
 
-            <button
-              id="seeMoreDonut"
-              class="btn btn-subtle"
-              style="margin-top:6px;width:100%;justify-content:center;"
-            >
-              View detailed donut breakdown
-            </button>
+              <div>
+                <p class="statusTitle" id="statusTitle">Waiting for income</p>
+                <p class="statusBody" id="statusBody">Add your salary for this month to see how much is left after direct debits and spending.</p>
+
+                <div class="graph" aria-label="Mini line graph">
+                  <canvas id="miniGraph" width="600" height="180"></canvas>
+                </div>
+
+                <p class="note" style="margin-top:10px;">
+                  Tap this card for a full breakdown.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="line-graph-container">
-          <div class="line-graph-label">
-            Balance curve across the month (with opening balance applied)
-          </div>
-          <canvas id="balanceCanvas" class="line-graph-canvas"></canvas>
-        </div>
-
-        <div class="slider-row">
-          <div class="slider-row-top">
-            <span>What if this month changed by…</span>
-            <button id="resetWhatIf" class="slider-reset-btn">Reset</button>
-          </div>
-          <input id="whatIfSlider" class="slider" type="range" min="-2000" max="2000" step="10" value="0" />
-          <div style="display:flex;justify-content:space-between;margin-top:2px;">
-            <span id="whatIfChange">Change: £0.00</span>
-            <span id="whatIfAfter">After change: £0.00</span>
-          </div>
+        <div class="footerActions">
+          <button class="btn btnGhost" id="exportAllBtn" type="button">⬇ Export all data (CSV)</button>
+          <button class="btn btnDanger" id="resetAllBtn" type="button">Reset app (wipe data)</button>
         </div>
       </div>
+    </div>
 
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <div class="section-title">Add transaction (one-off)</div>
-            <div class="section-subtitle">Income or spending just for this month.</div>
-          </div>
-        </div>
+    <!-- Add transaction -->
+    <div class="card section">
+      <div class="cardInner">
+        <h2 class="sectionTitle">Add transaction (one-off)</h2>
 
-        <div class="inputs-row">
-          <div>
-            <div class="input-label">Date</div>
-            <input id="txDate" type="date" class="input" />
+        <div class="formGrid">
+          <div class="field">
+            <label for="txDate">Date</label>
+            <input id="txDate" type="date" />
           </div>
-          <div>
-            <div class="input-label">Type</div>
-            <select id="txType" class="input">
+
+          <div class="field">
+            <label for="txType">Type</label>
+            <select id="txType">
               <option value="income">Income</option>
               <option value="spend">Spending</option>
             </select>
           </div>
-        </div>
 
-        <div class="inputs-row">
-          <div>
-            <div class="input-label">Description</div>
-            <input id="txDesc" class="input" placeholder="e.g. RN salary, Tesco shop" />
+          <div class="field" style="grid-column: span 2;">
+            <label for="txDesc">Description</label>
+            <input id="txDesc" type="text" placeholder="RN salary, Tesco shop…" />
           </div>
-          <div>
-            <div class="input-label">Amount</div>
-            <input id="txAmt" class="input" placeholder="0.00" inputmode="decimal" />
+
+          <div class="field" style="grid-column: span 2;">
+            <label for="txAmt">Amount</label>
+            <input id="txAmt" type="number" inputmode="decimal" placeholder="0.00" />
           </div>
-        </div>
 
-        <button id="addTxBtn" class="btn btn-full" style="margin-top:4px;">
-          Add transaction
-        </button>
-
-        <div id="txList" class="list-container"></div>
-      </div>
-
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <div class="section-title">Direct debits & regular bills</div>
-            <div class="section-subtitle">Per-month commitments, auto-carrying to future months.</div>
-          </div>
-        </div>
-
-        <div class="inputs-row">
-          <div>
-            <div class="input-label">Name</div>
-            <input id="ddName" class="input" placeholder="e.g. Mortgage, Council tax" />
-          </div>
-          <div>
-            <div class="input-label">Amount</div>
-            <input id="ddAmt" class="input" placeholder="0.00" inputmode="decimal" />
-          </div>
-        </div>
-
-        <div class="inputs-row">
-          <div>
-            <div class="input-label">Day of month</div>
-            <input id="ddDay" class="input" placeholder="1–31" inputmode="numeric" />
-          </div>
-          <div>
-            <div class="input-label">Category (optional)</div>
-            <input id="ddCat" class="input" placeholder="e.g. Utilities, Housing" />
-          </div>
-        </div>
-
-        <button id="addDdBtn" class="btn btn-full" style="margin-top:4px;">
-          Add direct debit
-        </button>
-
-        <div id="ddList" class="list-container"></div>
-      </div>
-
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <div class="section-title">Month summary</div>
-            <div class="section-subtitle">Where this month ends up overall.</div>
-          </div>
-        </div>
-
-        <div class="summary-card-inner">
-          <div class="summary-rows">
-            <div class="summary-row">
-              <span class="summary-row-label">Started with (opening + income)</span>
-              <span id="summaryStart" class="summary-row-value">£0.00</span>
-            </div>
-            <div class="summary-row">
-              <span class="summary-row-label">Committed to direct debits</span>
-              <span id="summaryDd" class="summary-row-value">£0.00</span>
-            </div>
-            <div class="summary-row">
-              <span class="summary-row-label">Spent this month</span>
-              <span id="summarySpend" class="summary-row-value">£0.00</span>
-            </div>
-            <div class="subtle-divider"></div>
-            <div class="summary-row summary-row-strong">
-              <span class="summary-row-label">Left after everything</span>
-              <span id="summaryAfter" class="summary-row-value">£0.00</span>
+          <div class="field" style="grid-column: span 2; border-color: rgba(255,255,255,0.14);">
+            <div class="row" style="width:100%;">
+              <div class="soft" style="font-size:12px; font-weight:900;">Quick add</div>
+              <button class="btn btnTiny" id="addTxBtn" type="button">Add transaction</button>
             </div>
           </div>
         </div>
 
-        <div style="margin-top:8px;display:flex;gap:6px;justify-content:space-between;">
-          <button id="exportCsvBtn" class="btn btn-small btn-secondary" style="flex:1;">
-            Export all data (CSV)
-          </button>
-          <button id="resetAppBtn" class="btn btn-small btn-ghost" style="flex:1;">
-            Reset app
-          </button>
+        <div class="listWindow" id="txListWrap">
+          <div class="listScroller" id="txList"></div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- TRANSACTION EDIT MODAL -->
-  <div id="txModal" class="modal-overlay">
-    <div class="modal-sheet">
-      <div class="modal-header">
-        <div class="modal-title">Edit transaction</div>
-        <button class="btn btn-small btn-ghost" id="txModalDone">Done</button>
-      </div>
+    <!-- Direct Debits -->
+    <div class="card section">
+      <div class="cardInner">
+        <h2 class="sectionTitle">Direct debits & regular bills</h2>
 
-      <div class="modal-row">
-        <div class="input-label">Date</div>
-        <input id="editTxDate" type="date" class="input" />
-      </div>
-      <div class="modal-row">
-        <div class="input-label">Type</div>
-        <select id="editTxType" class="input">
-          <option value="income">Income</option>
-          <option value="spend">Spending</option>
-        </select>
-      </div>
-      <div class="modal-row">
-        <div class="input-label">Description</div>
-        <input id="editTxDesc" class="input" />
-      </div>
-      <div class="modal-row">
-        <div class="input-label">Amount</div>
-        <input id="editTxAmt" class="input" inputmode="decimal" />
-      </div>
+        <div class="formGrid">
+          <div class="field" style="grid-column: span 2;">
+            <label for="ddName">Name</label>
+            <input id="ddName" type="text" placeholder="Mortgage, Council tax…" />
+          </div>
 
-      <div class="modal-actions">
-        <button id="deleteTxBtn" class="btn btn-danger">Delete</button>
-        <button id="saveTxBtn" class="btn btn-secondary" style="flex:1;">
-          Save changes
-        </button>
-      </div>
-    </div>
-  </div>
+          <div class="field">
+            <label for="ddDay">Day</label>
+            <input id="ddDay" type="number" inputmode="numeric" placeholder="1–31" />
+          </div>
 
-  <!-- DIRECT DEBIT EDIT MODAL -->
-  <div id="ddModal" class="modal-overlay">
-    <div class="modal-sheet">
-      <div class="modal-header">
-        <div class="modal-title">Edit direct debit</div>
-        <button class="btn btn-small btn-ghost" id="ddModalDone">Done</button>
-      </div>
+          <div class="field">
+            <label for="ddAmt">Amount</label>
+            <input id="ddAmt" type="number" inputmode="decimal" placeholder="0.00" />
+          </div>
 
-      <div class="modal-row">
-        <div class="input-label">Name</div>
-        <input id="editDdName" class="input" />
-      </div>
-      <div class="modal-row">
-        <div class="input-label">Amount</div>
-        <input id="editDdAmt" class="input" inputmode="decimal" />
-      </div>
-      <div class="modal-row">
-        <div class="input-label">Day of month</div>
-        <input id="editDdDay" class="input" inputmode="numeric" />
-      </div>
-      <div class="modal-row">
-        <div class="input-label">Category</div>
-        <input id="editDdCat" class="input" />
-      </div>
+          <div class="field" style="grid-column: span 2;">
+            <label for="ddCat">Category</label>
+            <input id="ddCat" type="text" placeholder="(optional)" />
+          </div>
 
-      <div class="toggle-row">
-        <span class="toggle-label">Paused for this month</span>
-        <div id="ddPausedToggle" class="toggle-pill">
-          <div class="toggle-thumb"></div>
-        </div>
-      </div>
-
-      <div class="modal-actions">
-        <button id="deleteDdBtn" class="btn btn-danger">Delete this month</button>
-        <button id="saveDdBtn" class="btn btn-secondary" style="flex:1;">
-          Save changes
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- DONUT BREAKDOWN SCREEN -->
-  <div id="donutBreakdown">
-    <div class="bd-inner">
-      <div class="bd-back-row">
-        <button class="btn btn-small btn-ghost" id="closeDonutBreakdown">
-          ← Back to month
-        </button>
-      </div>
-
-      <div class="bd-card">
-        <div class="section-header" style="margin-bottom:4px;">
-          <div>
-            <div class="section-title">Detailed donut breakdown</div>
-            <div class="section-subtitle">
-              Income, DDs and spending for the selected month, with carry from the previous months.
+          <div class="field" style="grid-column: span 2; border-color: rgba(255,255,255,0.14);">
+            <div class="row" style="width:100%;">
+              <div class="soft" style="font-size:12px; font-weight:900;">Add to this month</div>
+              <button class="btn btnTiny" id="addDdBtn" type="button">Add direct debit</button>
             </div>
           </div>
         </div>
 
-        <div class="bd-donut-wrap">
-          <canvas id="donutBig" width="260" height="260"></canvas>
+        <div class="listWindow">
+          <div class="listScroller" id="ddList"></div>
         </div>
 
-        <div class="bd-subtext">
-          The donut shows: opening balance + income vs DDs + spending, with what’s left after everything.
-        </div>
+        <p class="note">
+          Edits can apply just to this month (override) or from this month onwards (new version). Previous months won’t change.
+        </p>
+      </div>
+    </div>
 
-        <div class="bd-grid">
-          <div class="bd-mini">
-            <div class="bd-label">Income this month</div>
-            <div id="bdIncome" class="bd-value">£0.00</div>
+    <!-- Donut detail modal -->
+    <div class="modalOverlay" id="donutModal">
+      <div class="modal">
+        <div class="modalHead">
+          <h3 class="modalTitle">Monthly breakdown</h3>
+          <button class="btn btnGhost btnTiny" id="closeDonutModal" type="button">Close</button>
+        </div>
+        <div class="modalBody">
+          <div class="row" style="margin-bottom: 10px;">
+            <div class="pill" style="flex: 1;">
+              <span class="pillLabel">Month</span>
+              <span class="pillValue" id="modalMonthLabel">—</span>
+            </div>
+            <div class="pill" style="flex: 1;">
+              <span class="pillLabel">Carry in</span>
+              <span class="pillValue" id="modalCarryIn">£0.00</span>
+            </div>
           </div>
-          <div class="bd-mini">
-            <div class="bd-label">Direct debits & bills</div>
-            <div id="bdDd" class="bd-value">£0.00</div>
-          </div>
-          <div class="bd-mini">
-            <div class="bd-label">Other spending</div>
-            <div id="bdSpend" class="bd-value">£0.00</div>
-          </div>
-          <div class="bd-mini">
-            <div class="bd-label">Opening balance from last month</div>
-            <div id="bdCarry" class="bd-value">£0.00</div>
-          </div>
-          <div class="bd-mini" style="grid-column:1/3;">
-            <div class="bd-label">Left after everything</div>
-            <div id="bdAfter" class="bd-value">£0.00</div>
+
+          <div class="row" style="gap: 12px; align-items: flex-start; flex-wrap: wrap;">
+            <div style="flex: 0 0 auto;">
+              <canvas id="bigDonut" width="240" height="240" style="border-radius: 18px; background: rgba(15,23,42,0.55); border:1px solid var(--stroke);"></canvas>
+              <div style="margin-top: -172px; text-align:center; pointer-events:none;">
+                <div style="font-size:34px; font-weight: 1000;" id="bigDonutPct">0%</div>
+                <div style="font-size:11px; letter-spacing: 1px; text-transform: uppercase; color: var(--textSoft); margin-top:6px;">starting funds left</div>
+              </div>
+            </div>
+
+            <div style="flex: 1; min-width: 240px;">
+              <div class="summaryPill" style="min-height: unset;">
+                <div class="row"><div class="soft" style="font-weight:900;">Started with</div><div id="bkStart" style="font-weight: 1000;">£0.00</div></div>
+                <div class="row"><div class="soft" style="font-weight:900;">Income</div><div id="bkIncome" style="font-weight: 1000;">£0.00</div></div>
+                <div class="row"><div class="soft" style="font-weight:900;">Direct Debits</div><div id="bkDD" style="font-weight: 1000;">£0.00</div></div>
+                <div class="row"><div class="soft" style="font-weight:900;">Spending</div><div id="bkSpend" style="font-weight: 1000;">£0.00</div></div>
+                <div class="hr"></div>
+                <div class="row"><div style="font-weight:1000;">Left after everything</div><div id="bkLeft" style="font-weight:1000;">£0.00</div></div>
+              </div>
+
+              <div class="note" style="margin-top: 10px;">
+                Tip: Edit a direct debit in the month you’re looking at, then choose “This month only” or “From this month onwards”.
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <div class="compare-card">
-          <div class="compare-row">
-            <span class="compare-label">This month left vs last month left</span>
-            <span id="compareAfter" class="compare-value">–</span>
+    <!-- Transaction edit modal -->
+    <div class="modalOverlay" id="txModal">
+      <div class="modal">
+        <div class="modalHead">
+          <h3 class="modalTitle">Edit transaction</h3>
+          <button class="btn btnGhost btnTiny" id="closeTxModal" type="button">Close</button>
+        </div>
+        <div class="modalBody">
+          <div class="formGrid">
+            <div class="field">
+              <label>Date</label>
+              <input id="editTxDate" type="date" />
+            </div>
+
+            <div class="field">
+              <label>Type</label>
+              <select id="editTxType">
+                <option value="income">Income</option>
+                <option value="spend">Spending</option>
+              </select>
+            </div>
+
+            <div class="field" style="grid-column: span 2;">
+              <label>Description</label>
+              <input id="editTxDesc" type="text" />
+            </div>
+
+            <div class="field" style="grid-column: span 2;">
+              <label>Amount</label>
+              <input id="editTxAmt" type="number" inputmode="decimal" />
+            </div>
           </div>
-          <div class="compare-row">
-            <span class="compare-label">Income change since last month</span>
-            <span id="compareIncome" class="compare-value">–</span>
+
+          <div class="formActions">
+            <button class="btn" id="saveTxBtn" type="button">Save</button>
+            <button class="btn btnDanger" id="deleteTxBtn" type="button">Delete</button>
           </div>
-          <div class="compare-row">
-            <span class="compare-label">Spending change since last month</span>
-            <span id="compareSpend" class="compare-value">–</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Direct debit edit modal -->
+    <div class="modalOverlay" id="ddModal">
+      <div class="modal">
+        <div class="modalHead">
+          <h3 class="modalTitle">Edit direct debit</h3>
+          <button class="btn btnGhost btnTiny" id="closeDdModal" type="button">Close</button>
+        </div>
+        <div class="modalBody">
+          <div class="formGrid">
+            <div class="field" style="grid-column: span 2;">
+              <label>Name</label>
+              <input id="editDdName" type="text" />
+            </div>
+
+            <div class="field">
+              <label>Day</label>
+              <input id="editDdDay" type="number" inputmode="numeric" />
+            </div>
+
+            <div class="field">
+              <label>Amount</label>
+              <input id="editDdAmt" type="number" inputmode="decimal" />
+            </div>
+
+            <div class="field" style="grid-column: span 2;">
+              <label>Category</label>
+              <input id="editDdCat" type="text" />
+            </div>
+
+            <div class="field" style="grid-column: span 2; border-color: rgba(251,146,60,0.35);">
+              <div class="row" style="width:100%;">
+                <div style="font-weight:1000; font-size:12px;">Paused</div>
+                <input id="editDdPaused" type="checkbox" style="transform: scale(1.2);" />
+              </div>
+            </div>
+          </div>
+
+          <div class="radioRow" style="margin-top: 12px;">
+            <div class="radio active" id="scopeThisMonth">
+              <input type="radio" name="ddScope" value="this" checked />
+              This month only
+            </div>
+            <div class="radio" id="scopeFromMonth">
+              <input type="radio" name="ddScope" value="from" />
+              From this month onwards
+            </div>
+          </div>
+
+          <div class="note">
+            “This month only” creates a one-month override. “From this month onwards” creates a new version starting this month and ends the previous version the month before.
+          </div>
+
+          <div class="formActions" style="margin-top: 12px;">
+            <button class="btn" id="saveDdBtn" type="button">Save</button>
+            <button class="btn btnDanger" id="deleteDdBtn" type="button">Delete (series)</button>
           </div>
         </div>
       </div>
@@ -1121,1070 +948,1058 @@
   </div>
 
   <script>
-    // ------------ DATA & HELPERS ------------
+    /**********************
+     * Storage + Models
+     **********************/
+    const STORAGE_KEY = "BishopBudget_HTML_v2";
 
-    let transactions = [];
-    let directDebits = [];
-    let ddOverrides = [];
+    // New model:
+    // data = {
+    //   transactions: [{id, dateISO, description, amount, type}],
+    //   ddSeries: [{id, name, category, periods: [{id, startMonth, endMonth|null, day, amount, paused}]}]
+    // }
+    //
+    // month key format: "YYYY-MM"
+    // transaction date: "YYYY-MM-DD"
 
-    function loadFromStorage() {
-      try {
-        const txRaw = localStorage.getItem("bb_tx");
-        const ddRaw = localStorage.getItem("bb_dd");
-        const ovRaw = localStorage.getItem("bb_dd_overrides");
-        transactions = txRaw ? JSON.parse(txRaw) : [];
-        directDebits = ddRaw ? JSON.parse(ddRaw) : [];
-        ddOverrides = ovRaw ? JSON.parse(ovRaw) : [];
-      } catch (e) {
-        transactions = [];
-        directDebits = [];
-        ddOverrides = [];
+    function uid(){
+      return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
+    }
+
+    function loadData(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw){
+        return { transactions: [], ddSeries: [] };
       }
-    }
+      try{
+        const parsed = JSON.parse(raw);
 
-    function saveToStorage() {
-      localStorage.setItem("bb_tx", JSON.stringify(transactions));
-      localStorage.setItem("bb_dd", JSON.stringify(directDebits));
-      localStorage.setItem("bb_dd_overrides", JSON.stringify(ddOverrides));
-    }
-
-    function uuid() {
-      if (crypto.randomUUID) return crypto.randomUUID();
-      return "id-" + Math.random().toString(16).slice(2);
-    }
-
-    function firstOfMonth(d) {
-      return new Date(d.getFullYear(), d.getMonth(), 1);
-    }
-
-    function monthKey(d) {
-      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
-    }
-
-    function parseMonthKey(mk) {
-      const [y, m] = mk.split("-").map(Number);
-      if (!y || !m) return null;
-      return new Date(y, m - 1, 1);
-    }
-
-    function monthLabel(d) {
-      return d.toLocaleDateString("en-GB", { month: "short", year: "2-digit" });
-    }
-
-    function formatMoney(v) {
-      if (!isFinite(v)) v = 0;
-      return "£" + v.toFixed(2);
-    }
-
-    function formatDisplayDate(iso) {
-      if (!iso) return "";
-      const d = new Date(iso);
-      if (Number.isNaN(d.getTime())) return iso;
-      const day = String(d.getDate()).padStart(2, "0");
-      const mmm = d.toLocaleDateString("en-GB", { month: "short" });
-      const yy = String(d.getFullYear()).slice(-2);
-      return `${day}-${mmm}-${yy}`;
-    }
-
-    // Ignore old auto-opening incomes from previous versions
-    function isAutoOpening(tx) {
-      return (
-        tx.type === "income" &&
-        tx.description === "Opening balance (auto)"
-      );
-    }
-
-    // ------------ DONUT & GRAPH DRAWING ------------
-
-    function drawDonut(canvas, openingPlusIncome, outgoing) {
-      const ctx = canvas.getContext("2d");
-      const w = canvas.width;
-      const h = canvas.height;
-      ctx.clearRect(0, 0, w, h);
-
-      const cx = w / 2;
-      const cy = h / 2;
-      const radius = Math.min(cx, cy) - 12;
-      const ringWidth = 18;
-
-      // Base ring
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      const baseGrad = ctx.createLinearGradient(cx - radius, cy, cx + radius, cy);
-      baseGrad.addColorStop(0, "#1b2748");
-      baseGrad.addColorStop(1, "#11182f");
-      ctx.strokeStyle = baseGrad;
-      ctx.lineWidth = ringWidth;
-      ctx.stroke();
-
-      // Left / outgoing + percentage
-      const total = Math.max(openingPlusIncome, outgoing, 1);
-      const rawLeft = openingPlusIncome - outgoing;
-      const left = Math.max(0, rawLeft);
-      const percentLeft = openingPlusIncome > 0
-        ? Math.max(0, Math.min(100, (left / openingPlusIncome) * 100))
-        : 0;
-
-      const outAngle = (outgoing / total) * Math.PI * 2;
-      const leftAngle = (left / total) * Math.PI * 2;
-      const startAngle = -Math.PI / 2;
-
-      // Outgoing segment
-      if (outgoing > 0) {
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius, startAngle, startAngle + outAngle);
-        const gradRed = ctx.createLinearGradient(cx, cy - radius, cx, cy + radius);
-        gradRed.addColorStop(0, "#ff9fab");
-        gradRed.addColorStop(1, "#ff6a78");
-        ctx.strokeStyle = gradRed;
-        ctx.lineWidth = ringWidth;
-        ctx.lineCap = "round";
-        ctx.stroke();
-      }
-
-      // Left segment
-      if (left > 0) {
-        ctx.beginPath();
-        ctx.arc(
-          cx,
-          cy,
-          radius,
-          startAngle + outAngle,
-          startAngle + outAngle + leftAngle
-        );
-        const gradGreen = ctx.createLinearGradient(
-          cx - radius,
-          cy,
-          cx + radius,
-          cy
-        );
-        gradGreen.addColorStop(0, "#9af7c7");
-        gradGreen.addColorStop(1, "#40e38a");
-        ctx.strokeStyle = gradGreen;
-        ctx.lineWidth = ringWidth;
-        ctx.lineCap = "round";
-        ctx.stroke();
-      }
-
-      // Centre text: XX% + "income left"
-      ctx.fillStyle = "#e8edf8";
-      ctx.font = "600 22px -apple-system, system-ui, sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(`${Math.round(percentLeft)}%`, cx, cy - 5);
-
-      ctx.fillStyle = "#9aa3b1";
-      ctx.font = "11px -apple-system, system-ui, sans-serif";
-      ctx.fillText("income left", cx, cy + 12);
-    }
-
-    function drawBalanceLine(canvas, dailyBalances) {
-      const ctx = canvas.getContext("2d");
-      const w = canvas.width;
-      const h = canvas.height;
-      ctx.clearRect(0, 0, w, h);
-
-      if (!dailyBalances || dailyBalances.length === 0) {
-        return;
-      }
-
-      const maxVal = Math.max(...dailyBalances, 0);
-      const minVal = Math.min(...dailyBalances, 0);
-      const range = maxVal - minVal || 1;
-
-      const leftPadding = 4;
-      const rightPadding = 4;
-      const topPadding = 4;
-      const bottomPadding = 4;
-      const usableWidth = w - leftPadding - rightPadding;
-      const usableHeight = h - topPadding - bottomPadding;
-
-      const count = dailyBalances.length;
-      const stepX = count > 1 ? usableWidth / (count - 1) : 0;
-
-      const zeroY =
-        topPadding + usableHeight - ((0 - minVal) / range) * usableHeight;
-
-      ctx.strokeStyle = "rgba(255,255,255,0.16)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(leftPadding, zeroY);
-      ctx.lineTo(w - rightPadding, zeroY);
-      ctx.stroke();
-
-      ctx.beginPath();
-      dailyBalances.forEach((val, idx) => {
-        const x = leftPadding + idx * stepX;
-        const norm = (val - minVal) / range;
-        const y = topPadding + usableHeight - norm * usableHeight;
-
-        if (idx === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
+        // MIGRATION SAFETY: if older shape exists, keep it simple and best-effort.
+        // If someone had directDebits as a flat array with day/amount/active, we convert into series with one period.
+        if(parsed && !parsed.ddSeries && Array.isArray(parsed.directDebits)){
+          const series = parsed.directDebits.map(dd => ({
+            id: dd.id || uid(),
+            name: dd.name || "Direct Debit",
+            category: dd.category || "",
+            periods: [{
+              id: uid(),
+              startMonth: dd.monthKey || firstMonthKeyFromAnything(parsed) || monthKey(today()),
+              endMonth: null,
+              day: Number(dd.day || 1),
+              amount: Number(dd.amount || 0),
+              paused: dd.active === false
+            }]
+          }));
+          const migrated = {
+            transactions: Array.isArray(parsed.transactions) ? parsed.transactions.map(t => ({
+              id: t.id || uid(),
+              dateISO: (t.dateISO || t.date || toISODate(today())),
+              description: t.description || "",
+              amount: Number(t.amount || 0),
+              type: t.type || "spend"
+            })) : [],
+            ddSeries: series
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+          return migrated;
         }
-      });
 
-      const grad = ctx.createLinearGradient(leftPadding, 0, w - rightPadding, 0);
-      grad.addColorStop(0, "#5fa9ff");
-      grad.addColorStop(0.5, "#9af7c7");
-      grad.addColorStop(1, "#ffb24a");
+        // If looks already correct:
+        if(parsed && Array.isArray(parsed.transactions) && Array.isArray(parsed.ddSeries)){
+          // Normalise
+          parsed.transactions = parsed.transactions.map(t => ({
+            id: t.id || uid(),
+            dateISO: (t.dateISO || toISODate(today())),
+            description: t.description || "",
+            amount: Number(t.amount || 0),
+            type: t.type === "income" ? "income" : "spend"
+          }));
+          parsed.ddSeries = parsed.ddSeries.map(s => ({
+            id: s.id || uid(),
+            name: s.name || "Direct Debit",
+            category: s.category || "",
+            periods: Array.isArray(s.periods) ? s.periods.map(p => ({
+              id: p.id || uid(),
+              startMonth: p.startMonth || monthKey(today()),
+              endMonth: p.endMonth ?? null,
+              day: Number(p.day || 1),
+              amount: Number(p.amount || 0),
+              paused: !!p.paused
+            })) : []
+          }));
+          return parsed;
+        }
+
+        return { transactions: [], ddSeries: [] };
+      }catch(e){
+        return { transactions: [], ddSeries: [] };
+      }
+    }
+
+    function saveData(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+    }
+
+    function firstMonthKeyFromAnything(parsed){
+      const months = [];
+      if(Array.isArray(parsed.transactions)){
+        parsed.transactions.forEach(t=>{
+          const d = (t.dateISO || t.date);
+          if(typeof d === "string" && d.length >= 7) months.push(d.slice(0,7));
+        });
+      }
+      if(Array.isArray(parsed.directDebits)){
+        parsed.directDebits.forEach(dd=>{
+          if(dd.monthKey) months.push(dd.monthKey);
+        });
+      }
+      months.sort();
+      return months[0] || null;
+    }
+
+    /**********************
+     * Date helpers
+     **********************/
+    function pad2(n){ return String(n).padStart(2,"0"); }
+
+    function toISODate(d){
+      const y = d.getFullYear();
+      const m = pad2(d.getMonth()+1);
+      const day = pad2(d.getDate());
+      return `${y}-${m}-${day}`;
+    }
+
+    function monthKey(d){
+      const y = d.getFullYear();
+      const m = pad2(d.getMonth()+1);
+      return `${y}-${m}`;
+    }
+
+    function parseMonthKey(mk){
+      const [y,m] = mk.split("-").map(Number);
+      return new Date(y, (m-1), 1);
+    }
+
+    function addMonths(mk, delta){
+      const d = parseMonthKey(mk);
+      d.setMonth(d.getMonth()+delta);
+      return monthKey(d);
+    }
+
+    function compareMonthKey(a,b){
+      // a,b "YYYY-MM"
+      if(a===b) return 0;
+      return a < b ? -1 : 1;
+    }
+
+    function monthLabel(mk){
+      // "MMM-YY"
+      const d = parseMonthKey(mk);
+      const fmt = new Intl.DateTimeFormat("en-GB",{ month:"short", year:"2-digit" });
+      // fmt gives "Dec 25" -> convert to "Dec-25"
+      const parts = fmt.format(d).replace(" ","-");
+      return parts;
+    }
+
+    function shortDateLabel(iso){
+      // "DD-Mmm-YY"
+      const d = new Date(iso+"T00:00:00");
+      const day = pad2(d.getDate());
+      const mon = new Intl.DateTimeFormat("en-GB",{ month:"short" }).format(d);
+      const yr = String(d.getFullYear()).slice(2);
+      return `${day}-${mon}-${yr}`;
+    }
+
+    function daysInMonth(mk){
+      const d = parseMonthKey(mk);
+      const y = d.getFullYear();
+      const m = d.getMonth();
+      return new Date(y, m+1, 0).getDate();
+    }
+
+    function prevMonth(mk){
+      return addMonths(mk, -1);
+    }
+
+    function today(){
+      return new Date();
+    }
+
+    /**********************
+     * Money helpers
+     **********************/
+    function money(n){
+      const v = Number(n || 0);
+      return v.toLocaleString("en-GB",{ style:"currency", currency:"GBP", minimumFractionDigits:2, maximumFractionDigits:2 });
+    }
+
+    function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+    /**********************
+     * Direct Debits logic (versioned)
+     **********************/
+    function seriesApplicablePeriod(series, mk){
+      // find the period where startMonth <= mk <= endMonth (or endMonth null)
+      const periods = (series.periods || []).slice().sort((a,b)=> (a.startMonth < b.startMonth ? -1 : 1));
+      for(const p of periods){
+        const startOk = compareMonthKey(p.startMonth, mk) <= 0;
+        const endOk = (p.endMonth == null) ? true : (compareMonthKey(mk, p.endMonth) <= 0);
+        if(startOk && endOk) return p;
+      }
+      return null;
+    }
+
+    function listDirectDebitsForMonth(mk){
+      const rows = [];
+      for(const s of state.data.ddSeries){
+        const p = seriesApplicablePeriod(s, mk);
+        if(!p) continue;
+        rows.push({
+          seriesId: s.id,
+          seriesName: s.name,
+          seriesCategory: s.category || "",
+          periodId: p.id,
+          startMonth: p.startMonth,
+          endMonth: p.endMonth,
+          day: Number(p.day||1),
+          amount: Number(p.amount||0),
+          paused: !!p.paused
+        });
+      }
+      rows.sort((a,b)=> (a.day - b.day) || a.seriesName.localeCompare(b.seriesName));
+      return rows;
+    }
+
+    function ddTotalForMonth(mk){
+      const dds = listDirectDebitsForMonth(mk);
+      return dds.filter(x=>!x.paused).reduce((sum,x)=> sum + x.amount, 0);
+    }
+
+    /**********************
+     * Transactions logic
+     **********************/
+    function transactionsForMonth(mk){
+      return state.data.transactions
+        .filter(t => (t.dateISO || "").slice(0,7) === mk)
+        .slice()
+        .sort((a,b)=> (a.dateISO < b.dateISO ? -1 : 1));
+    }
+
+    function incomeTotalForMonth(mk){
+      return transactionsForMonth(mk).filter(t=>t.type==="income").reduce((s,t)=> s + Number(t.amount||0), 0);
+    }
+
+    function spendTotalForMonth(mk){
+      return transactionsForMonth(mk).filter(t=>t.type==="spend").reduce((s,t)=> s + Number(t.amount||0), 0);
+    }
+
+    /**********************
+     * Carry-forward + month maths (robust)
+     **********************/
+    function allMonthKeysInData(){
+      const set = new Set();
+      state.data.transactions.forEach(t=>{
+        if(t.dateISO && t.dateISO.length >= 7) set.add(t.dateISO.slice(0,7));
+      });
+      state.data.ddSeries.forEach(s=>{
+        (s.periods||[]).forEach(p=>{
+          if(p.startMonth) set.add(p.startMonth);
+          if(p.endMonth) set.add(p.endMonth);
+        });
+      });
+      return Array.from(set).sort();
+    }
+
+    function earliestMonthKey(){
+      const all = allMonthKeysInData();
+      return all.length ? all[0] : state.selectedMonth;
+    }
+
+    function computeMonthSummary(mk, memo){
+      if(memo[mk]) return memo[mk];
+
+      const first = earliestMonthKey();
+
+      let carryIn = 0;
+      if(compareMonthKey(mk, first) > 0){
+        const pm = prevMonth(mk);
+        const prevSum = computeMonthSummary(pm, memo);
+        carryIn = prevSum.leftAfterAll;
+      }
+
+      const income = incomeTotalForMonth(mk);
+      const dd = ddTotalForMonth(mk);
+      const spend = spendTotalForMonth(mk);
+
+      const startedWith = carryIn + income;
+      const leftAfterAll = startedWith - dd - spend;
+
+      const res = { mk, carryIn, income, dd, spend, startedWith, leftAfterAll };
+      memo[mk] = res;
+      return res;
+    }
+
+    function monthSummary(mk){
+      const memo = {};
+      return computeMonthSummary(mk, memo);
+    }
+
+    /**********************
+     * Donut + graph
+     **********************/
+    function drawDonut(canvas, percent){
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width, h = canvas.height;
+      const cx = w/2, cy = h/2;
+      const r = Math.min(w,h)/2 - 10;
+
+      ctx.clearRect(0,0,w,h);
+
+      // base ring
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,0,Math.PI*2);
+      ctx.strokeStyle = "rgba(31,41,55,0.9)";
+      ctx.lineWidth = 16;
+      ctx.lineCap = "round";
+      ctx.stroke();
+
+      const p = clamp(percent, 0, 100) / 100;
+      const start = -Math.PI/2;
+      const end = start + (Math.PI*2 * p);
+
+      // gradient arc
+      const grad = ctx.createLinearGradient(0,0,w,h);
+      grad.addColorStop(0, "#60a5fa");
+      grad.addColorStop(0.55, "#22c55e");
+      grad.addColorStop(1, "#06b6d4");
+
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,start,end);
       ctx.strokeStyle = grad;
-      ctx.lineWidth = 2;
-      ctx.lineJoin = "round";
+      ctx.lineWidth = 16;
       ctx.lineCap = "round";
       ctx.stroke();
     }
 
-    // ------------ MONTH CALC WITH CARRY ------------
+    function drawLineGraph(canvas, mk, whatIfOffset){
+      const ctx = canvas.getContext("2d");
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0,0,W,H);
 
-    function getAllMonthKeysIncluding(targetMonth) {
-      const set = new Set();
-      const targetMK = monthKey(targetMonth);
+      const sum = monthSummary(mk);
+      const days = daysInMonth(mk);
 
-      for (const tx of transactions) {
-        if (isAutoOpening(tx)) continue;
-        const d = new Date(tx.date);
-        if (Number.isNaN(d.getTime())) continue;
-        set.add(monthKey(d));
+      // Build daily values
+      const txs = transactionsForMonth(mk);
+      const dds = listDirectDebitsForMonth(mk);
+
+      // Spending by day
+      const spendByDay = new Array(days).fill(0);
+      for(const t of txs){
+        if(t.type !== "spend") continue;
+        const day = Number(t.dateISO.slice(8,10));
+        if(day>=1 && day<=days) spendByDay[day-1] += Number(t.amount||0);
       }
 
-      for (const dd of directDebits) {
-        if (dd.month) set.add(dd.month);
+      // DDs by day (only non-paused)
+      const ddByDay = new Array(days).fill(0);
+      for(const dd of dds){
+        if(dd.paused) continue;
+        const d = clamp(Number(dd.day||1), 1, days);
+        ddByDay[d-1] += Number(dd.amount||0);
       }
 
-      for (const ov of ddOverrides) {
-        if (ov.month) set.add(ov.month);
-      }
+      // Start with startedWith, apply whatIf linearly across month (to match your original feel)
+      const baseStart = sum.startedWith;
+      const values = [];
+      let running = baseStart;
 
-      set.add(targetMK);
-
-      if (set.size === 0) {
-        set.add(targetMK);
-      }
-
-      return Array.from(set).sort();
-    }
-
-    function computeRawMonthTotals(monthDate, carryIn) {
-      const mk = monthKey(monthDate);
-
-      const monthTx = transactions.filter((t) => {
-        if (isAutoOpening(t)) return false;
-        const d = new Date(t.date);
-        if (Number.isNaN(d.getTime())) return false;
-        return monthKey(d) === mk;
-      });
-
-      // CHANGED: any DD whose "start month" <= this month is considered part of the series
-      const monthBaseDDs = directDebits.filter((dd) => {
-        if (!dd.month) return false;
-        const baseDate = parseMonthKey(dd.month);
-        if (!baseDate) return false;
-        return baseDate <= monthDate;   // repeats for this and all future months
-      });
-
-      const actualDDs = monthBaseDDs.map((dd) => {
-        const override = ddOverrides.find(
-          (ov) => ov.baseId === dd.id && ov.month === mk
-        );
-        if (!override || override.type === "none") {
-          const active = override ? override.active : dd.active;
-          return {
-            baseId: dd.id,
-            name: dd.name,
-            amount: dd.amount,
-            day: dd.day,
-            category: dd.category,
-            active: active !== false
-          };
+      for(let i=0;i<days;i++){
+        const factor = (i+1)/days;
+        const adjustedStart = baseStart - (whatIfOffset * factor);
+        if(i===0){
+          running = adjustedStart;
+        }else{
+          // drift from prior day's running to new adjustedStart baseline smoothly:
+          // Keep it simple: set running = adjustedStart - (spent so far)
+          // We'll compute from scratch each day for stability:
         }
-        if (override.type === "modified") {
-          return {
-            baseId: dd.id,
-            name: override.name,
-            amount: override.amount,
-            day: override.day,
-            category: override.category,
-            active: override.active !== false
-          };
+
+        // compute from scratch to avoid drift
+        let cur = baseStart - (whatIfOffset * factor);
+        let spendSoFar = 0, ddSoFar = 0;
+        for(let j=0;j<=i;j++){
+          spendSoFar += spendByDay[j];
+          ddSoFar += ddByDay[j];
         }
-        if (override.type === "skipped") {
-          return {
-            baseId: dd.id,
-            name: dd.name,
-            amount: dd.amount,
-            day: dd.day,
-            category: dd.category,
-            active: false
-          };
-        }
-        return {
-          baseId: dd.id,
-          name: dd.name,
-          amount: dd.amount,
-          day: dd.day,
-          category: dd.category,
-          active: dd.active
-        };
-      });
-
-      const activeDDs = actualDDs.filter((d) => d.active);
-
-      const income = monthTx
-        .filter((t) => t.type === "income")
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-      const spend = monthTx
-        .filter((t) => t.type === "spend")
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-      const ddTotal = activeDDs.reduce(
-        (sum, d) => sum + (d.amount || 0),
-        0
-      );
-
-      const daysInMonth = new Date(
-        monthDate.getFullYear(),
-        monthDate.getMonth() + 1,
-        0
-      ).getDate();
-
-      const dailyBalances = [];
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const ddUpToDay = activeDDs
-          .filter((d) => d.day <= day)
-          .reduce((sum, d) => sum + (d.amount || 0), 0);
-
-        const spendUpToDay = monthTx
-          .filter((t) => {
-            if (t.type !== "spend") return false;
-            const d = new Date(t.date);
-            if (Number.isNaN(d.getTime())) return false;
-            return d.getDate() <= day;
-          })
-          .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-        const incomeUpToDay = monthTx
-          .filter((t) => {
-            if (t.type !== "income") return false;
-            const d = new Date(t.date);
-            if (Number.isNaN(d.getTime())) return false;
-            return d.getDate() <= day;
-          })
-          .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-        const bal = carryIn + incomeUpToDay - ddUpToDay - spendUpToDay;
-        dailyBalances.push(bal);
+        cur = cur - spendSoFar - ddSoFar;
+        values.push(cur);
       }
 
-      const afterAll = carryIn + income - ddTotal - spend;
-
-      return {
-        carryIn,
-        income,
-        spend,
-        ddTotal,
-        afterAll,
-        dailyBalances,
-        activeDDs,
-        rawTransactions: monthTx
-      };
-    }
-
-    function computeMonthWithCarry(targetMonth) {
-      const targetMK = monthKey(targetMonth);
-      const allMKs = getAllMonthKeysIncluding(targetMonth);
-      let carry = 0;
-      let result = null;
-
-      for (const mk of allMKs) {
-        const mDate = parseMonthKey(mk);
-        if (!mDate) continue;
-
-        const raw = computeRawMonthTotals(mDate, carry);
-        if (mk === targetMK) {
-          result = raw;
-          break;
-        } else {
-          carry = raw.afterAll;
-        }
-      }
-
-      if (!result) {
-        const fallback = computeRawMonthTotals(targetMonth, 0);
-        return fallback;
-      }
-
-      return result;
-    }
-
-    // ------------ UI RENDERING ------------
-
-    let selectedMonth = firstOfMonth(new Date());
-    let whatIfOffset = 0;
-    let currentEditingTxId = null;
-    let currentEditingDdBaseId = null;
-    let currentEditingDdMonthKey = null;
-
-    function refreshUI() {
-      const monthLabelEl = document.getElementById("monthLabel");
-      const incomeValueEl = document.getElementById("incomeValue");
-      const ddValueEl = document.getElementById("ddValue");
-      const spendValueEl = document.getElementById("spendValue");
-      const leftValueEl = document.getElementById("leftValue");
-      const leftCardEl = document.getElementById("leftCard");
-      const whatIfSlider = document.getElementById("whatIfSlider");
-      const whatIfChangeEl = document.getElementById("whatIfChange");
-      const whatIfAfterEl = document.getElementById("whatIfAfter");
-      const donutCanvas = document.getElementById("donutCanvas");
-      const balanceCanvas = document.getElementById("balanceCanvas");
-
-      const summaryStartEl = document.getElementById("summaryStart");
-      const summaryDdEl = document.getElementById("summaryDd");
-      const summarySpendEl = document.getElementById("summarySpend");
-      const summaryAfterEl = document.getElementById("summaryAfter");
-
-      const legendIncomeEl = document.getElementById("legendIncome");
-      const legendOutEl = document.getElementById("legendOut");
-      const legendLeftEl = document.getElementById("legendLeft");
-
-      const statusDotEl = document.getElementById("statusDot");
-      const statusMainEl = document.getElementById("statusMain");
-      const statusSubEl = document.getElementById("statusSub");
-
-      monthLabelEl.textContent = monthLabel(selectedMonth);
-
-      const totals = computeMonthWithCarry(selectedMonth);
-      const income = totals.income;
-      const spend = totals.spend;
-      const ddTotal = totals.ddTotal;
-      const carryIn = totals.carryIn;
-      const baseAfterAll = totals.afterAll;
-
-      const openingPlusIncome = carryIn + income;
-      const totalOut = ddTotal + spend;
-
-      incomeValueEl.textContent = formatMoney(income);
-      ddValueEl.textContent = formatMoney(ddTotal);
-      spendValueEl.textContent = formatMoney(spend);
-      leftValueEl.textContent = formatMoney(baseAfterAll);
-
-      legendIncomeEl.textContent = formatMoney(openingPlusIncome);
-      legendOutEl.textContent = formatMoney(totalOut);
-      legendLeftEl.textContent = formatMoney(baseAfterAll);
-
-      summaryStartEl.textContent = formatMoney(openingPlusIncome);
-      summaryDdEl.textContent = formatMoney(ddTotal);
-      summarySpendEl.textContent = formatMoney(spend);
-      summaryAfterEl.textContent = formatMoney(baseAfterAll);
-
-      if (baseAfterAll > 0) {
-        leftCardEl.style.borderColor = "rgba(64,227,138,0.5)";
-        leftCardEl.style.boxShadow = "0 12px 30px rgba(64,227,138,0.35)";
-        leftValueEl.style.color = "var(--green-soft)";
-
-        statusDotEl.classList.remove("status-dot-red");
-        statusDotEl.classList.add("status-dot");
-        statusMainEl.textContent = "You’re in the green";
-        statusMainEl.style.color = "var(--green-soft)";
-        statusSubEl.textContent = `${formatMoney(baseAfterAll)} left after this month’s direct debits and spending.`;
-      } else if (baseAfterAll < 0) {
-        leftCardEl.style.borderColor = "rgba(255,106,120,0.55)";
-        leftCardEl.style.boxShadow = "0 12px 30px rgba(255,106,120,0.4)";
-        leftValueEl.style.color = "var(--red-soft)";
-
-        statusDotEl.classList.remove("status-dot");
-        statusDotEl.classList.add("status-dot-red");
-        statusMainEl.textContent = "Spending over income";
-        statusMainEl.style.color = "var(--red-soft)";
-        statusSubEl.textContent = `Over by ${formatMoney(Math.abs(baseAfterAll))} this month.`;
-      } else {
-        leftCardEl.style.borderColor = "rgba(255,255,255,0.12)";
-        leftCardEl.style.boxShadow = "0 12px 30px rgba(0,0,0,0.7)";
-        leftValueEl.style.color = "var(--text)";
-
-        statusDotEl.classList.remove("status-dot-red");
-        statusDotEl.classList.add("status-dot");
-        statusMainEl.textContent = "Every pound is allocated";
-        statusMainEl.style.color = "var(--text)";
-        statusSubEl.textContent = "You’ve used 100% of this month’s opening + income.";
-      }
-
-      const maxSlider = Math.max(2000, Math.round(openingPlusIncome) || 0);
-      whatIfSlider.min = -maxSlider;
-      whatIfSlider.max = maxSlider;
-      whatIfSlider.value = whatIfOffset;
-
-      const absChange = Math.abs(whatIfOffset);
-      const sign = whatIfOffset === 0 ? "" : whatIfOffset > 0 ? "+" : "−";
-      const afterChange = baseAfterAll - whatIfOffset;
-
-      whatIfChangeEl.textContent = `Change: ${sign}${formatMoney(absChange).replace("£", "")}`;
-      whatIfAfterEl.textContent = `After change: ${formatMoney(afterChange)}`;
-
-      const adjustedBalances = totals.dailyBalances.map((v, idx, arr) => {
-        if (whatIfOffset === 0 || arr.length === 0) return v;
-        const factor = (idx + 1) / arr.length;
-        return v - whatIfOffset * factor;
-      });
-
-      drawBalanceLine(balanceCanvas, adjustedBalances);
-
-      const adjustedOpeningPlusIncome = openingPlusIncome - whatIfOffset;
-      drawDonut(donutCanvas, adjustedOpeningPlusIncome, totalOut);
-
-      renderTransactionList();
-      renderDirectDebitList();
-    }
-
-    function renderTransactionList() {
-      const mk = monthKey(selectedMonth);
-      const txList = document.getElementById("txList");
-      txList.innerHTML = "";
-
-      const filtered = transactions.filter((t) => {
-        if (isAutoOpening(t)) return false;
-        const d = new Date(t.date);
-        if (Number.isNaN(d.getTime())) return false;
-        return monthKey(d) === mk;
-      });
-
-      if (filtered.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "list-empty";
-        empty.textContent =
-          "No transactions yet. Add income and spending above.";
-        txList.appendChild(empty);
+      if(values.length < 2){
+        // draw axis anyway
+        ctx.strokeStyle = "rgba(255,255,255,0.18)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(10, H-18);
+        ctx.lineTo(W-10, H-18);
+        ctx.stroke();
         return;
       }
 
-      const sorted = filtered
-        .slice()
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
+      // allow negative Y
+      const minV = Math.min(...values);
+      const maxV = Math.max(...values);
+      const range = Math.max(1, maxV - minV);
 
-      for (const tx of sorted) {
-        const row = document.createElement("div");
-        row.className = "list-item";
+      // padding
+      const left = 10, right = 10, top = 10, bottom = 18;
+      const plotW = W - left - right;
+      const plotH = H - top - bottom;
 
-        const main = document.createElement("div");
-        main.className = "list-main";
-
-        const title = document.createElement("div");
-        title.className = "list-title";
-        title.textContent = tx.description;
-
-        const sub = document.createElement("div");
-        sub.className = "list-sub";
-        sub.textContent = `${formatDisplayDate(tx.date)} · ${
-          tx.type === "income" ? "Income" : "Spending"
-        }`;
-
-        main.appendChild(title);
-        main.appendChild(sub);
-
-        const right = document.createElement("div");
-        right.className = "list-right";
-
-        const amt = document.createElement("div");
-        amt.className = "list-amount";
-        amt.style.color =
-          tx.type === "income" ? "var(--green-soft)" : "var(--red-soft)";
-        amt.textContent = formatMoney(tx.amount);
-
-        const editBtn = document.createElement("button");
-        editBtn.className = "btn btn-small btn-ghost";
-        editBtn.textContent = "Edit";
-        editBtn.style.marginTop = "-2px";
-        editBtn.addEventListener("click", () => openTransactionEditModal(tx));
-
-        right.appendChild(amt);
-        right.appendChild(editBtn);
-
-        row.appendChild(main);
-        row.appendChild(right);
-
-        txList.appendChild(row);
+      // x-axis at y=0 if within range, else bottom
+      let axisY;
+      if(minV <= 0 && maxV >= 0){
+        axisY = top + plotH * (maxV / range);
+      }else{
+        axisY = top + plotH;
       }
+
+      // x-axis visible
+      ctx.strokeStyle = "rgba(255,255,255,0.22)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(left, axisY);
+      ctx.lineTo(left + plotW, axisY);
+      ctx.stroke();
+
+      // line
+      const grad = ctx.createLinearGradient(0,0,W,0);
+      grad.addColorStop(0, "#60a5fa");
+      grad.addColorStop(0.6, "#22c55e");
+      grad.addColorStop(1, "#06b6d4");
+
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 3;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+
+      ctx.beginPath();
+      for(let i=0;i<values.length;i++){
+        const x = left + (plotW * (i/(values.length-1)));
+        const y = top + plotH * ((maxV - values[i]) / range);
+        if(i===0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
     }
 
-    function renderDirectDebitList() {
-      const mk = monthKey(selectedMonth);
-      const ddList = document.getElementById("ddList");
-      ddList.innerHTML = "";
+    /**********************
+     * UI State
+     **********************/
+    const state = {
+      data: loadData(),
+      selectedMonth: monthKey(today()),
+      whatIfOffset: 0,
 
-      // CHANGED: treat DDs whose start month <= this month as part of the series
-      const monthBaseDDs = directDebits.filter((dd) => {
-        if (!dd.month) return false;
-        const baseDate = parseMonthKey(dd.month);
-        if (!baseDate) return false;
-        return baseDate <= selectedMonth;
-      });
+      // modal editing
+      editingTxId: null,
+      editingDd: null, // {seriesId, periodId} for the month view
+      ddEditScope: "this"
+    };
 
-      const actualDDs = monthBaseDDs.map((dd) => {
-        const override = ddOverrides.find(
-          (ov) => ov.baseId === dd.id && ov.month === mk
-        );
-        if (!override || override.type === "none") {
-          const active = override ? override.active : dd.active;
-          return {
-            baseId: dd.id,
-            name: dd.name,
-            amount: dd.amount,
-            day: dd.day,
-            category: dd.category,
-            active: active !== false
-          };
-        }
-        if (override.type === "modified") {
-          return {
-            baseId: dd.id,
-            name: override.name,
-            amount: override.amount,
-            day: override.day,
-            category: override.category,
-            active: override.active !== false
-          };
-        }
-        if (override.type === "skipped") {
-          return {
-            baseId: dd.id,
-            name: dd.name,
-            amount: dd.amount,
-            day: dd.day,
-            category: dd.category,
-            active: false
-          };
-        }
-        return {
-          baseId: dd.id,
-          name: dd.name,
-          amount: dd.amount,
-          day: dd.day,
-          category: dd.category,
-          active: dd.active
-        };
-      });
+    /**********************
+     * DOM refs
+     **********************/
+    const el = {
+      monthLabel: document.getElementById("monthLabel"),
+      prevMonthBtn: document.getElementById("prevMonthBtn"),
+      nextMonthBtn: document.getElementById("nextMonthBtn"),
 
-      if (actualDDs.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "list-empty";
-        empty.textContent =
-          "No direct debits yet. Start with mortgage, council tax and utilities.";
-        ddList.appendChild(empty);
+      incomeTotal: document.getElementById("incomeTotal"),
+      ddTotal: document.getElementById("ddTotal"),
+      spendTotal: document.getElementById("spendTotal"),
+      leftAfterAll: document.getElementById("leftAfterAll"),
+      leftPill: document.getElementById("leftPill"),
+
+      whatIfSlider: document.getElementById("whatIfSlider"),
+      whatIfChange: document.getElementById("whatIfChange"),
+      whatIfAfter: document.getElementById("whatIfAfter"),
+      resetWhatIfBtn: document.getElementById("resetWhatIfBtn"),
+
+      donutCanvas: document.getElementById("donutCanvas"),
+      donutPct: document.getElementById("donutPct"),
+      statusTitle: document.getElementById("statusTitle"),
+      statusBody: document.getElementById("statusBody"),
+      miniGraph: document.getElementById("miniGraph"),
+
+      // transaction add
+      txDate: document.getElementById("txDate"),
+      txType: document.getElementById("txType"),
+      txDesc: document.getElementById("txDesc"),
+      txAmt: document.getElementById("txAmt"),
+      addTxBtn: document.getElementById("addTxBtn"),
+      txList: document.getElementById("txList"),
+
+      // dd add
+      ddName: document.getElementById("ddName"),
+      ddDay: document.getElementById("ddDay"),
+      ddAmt: document.getElementById("ddAmt"),
+      ddCat: document.getElementById("ddCat"),
+      addDdBtn: document.getElementById("addDdBtn"),
+      ddList: document.getElementById("ddList"),
+
+      // export/reset
+      exportAllBtn: document.getElementById("exportAllBtn"),
+      resetAllBtn: document.getElementById("resetAllBtn"),
+
+      // donut modal
+      donutCard: document.getElementById("donutCard"),
+      donutModal: document.getElementById("donutModal"),
+      closeDonutModal: document.getElementById("closeDonutModal"),
+      modalMonthLabel: document.getElementById("modalMonthLabel"),
+      modalCarryIn: document.getElementById("modalCarryIn"),
+      bigDonut: document.getElementById("bigDonut"),
+      bigDonutPct: document.getElementById("bigDonutPct"),
+      bkStart: document.getElementById("bkStart"),
+      bkIncome: document.getElementById("bkIncome"),
+      bkDD: document.getElementById("bkDD"),
+      bkSpend: document.getElementById("bkSpend"),
+      bkLeft: document.getElementById("bkLeft"),
+
+      // tx modal
+      txModal: document.getElementById("txModal"),
+      closeTxModal: document.getElementById("closeTxModal"),
+      editTxDate: document.getElementById("editTxDate"),
+      editTxType: document.getElementById("editTxType"),
+      editTxDesc: document.getElementById("editTxDesc"),
+      editTxAmt: document.getElementById("editTxAmt"),
+      saveTxBtn: document.getElementById("saveTxBtn"),
+      deleteTxBtn: document.getElementById("deleteTxBtn"),
+
+      // dd modal
+      ddModal: document.getElementById("ddModal"),
+      closeDdModal: document.getElementById("closeDdModal"),
+      editDdName: document.getElementById("editDdName"),
+      editDdDay: document.getElementById("editDdDay"),
+      editDdAmt: document.getElementById("editDdAmt"),
+      editDdCat: document.getElementById("editDdCat"),
+      editDdPaused: document.getElementById("editDdPaused"),
+      scopeThisMonth: document.getElementById("scopeThisMonth"),
+      scopeFromMonth: document.getElementById("scopeFromMonth"),
+      saveDdBtn: document.getElementById("saveDdBtn"),
+      deleteDdBtn: document.getElementById("deleteDdBtn"),
+    };
+
+    /**********************
+     * Render
+     **********************/
+    function refresh(){
+      saveData();
+
+      el.monthLabel.textContent = monthLabel(state.selectedMonth);
+
+      // Set tx date default to today but keep user's if already set
+      if(!el.txDate.value){
+        el.txDate.value = toISODate(today());
+      }
+
+      // Month summary
+      const sum = monthSummary(state.selectedMonth);
+      const dd = sum.dd;
+      const income = sum.income;
+      const spend = sum.spend;
+
+      // Apply what-if
+      const whatIf = Number(state.whatIfOffset || 0);
+      const leftAfter = sum.leftAfterAll - whatIf;
+      const startedWith = sum.startedWith;
+
+      el.incomeTotal.textContent = money(income);
+      el.ddTotal.textContent = money(dd);
+      el.spendTotal.textContent = money(spend);
+      el.leftAfterAll.textContent = money(leftAfter);
+
+      // left pill coloring
+      const leftVal = leftAfter;
+      if(leftVal > 0){
+        el.leftAfterAll.style.color = "var(--green)";
+        el.leftPill.style.background = "rgba(34,197,94,0.12)";
+      }else if(leftVal === 0){
+        el.leftAfterAll.style.color = "var(--amber)";
+        el.leftPill.style.background = "rgba(251,146,60,0.12)";
+      }else{
+        el.leftAfterAll.style.color = "var(--red)";
+        el.leftPill.style.background = "rgba(251,113,133,0.12)";
+      }
+
+      // Donut percent (based on startedWith)
+      const base = Math.max(0.0001, startedWith);
+      const pctLeft = clamp((leftAfter / base) * 100, -9999, 9999);
+
+      el.donutPct.textContent = `${Math.round(pctLeft)}%`;
+
+      // status text
+      if(startedWith <= 0.0001){
+        el.statusTitle.textContent = "Waiting for income";
+        el.statusTitle.style.color = "var(--text)";
+        el.statusBody.textContent = "Add your salary for this month to see how much is left after direct debits and spending.";
+      }else{
+        if(leftAfter > 0){
+          el.statusTitle.textContent = "You’re in the green";
+          el.statusTitle.style.color = "var(--greenSoft)";
+          el.statusBody.textContent = `${money(leftAfter)} left after this month’s direct debits and spending.`;
+        }else if(leftAfter === 0){
+          el.statusTitle.textContent = "Every pound is allocated";
+          el.statusTitle.style.color = "var(--text)";
+          el.statusBody.textContent = "You’ve used 100% of this month’s starting funds.";
+        }else{
+          el.statusTitle.textContent = "Spending over income";
+          el.statusTitle.style.color = "var(--red)";
+          el.statusBody.textContent = `Over by ${money(Math.abs(leftAfter))} this month.`;
+        }
+      }
+
+      // Donut visuals: use percent clamped to [0..100] for ring
+      drawDonut(el.donutCanvas, clamp(pctLeft, 0, 100));
+
+      // Graph
+      drawLineGraph(el.miniGraph, state.selectedMonth, whatIf);
+
+      // What-if slider range
+      const maxDelta = Math.max(500, Math.ceil(startedWith));
+      el.whatIfSlider.min = String(-maxDelta);
+      el.whatIfSlider.max = String(maxDelta);
+      el.whatIfSlider.value = String(state.whatIfOffset);
+
+      const absChange = Math.abs(whatIf);
+      const sign = whatIf === 0 ? "" : (whatIf > 0 ? "+" : "−");
+      el.whatIfChange.textContent = `Change: ${sign}${money(absChange)}`;
+      el.whatIfAfter.textContent = `After change: ${money(leftAfter)}`;
+
+      // Lists
+      renderTransactions();
+      renderDirectDebits();
+    }
+
+    function renderTransactions(){
+      const txs = transactionsForMonth(state.selectedMonth);
+
+      el.txList.innerHTML = "";
+      if(txs.length === 0){
+        el.txList.innerHTML = `<div class="note" style="padding: 8px;">No transactions yet. Add income and spending above.</div>`;
         return;
       }
 
-      const sorted = actualDDs
-        .slice()
-        .sort((a, b) => a.day - b.day || a.name.localeCompare(b.name));
+      for(const tx of txs){
+        const amtColor = tx.type === "income" ? "var(--green)" : "var(--red)";
+        const typeLabel = tx.type === "income" ? "Income" : "Spending";
 
-      for (const dd of sorted) {
-        const row = document.createElement("div");
-        row.className = "list-item";
-        if (!dd.active) row.classList.add("dd-paused");
+        const card = document.createElement("div");
+        card.className = "itemCard";
 
-        const main = document.createElement("div");
-        main.className = "list-main";
+        card.innerHTML = `
+          <div class="itemLeft">
+            <p class="itemTitle">${escapeHtml(tx.description || "(no description)")}</p>
+            <p class="itemMeta">${shortDateLabel(tx.dateISO)} · ${typeLabel}</p>
+          </div>
+          <div class="itemRight">
+            <div class="amount" style="color:${amtColor};">${money(tx.amount)}</div>
+            <button class="btn btnGhost btnTiny" type="button" data-edit-tx="${tx.id}" style="position: relative; top: -1px;">Edit</button>
+          </div>
+        `;
 
-        const title = document.createElement("div");
-        title.className = "list-title";
-        title.textContent = dd.name;
-
-        const sub = document.createElement("div");
-        sub.className = "list-sub";
-        sub.textContent = `${formatMoney(dd.amount)} · day ${
-          dd.day
-        }${dd.category ? " · " + dd.category : ""}`;
-
-        main.appendChild(title);
-        main.appendChild(sub);
-
-        const editBtn = document.createElement("button");
-        editBtn.className = "btn btn-small btn-ghost";
-        editBtn.textContent = "Edit";
-        editBtn.addEventListener("click", () =>
-          openDirectDebitEditModal(dd.baseId)
-        );
-
-        row.appendChild(main);
-        row.appendChild(editBtn);
-
-        ddList.appendChild(row);
+        el.txList.appendChild(card);
       }
+
+      // bind edit
+      el.txList.querySelectorAll("[data-edit-tx]").forEach(btn=>{
+        btn.addEventListener("click",(e)=>{
+          const id = e.currentTarget.getAttribute("data-edit-tx");
+          openTxModal(id);
+        });
+      });
     }
 
-    // ------------ ADD / EDIT / DELETE ------------
+    function renderDirectDebits(){
+      const rows = listDirectDebitsForMonth(state.selectedMonth);
+      el.ddList.innerHTML = "";
 
-    function addTransaction() {
-      const dateVal = document.getElementById("txDate").value;
-      const typeVal = document.getElementById("txType").value;
-      const descVal = document.getElementById("txDesc").value.trim();
-      const amtStr = document
-        .getElementById("txAmt")
-        .value.replace(",", ".");
-      const amt = parseFloat(amtStr);
-
-      if (!dateVal || !descVal || !isFinite(amt)) {
+      if(rows.length === 0){
+        el.ddList.innerHTML = `<div class="note" style="padding: 8px;">No direct debits yet. Start with mortgage, council tax and utilities.</div>`;
         return;
       }
 
-      transactions.push({
-        id: uuid(),
-        date: dateVal,
-        type: typeVal,
-        description: descVal,
-        amount: amt
+      for(const dd of rows){
+        const tagClass = dd.paused ? "tagRed" : "tagGreen";
+        const tagText = dd.paused ? "Paused" : "Active";
+
+        const metaBits = [
+          `${money(dd.amount)} · day ${dd.day}`,
+          dd.seriesCategory ? dd.seriesCategory : ""
+        ].filter(Boolean).join(" · ");
+
+        const card = document.createElement("div");
+        card.className = "itemCard";
+        if(dd.paused){
+          card.style.opacity = "0.92";
+        }
+
+        card.innerHTML = `
+          <div class="itemLeft">
+            <p class="itemTitle">${escapeHtml(dd.seriesName)}</p>
+            <p class="itemMeta">${escapeHtml(metaBits)}</p>
+          </div>
+          <div class="itemRight">
+            <div class="tag ${tagClass}">${tagText}</div>
+            <button class="btn btnGhost btnTiny" type="button" data-edit-dd="${dd.seriesId}">Edit</button>
+          </div>
+        `;
+
+        el.ddList.appendChild(card);
+      }
+
+      el.ddList.querySelectorAll("[data-edit-dd]").forEach(btn=>{
+        btn.addEventListener("click",(e)=>{
+          const seriesId = e.currentTarget.getAttribute("data-edit-dd");
+          openDdModal(seriesId);
+        });
       });
-
-      saveToStorage();
-      document.getElementById("txDesc").value = "";
-      document.getElementById("txAmt").value = "";
-      document.getElementById("txType").value = "income";
-      document.getElementById("txDate").value = "";
-
-      if (document.activeElement) document.activeElement.blur();
-      refreshUI();
     }
 
-    function addDirectDebit() {
-      const nameVal = document.getElementById("ddName").value.trim();
-      const amtStr = document
-        .getElementById("ddAmt")
-        .value.replace(",", ".");
-      const amt = parseFloat(amtStr);
-      const dayVal = parseInt(
-        document.getElementById("ddDay").value,
-        10
-      );
-      const catVal = document.getElementById("ddCat").value.trim();
+    /**********************
+     * Add transaction / DD
+     **********************/
+    function blurKeyboard(){
+      if(document.activeElement && typeof document.activeElement.blur === "function"){
+        document.activeElement.blur();
+      }
+    }
 
-      if (!nameVal || !isFinite(amt) || !isFinite(dayVal)) return;
-      if (dayVal < 1 || dayVal > 31) return;
+    function addTransaction(){
+      const dateISO = el.txDate.value || toISODate(today());
+      const type = el.txType.value === "income" ? "income" : "spend";
+      const desc = (el.txDesc.value || "").trim();
+      const amt = Number(String(el.txAmt.value || "").replace(",", "."));
 
-      directDebits.push({
-        id: uuid(),
-        month: monthKey(selectedMonth),
-        name: nameVal,
+      if(!desc) return alert("Please enter a description.");
+      if(!Number.isFinite(amt) || amt <= 0) return alert("Please enter a valid amount.");
+
+      state.data.transactions.push({
+        id: uid(),
+        dateISO,
+        description: desc,
         amount: amt,
-        day: dayVal,
-        category: catVal,
-        active: true
+        type
       });
 
-      saveToStorage();
-      document.getElementById("ddName").value = "";
-      document.getElementById("ddAmt").value = "";
-      document.getElementById("ddDay").value = "";
-      document.getElementById("ddCat").value = "";
+      el.txDesc.value = "";
+      el.txAmt.value = "";
+      el.txType.value = "income";
+      el.txDate.value = toISODate(today());
 
-      if (document.activeElement) document.activeElement.blur();
-      refreshUI();
+      blurKeyboard();
+      refresh();
     }
 
-    function openTransactionEditModal(tx) {
-      currentEditingTxId = tx.id;
+    function addDirectDebit(){
+      const name = (el.ddName.value || "").trim();
+      const day = Number(el.ddDay.value || 0);
+      const amt = Number(String(el.ddAmt.value || "").replace(",", "."));
+      const cat = (el.ddCat.value || "").trim();
 
-      document.getElementById("editTxDate").value = tx.date;
-      document.getElementById("editTxType").value = tx.type;
-      document.getElementById("editTxDesc").value = tx.description;
-      document.getElementById("editTxAmt").value = tx.amount.toFixed(2);
+      if(!name) return alert("Please enter a name.");
+      if(!Number.isFinite(day) || day < 1 || day > 31) return alert("Please enter a valid day (1–31).");
+      if(!Number.isFinite(amt) || amt <= 0) return alert("Please enter a valid amount.");
 
-      document.getElementById("txModal").style.display = "flex";
+      const series = {
+        id: uid(),
+        name,
+        category: cat,
+        periods: [{
+          id: uid(),
+          startMonth: state.selectedMonth,
+          endMonth: null,
+          day,
+          amount: amt,
+          paused: false
+        }]
+      };
+
+      state.data.ddSeries.push(series);
+
+      el.ddName.value = "";
+      el.ddDay.value = "";
+      el.ddAmt.value = "";
+      el.ddCat.value = "";
+
+      blurKeyboard();
+      refresh();
     }
 
-    function closeTransactionEditModal() {
-      document.getElementById("txModal").style.display = "none";
-      currentEditingTxId = null;
+    /**********************
+     * Transaction modal
+     **********************/
+    function openTxModal(id){
+      const tx = state.data.transactions.find(t=>t.id===id);
+      if(!tx) return;
+
+      state.editingTxId = id;
+
+      el.editTxDate.value = tx.dateISO;
+      el.editTxType.value = tx.type;
+      el.editTxDesc.value = tx.description;
+      el.editTxAmt.value = String(tx.amount);
+
+      el.txModal.classList.add("show");
     }
 
-    function saveTransactionEdit() {
-      if (!currentEditingTxId) return;
-      const tx = transactions.find((t) => t.id === currentEditingTxId);
-      if (!tx) return;
+    function closeTxModal(){
+      state.editingTxId = null;
+      el.txModal.classList.remove("show");
+      blurKeyboard();
+    }
 
-      const dateVal = document.getElementById("editTxDate").value;
-      const typeVal = document.getElementById("editTxType").value;
-      const descVal = document.getElementById("editTxDesc").value.trim();
-      const amtStr = document
-        .getElementById("editTxAmt")
-        .value.replace(",", ".");
-      const amt = parseFloat(amtStr);
+    function saveTx(){
+      const id = state.editingTxId;
+      const tx = state.data.transactions.find(t=>t.id===id);
+      if(!tx) return;
 
-      if (!dateVal || !descVal || !isFinite(amt)) return;
+      const dateISO = el.editTxDate.value || tx.dateISO;
+      const type = el.editTxType.value === "income" ? "income" : "spend";
+      const desc = (el.editTxDesc.value || "").trim();
+      const amt = Number(String(el.editTxAmt.value || "").replace(",", "."));
 
-      tx.date = dateVal;
-      tx.type = typeVal;
-      tx.description = descVal;
+      if(!desc) return alert("Please enter a description.");
+      if(!Number.isFinite(amt) || amt <= 0) return alert("Please enter a valid amount.");
+
+      tx.dateISO = dateISO;
+      tx.type = type;
+      tx.description = desc;
       tx.amount = amt;
 
-      saveToStorage();
-      refreshUI();
-      closeTransactionEditModal();
+      closeTxModal();
+      refresh();
     }
 
-    function deleteTransaction() {
-      if (!currentEditingTxId) return;
-      transactions = transactions.filter((t) => t.id !== currentEditingTxId);
-      saveToStorage();
-      refreshUI();
-      closeTransactionEditModal();
+    function deleteTx(){
+      const id = state.editingTxId;
+      const idx = state.data.transactions.findIndex(t=>t.id===id);
+      if(idx < 0) return;
+
+      if(!confirm("Delete this transaction?")) return;
+      state.data.transactions.splice(idx,1);
+
+      closeTxModal();
+      refresh();
     }
 
-    function openDirectDebitEditModal(baseId) {
-      currentEditingDdBaseId = baseId;
-      currentEditingDdMonthKey = monthKey(selectedMonth);
+    /**********************
+     * Direct Debit modal (versioned edits)
+     **********************/
+    function setScope(scope){
+      state.ddEditScope = scope;
+      if(scope === "this"){
+        el.scopeThisMonth.classList.add("active");
+        el.scopeFromMonth.classList.remove("active");
+      }else{
+        el.scopeThisMonth.classList.remove("active");
+        el.scopeFromMonth.classList.add("active");
+      }
+    }
 
-      const base = directDebits.find((d) => d.id === baseId);
-      if (!base) return;
+    function openDdModal(seriesId){
+      const series = state.data.ddSeries.find(s=>s.id===seriesId);
+      if(!series) return;
 
-      const mk = monthKey(selectedMonth);
-      const override = ddOverrides.find(
-        (ov) => ov.baseId === baseId && ov.month === mk
-      );
+      // find applicable period for this month
+      const period = seriesApplicablePeriod(series, state.selectedMonth);
+      if(!period){
+        // if none applies, treat as can't edit in this month
+        alert("No active version for this direct debit in the selected month.");
+        return;
+      }
 
-      let effective = {
-        name: base.name,
-        amount: base.amount,
-        day: base.day,
-        category: base.category,
-        active: base.active
-      };
+      state.editingDd = { seriesId, periodId: period.id };
 
-      if (override) {
-        if (override.type === "modified") {
-          effective = {
-            name: override.name,
-            amount: override.amount,
-            day: override.day,
-            category: override.category,
-            active: override.active
+      el.editDdName.value = series.name;
+      el.editDdCat.value = series.category || "";
+      el.editDdDay.value = String(period.day);
+      el.editDdAmt.value = String(period.amount);
+      el.editDdPaused.checked = !!period.paused;
+
+      // default scope = from this month onwards (usually what you want for changes)
+      setScope("from");
+
+      el.ddModal.classList.add("show");
+    }
+
+    function closeDdModal(){
+      state.editingDd = null;
+      el.ddModal.classList.remove("show");
+      blurKeyboard();
+    }
+
+    function saveDd(){
+      const edit = state.editingDd;
+      if(!edit) return;
+
+      const series = state.data.ddSeries.find(s=>s.id===edit.seriesId);
+      if(!series) return;
+
+      const currentPeriod = seriesApplicablePeriod(series, state.selectedMonth);
+      if(!currentPeriod) return;
+
+      const newName = (el.editDdName.value || "").trim();
+      const newCat = (el.editDdCat.value || "").trim();
+      const newDay = Number(el.editDdDay.value || 0);
+      const newAmt = Number(String(el.editDdAmt.value || "").replace(",", "."));
+      const newPaused = !!el.editDdPaused.checked;
+
+      if(!newName) return alert("Please enter a name.");
+      if(!Number.isFinite(newDay) || newDay < 1 || newDay > 31) return alert("Please enter a valid day (1–31).");
+      if(!Number.isFinite(newAmt) || newAmt <= 0) return alert("Please enter a valid amount.");
+
+      // Always update series name/category (harmless)
+      series.name = newName;
+      series.category = newCat;
+
+      const mk = state.selectedMonth;
+
+      if(state.ddEditScope === "this"){
+        // Create or update a one-month override period for mk:
+        // If there is already a period that is exactly mk..mk, update it.
+        let override = series.periods.find(p=>p.startMonth===mk && p.endMonth===mk);
+        if(!override){
+          override = {
+            id: uid(),
+            startMonth: mk,
+            endMonth: mk,
+            day: newDay,
+            amount: newAmt,
+            paused: newPaused
           };
-        } else if (override.type === "skipped") {
-          effective.active = false;
+          series.periods.push(override);
+        }else{
+          override.day = newDay;
+          override.amount = newAmt;
+          override.paused = newPaused;
+        }
+      }else{
+        // From this month onwards:
+        // 1) Find the period currently applying to this month (could be open ended).
+        // 2) End it the month before mk (if it started before mk).
+        // 3) Create a new period starting at mk, ending where old one ended.
+        const applying = currentPeriod;
+
+        const oldEnd = applying.endMonth ?? null;
+
+        // If applying already starts this month, just update it.
+        if(applying.startMonth === mk){
+          applying.day = newDay;
+          applying.amount = newAmt;
+          applying.paused = newPaused;
+        }else{
+          // End old period at previous month
+          const endOldAt = prevMonth(mk);
+          applying.endMonth = endOldAt;
+
+          // New period continues onwards (inherits old end)
+          series.periods.push({
+            id: uid(),
+            startMonth: mk,
+            endMonth: oldEnd,
+            day: newDay,
+            amount: newAmt,
+            paused: newPaused
+          });
         }
       }
 
-      document.getElementById("editDdName").value = effective.name;
-      document.getElementById("editDdAmt").value = effective.amount.toFixed(2);
-      document.getElementById("editDdDay").value = effective.day;
-      document.getElementById("editDdCat").value = effective.category || "";
-
-      const pausedToggle = document.getElementById("ddPausedToggle");
-      pausedToggle.classList.toggle("on", !effective.active);
-
-      document.getElementById("ddModal").style.display = "flex";
+      closeDdModal();
+      refresh();
     }
 
-    function closeDirectDebitEditModal() {
-      document.getElementById("ddModal").style.display = "none";
-      currentEditingDdBaseId = null;
-      currentEditingDdMonthKey = null;
+    function deleteDdSeries(){
+      const edit = state.editingDd;
+      if(!edit) return;
+
+      const idx = state.data.ddSeries.findIndex(s=>s.id===edit.seriesId);
+      if(idx < 0) return;
+
+      if(!confirm("Delete this direct debit series entirely? (This removes it from ALL months.)")) return;
+
+      state.data.ddSeries.splice(idx,1);
+      closeDdModal();
+      refresh();
     }
 
-    function toggleDdPaused() {
-      const toggle = document.getElementById("ddPausedToggle");
-      toggle.classList.toggle("on");
+    /**********************
+     * Donut modal
+     **********************/
+    function openDonutModal(){
+      const sum = monthSummary(state.selectedMonth);
+
+      el.modalMonthLabel.textContent = monthLabel(state.selectedMonth);
+      el.modalCarryIn.textContent = money(sum.carryIn);
+
+      const whatIf = Number(state.whatIfOffset||0);
+      const left = sum.leftAfterAll - whatIf;
+      const started = sum.startedWith;
+
+      el.bkStart.textContent = money(started);
+      el.bkIncome.textContent = money(sum.income);
+      el.bkDD.textContent = money(sum.dd);
+      el.bkSpend.textContent = money(sum.spend);
+      el.bkLeft.textContent = money(left);
+      el.bkLeft.style.color = left >= 0 ? "var(--green)" : "var(--red)";
+
+      const base = Math.max(0.0001, started);
+      const pctLeft = clamp((left / base) * 100, -9999, 9999);
+      el.bigDonutPct.textContent = `${Math.round(pctLeft)}%`;
+
+      drawDonut(el.bigDonut, clamp(pctLeft, 0, 100));
+
+      el.donutModal.classList.add("show");
     }
 
-    function saveDirectDebitEdit() {
-      if (!currentEditingDdBaseId || !currentEditingDdMonthKey) return;
-
-      const base = directDebits.find((d) => d.id === currentEditingDdBaseId);
-      if (!base) return;
-
-      const nameVal = document.getElementById("editDdName").value.trim();
-      const amtStr = document
-        .getElementById("editDdAmt")
-        .value.replace(",", ".");
-      const amt = parseFloat(amtStr);
-      const dayVal = parseInt(
-        document.getElementById("editDdDay").value,
-        10
-      );
-      const catVal = document.getElementById("editDdCat").value.trim();
-      const paused = document
-        .getElementById("ddPausedToggle")
-        .classList.contains("on");
-
-      if (!nameVal || !isFinite(amt) || !isFinite(dayVal)) return;
-      if (dayVal < 1 || dayVal > 31) return;
-
-      let override = ddOverrides.find(
-        (ov) =>
-          ov.baseId === currentEditingDdBaseId &&
-          ov.month === currentEditingDdMonthKey
-      );
-
-      if (!override) {
-        override = {
-          baseId: currentEditingDdBaseId,
-          month: currentEditingDdMonthKey,
-          type: "none",
-          active: base.active
-        };
-        ddOverrides.push(override);
-      }
-
-      override.type = "modified";
-      override.name = nameVal;
-      override.amount = amt;
-      override.day = dayVal;
-      override.category = catVal;
-      override.active = !paused;
-
-      if (
-        override.name === base.name &&
-        override.amount === base.amount &&
-        override.day === base.day &&
-        (override.category || "") === (base.category || "") &&
-        override.active === base.active
-      ) {
-        ddOverrides = ddOverrides.filter(
-          (ov) =>
-            !(
-              ov.baseId === currentEditingDdBaseId &&
-              ov.month === currentEditingDdMonthKey
-            )
-        );
-      }
-
-      saveToStorage();
-      closeDirectDebitEditModal();
-      refreshUI();
+    function closeDonutModal(){
+      el.donutModal.classList.remove("show");
     }
 
-    function deleteDirectDebitForMonth() {
-      if (!currentEditingDdBaseId || !currentEditingDdMonthKey) return;
-
-      let override = ddOverrides.find(
-        (ov) =>
-          ov.baseId === currentEditingDdBaseId &&
-          ov.month === currentEditingDdMonthKey
-      );
-
-      if (!override) {
-        override = {
-          baseId: currentEditingDdBaseId,
-          month: currentEditingDdMonthKey,
-          type: "skipped",
-          active: false
-        };
-        ddOverrides.push(override);
-      } else {
-        override.type = "skipped";
-        override.active = false;
-      }
-
-      saveToStorage();
-      closeDirectDebitEditModal();
-      refreshUI();
-    }
-
-    // ------------ DONUT BREAKDOWN ------------
-
-    function openDonutBreakdown() {
-      const thisTotals = computeMonthWithCarry(selectedMonth);
-      const carryIn = thisTotals.carryIn;
-      const thisIncome = thisTotals.income;
-      const thisSpend = thisTotals.spend;
-      const thisDd = thisTotals.ddTotal;
-      const thisAfter = thisTotals.afterAll;
-
-      const prevMonth = new Date(
-        selectedMonth.getFullYear(),
-        selectedMonth.getMonth() - 1,
-        1
-      );
-      const prevTotals = computeMonthWithCarry(prevMonth);
-      const lastMonthAfter = prevTotals.afterAll;
-      const lastMonthIncomeTotal = prevTotals.income + prevTotals.carryIn;
-
-      document.getElementById("bdIncome").textContent = formatMoney(thisIncome);
-      document.getElementById("bdDd").textContent = formatMoney(thisDd);
-      document.getElementById("bdSpend").textContent = formatMoney(thisSpend);
-      document.getElementById("bdCarry").textContent = formatMoney(carryIn);
-      document.getElementById("bdAfter").textContent = formatMoney(thisAfter);
-
-      const diffAfter = thisAfter - lastMonthAfter;
-      const diffIncome = (thisIncome + carryIn) - lastMonthIncomeTotal;
-      const diffSpend = thisSpend - prevTotals.spend;
-
-      const afterLabel =
-        !isFinite(lastMonthAfter) || lastMonthAfter === 0
-          ? "–"
-          : `${diffAfter >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffAfter)).replace("£", "")}`;
-      const incomeLabel =
-        !isFinite(lastMonthIncomeTotal) || lastMonthIncomeTotal === 0
-          ? "–"
-          : `${diffIncome >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffIncome)).replace("£", "")}`;
-      const spendLabel =
-        !isFinite(prevTotals.spend) || prevTotals.spend === 0
-          ? "–"
-          : `${diffSpend >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffSpend)).replace("£", "")}`;
-
-      document.getElementById("compareAfter").textContent = afterLabel;
-      document.getElementById("compareIncome").textContent = incomeLabel;
-      document.getElementById("compareSpend").textContent = spendLabel;
-
-      const donutBig = document.getElementById("donutBig");
-      const effectiveIncome = carryIn + thisIncome;
-      const totalOut = thisDd + thisSpend;
-      drawDonut(donutBig, effectiveIncome, totalOut);
-
-      document.getElementById("donutBreakdown").style.display = "block";
-    }
-
-    function closeDonutBreakdown() {
-      document.getElementById("donutBreakdown").style.display = "none";
-    }
-
-    // ------------ EXPORT & RESET ------------
-
-    function exportAllData() {
-      function esc(str) {
-        if (str == null) str = "";
-        str = String(str).replace(/"/g, '""');
-        return `"${str}"`;
-      }
-
+    /**********************
+     * Export / Reset
+     **********************/
+    function exportAllCSV(){
+      // One CSV with a RecordType column so Excel can filter/pivot easily.
+      // Transactions + Direct Debit Periods (versioned).
       const lines = [];
       lines.push([
-        "RowType",
+        "RecordType",
         "MonthKey",
         "Date",
-        "TxType",
+        "Type",
         "Description",
-        "TxAmount",
-        "DDName",
-        "DDAmount",
-        "DDDay",
-        "DDCategory",
-        "DDActive",
-        "OverrideMonth",
-        "OverrideType",
-        "OverrideAmount",
-        "OverrideDay",
-        "OverrideCategory",
-        "OverrideActive"
+        "Amount",
+        "DD_SeriesId",
+        "DD_Name",
+        "DD_Category",
+        "DD_DayOfMonth",
+        "DD_PeriodStartMonth",
+        "DD_PeriodEndMonth",
+        "DD_Paused"
       ].join(","));
 
-      for (const t of transactions) {
-        if (isAutoOpening(t)) continue;
-        const d = new Date(t.date);
-        const mk = Number.isNaN(d.getTime()) ? "" : monthKey(d);
-        lines.push([
-          "TRANSACTION",
+      // Transactions
+      for(const tx of state.data.transactions){
+        const mk = (tx.dateISO || "").slice(0,7);
+        lines.push(csvRow([
+          "Transaction",
           mk,
-          t.date || "",
-          t.type || "",
-          esc(t.description || ""),
-          t.amount != null ? t.amount.toFixed(2) : "",
-          "",
-          "",
-          "",
-          "",
+          tx.dateISO || "",
+          tx.type || "",
+          tx.description || "",
+          num2(tx.amount),
           "",
           "",
           "",
@@ -2192,174 +2007,130 @@
           "",
           "",
           ""
-        ].join(","));
+        ]));
       }
 
-      for (const dd of directDebits) {
-        lines.push([
-          "DIRECT_DEBIT",
-          dd.month || "",
-          "",
-          "",
-          "",
-          "",
-          esc(dd.name || ""),
-          dd.amount != null ? dd.amount.toFixed(2) : "",
-          dd.day != null ? String(dd.day) : "",
-          esc(dd.category || ""),
-          dd.active ? "Yes" : "No",
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
-        ].join(","));
-      }
-
-      for (const ov of ddOverrides) {
-        lines.push([
-          "DD_OVERRIDE",
-          ov.month || "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          ov.month || "",
-          ov.type || "",
-          ov.amount != null ? ov.amount.toFixed(2) : "",
-          ov.day != null ? String(ov.day) : "",
-          esc(ov.category || ""),
-          ov.active === false ? "No" : "Yes"
-        ].join(","));
+      // DD periods
+      for(const s of state.data.ddSeries){
+        for(const p of (s.periods||[])){
+          // For DD periods, MonthKey is the startMonth (useful for sorting); date blank
+          lines.push(csvRow([
+            "DirectDebitPeriod",
+            p.startMonth || "",
+            "",
+            "",
+            "",
+            num2(p.amount),
+            s.id,
+            s.name || "",
+            s.category || "",
+            p.day,
+            p.startMonth || "",
+            (p.endMonth ?? ""),
+            p.paused ? "Yes" : "No"
+          ]));
+        }
       }
 
       const csv = lines.join("\n");
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+
       const a = document.createElement("a");
-      a.href = url;
-      a.download = "BishopBudget-AllData.csv";
+      a.href = URL.createObjectURL(blob);
+      a.download = "BishopBudget-Master.csv";
       document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      a.remove();
+      setTimeout(()=> URL.revokeObjectURL(a.href), 1000);
     }
 
-    function resetApp() {
-      const ok = confirm(
-        "This will delete ALL transactions, direct debits and overrides.\n\nAre you sure?"
-      );
-      if (!ok) return;
-
-      localStorage.removeItem("bb_tx");
-      localStorage.removeItem("bb_dd");
-      localStorage.removeItem("bb_dd_overrides");
-      transactions = [];
-      directDebits = [];
-      ddOverrides = [];
-      whatIfOffset = 0;
-      selectedMonth = firstOfMonth(new Date());
-      refreshUI();
+    function csvRow(arr){
+      return arr.map(v=>{
+        const s = String(v ?? "");
+        const escaped = s.replaceAll('"', '""');
+        return `"${escaped}"`;
+      }).join(",");
     }
 
-    // ------------ INIT ------------
-
-    function init() {
-      loadFromStorage();
-      selectedMonth = firstOfMonth(new Date());
-
-      const today = new Date();
-      document.getElementById("txDate").value = today
-        .toISOString()
-        .slice(0, 10);
-
-      document.getElementById("prevMonthBtn").addEventListener("click", () => {
-        selectedMonth = new Date(
-          selectedMonth.getFullYear(),
-          selectedMonth.getMonth() - 1,
-          1
-        );
-        whatIfOffset = 0;
-        refreshUI();
-      });
-
-      document.getElementById("nextMonthBtn").addEventListener("click", () => {
-        selectedMonth = new Date(
-          selectedMonth.getFullYear(),
-          selectedMonth.getMonth() + 1,
-          1
-        );
-        whatIfOffset = 0;
-        refreshUI();
-      });
-
-      document.getElementById("addTxBtn").addEventListener("click", addTransaction);
-      document.getElementById("addDdBtn").addEventListener("click", addDirectDebit);
-
-      const donutCanvas = document.getElementById("donutCanvas");
-      donutCanvas.addEventListener("click", openDonutBreakdown);
-
-      document
-        .getElementById("seeMoreDonut")
-        .addEventListener("click", openDonutBreakdown);
-      document
-        .getElementById("closeDonutBreakdown")
-        .addEventListener("click", closeDonutBreakdown);
-
-      document
-        .getElementById("txModalDone")
-        .addEventListener("click", closeTransactionEditModal);
-      document
-        .getElementById("saveTxBtn")
-        .addEventListener("click", saveTransactionEdit);
-      document
-        .getElementById("deleteTxBtn")
-        .addEventListener("click", deleteTransaction);
-
-      document
-        .getElementById("ddModalDone")
-        .addEventListener("click", closeDirectDebitEditModal);
-      document
-        .getElementById("ddPausedToggle")
-        .addEventListener("click", toggleDdPaused);
-      document
-        .getElementById("saveDdBtn")
-        .addEventListener("click", saveDirectDebitEdit);
-      document
-        .getElementById("deleteDdBtn")
-        .addEventListener("click", deleteDirectDebitForMonth);
-
-      const whatIfSlider = document.getElementById("whatIfSlider");
-      whatIfSlider.addEventListener("input", (e) => {
-        whatIfOffset = parseFloat(e.target.value) || 0;
-        refreshUI();
-      });
-
-      document
-        .getElementById("resetWhatIf")
-        .addEventListener("click", () => {
-          whatIfOffset = 0;
-          document.getElementById("whatIfSlider").value = "0";
-          refreshUI();
-        });
-
-      document
-        .getElementById("exportCsvBtn")
-        .addEventListener("click", exportAllData);
-      document
-        .getElementById("resetAppBtn")
-        .addEventListener("click", resetApp);
-
-      refreshUI();
+    function num2(n){
+      const v = Number(n || 0);
+      return v.toFixed(2);
     }
 
-    document.addEventListener("DOMContentLoaded", init);
+    function resetAll(){
+      if(!confirm("This will wipe ALL budget data from this device/browser. Continue?")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      state.data = { transactions: [], ddSeries: [] };
+      state.whatIfOffset = 0;
+      el.whatIfSlider.value = "0";
+      refresh();
+    }
+
+    /**********************
+     * Utilities
+     **********************/
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    /**********************
+     * Events
+     **********************/
+    el.prevMonthBtn.addEventListener("click", ()=>{
+      state.selectedMonth = addMonths(state.selectedMonth, -1);
+      refresh();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    el.nextMonthBtn.addEventListener("click", ()=>{
+      state.selectedMonth = addMonths(state.selectedMonth, 1);
+      refresh();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    el.whatIfSlider.addEventListener("input", ()=>{
+      state.whatIfOffset = Number(el.whatIfSlider.value || 0);
+      refresh();
+    });
+
+    el.resetWhatIfBtn.addEventListener("click", ()=>{
+      state.whatIfOffset = 0;
+      el.whatIfSlider.value = "0";
+      refresh();
+    });
+
+    el.addTxBtn.addEventListener("click", addTransaction);
+    el.addDdBtn.addEventListener("click", addDirectDebit);
+
+    el.exportAllBtn.addEventListener("click", exportAllCSV);
+    el.resetAllBtn.addEventListener("click", resetAll);
+
+    el.donutCard.addEventListener("click", openDonutModal);
+    el.closeDonutModal.addEventListener("click", closeDonutModal);
+
+    el.closeTxModal.addEventListener("click", closeTxModal);
+    el.saveTxBtn.addEventListener("click", saveTx);
+    el.deleteTxBtn.addEventListener("click", deleteTx);
+
+    el.closeDdModal.addEventListener("click", closeDdModal);
+    el.saveDdBtn.addEventListener("click", saveDd);
+    el.deleteDdBtn.addEventListener("click", deleteDdSeries);
+
+    el.scopeThisMonth.addEventListener("click", ()=> setScope("this"));
+    el.scopeFromMonth.addEventListener("click", ()=> setScope("from"));
+
+    // Tap outside modal closes (nice on iPhone)
+    el.donutModal.addEventListener("click",(e)=>{ if(e.target === el.donutModal) closeDonutModal(); });
+    el.txModal.addEventListener("click",(e)=>{ if(e.target === el.txModal) closeTxModal(); });
+    el.ddModal.addEventListener("click",(e)=>{ if(e.target === el.ddModal) closeDdModal(); });
+
+    // First paint
+    refresh();
   </script>
 </body>
 </html>
