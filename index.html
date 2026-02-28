@@ -1,349 +1,136 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>22 Bishop Road Budget</title>
+<title>22 Bishop Road Budget</title>
 
-  <!-- No pinch zoom -->
+<!-- No pinch zoom -->
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
-  <!-- Icons -->
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-  <link rel="apple-touch-icon" href="icon-192.png">
+<!-- Icons -->
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+@@ -37,7 +34,6 @@
+--border-subtle: rgba(255, 255, 255, 0.04);
+--border-strong: rgba(255, 255, 255, 0.12);
+--shadow-strong: 0 22px 65px rgba(0, 0, 0, 0.75);
 
-  <style>
-    :root {
-      --bg: #050713;
-      --bg2: #070b16;
-      --bg3: #080d1b;
-      --card: #0e172c;
-      --card-soft: #131f3a;
-      --pill: #182648;
-      --pill-soft: #1d2d55;
-      --blue: #5fa9ff;
-      --blue-soft: #8ec5ff;
-      --green: #40e38a;
-      --green-soft: #9af7c7;
-      --red: #ff6a78;
-      --red-soft: #ff8a94;
-      --amber: #ffb24a;
-      --text: #e6e8ee;
-      --text-soft: #9aa3b5;
-      --text-muted: #6f7888;
-      --border-subtle: rgba(255, 255, 255, 0.04);
-      --border-strong: rgba(255, 255, 255, 0.12);
-      --shadow-strong: 0 22px 65px rgba(0, 0, 0, 0.75);
-      --easeOut: cubic-bezier(0.18, 0.9, 0.2, 1);
-    }
+--easeOut: cubic-bezier(0.18, 0.9, 0.2, 1);
+}
 
-    * { box-sizing: border-box; }
+@@ -79,7 +75,6 @@
+.app-container { padding: 20px; }
+}
 
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, system-ui, -apple-system,
-        "SF Pro Text", Segoe UI, Inter, Arial, sans-serif;
-      background:
-        radial-gradient(circle at top left, #161c3f 0, #050713 55%),
-        radial-gradient(circle at bottom right, #050713 0, #020409 45%);
-      background-attachment: fixed;
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-    }
+    /* --- Subtle entrance animation --- */
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(8px); }
+to { opacity: 1; transform: translateY(0); }
+@@ -158,7 +153,6 @@
+overflow: hidden;
+}
 
-    .app-shell {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 12px 10px 26px;
-    }
+    /* subtle highlight sheen */
+.btn::after{
+content:"";
+position:absolute;
+@@ -213,17 +207,13 @@
+font-weight: 700;
+outline: none;
+margin-bottom: 6px;
+      transition: transform 0.08s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
 
-    .app-container {
-      width: 100%;
-      max-width: 520px;
-      background: radial-gradient(circle at top, #151d3f 0, #050713 60%);
-      border-radius: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: var(--shadow-strong);
-      padding: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    @media (min-width: 700px) {
-      .app-container { padding: 20px; }
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .section {
-      background: var(--card-soft);
-      border-radius: 18px;
-      padding: 14px;
-      margin-bottom: 10px;
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
-      animation: fadeUp 260ms var(--easeOut) both;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .section-title { font-size: 15px; font-weight: 600; }
-    .section-subtitle { font-size: 11px; color: var(--text-muted); }
-
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .header-title { font-size: 18px; font-weight: 700; }
-    .header-subtitle { font-size: 12px; color: var(--text-soft); }
-
-    .header-icon {
-      width: 68px;
-      height: 68px;
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      object-fit: cover;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-      background: radial-gradient(circle at 20% 0, #3b86ff 0, #040615 55%);
-      transform: translateZ(0);
-    }
-
-    .header-month-row {
-      display: flex;
-      align-items: center;
-      margin-top: 4px;
-      gap: 6px;
-    }
-
-    .header-month-label { font-size: 12px; color: var(--text-muted); }
-    .header-month-value { font-size: 13px; font-weight: 600; color: #cfd7ff; }
-
-    .btn {
-      border-radius: 11px;
-      padding: 6px 11px;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      background: radial-gradient(circle at top, #223461 0, #141e3e 65%);
-      color: #ffffff;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: transform 0.08s ease, box-shadow 0.12s ease, filter 0.12s ease;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
-      transform: translateZ(0);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn::after{
-      content:"";
-      position:absolute;
-      inset:-40% -70%;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), transparent 55%);
-      transform: rotate(10deg);
-      opacity: 0.0;
-      transition: opacity 0.12s ease;
-      pointer-events:none;
-    }
-
-    .btn:hover {
-      filter: brightness(1.06);
-      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.5);
-      transform: translateY(-0.6px);
-    }
-    .btn:hover::after { opacity: 1; }
-
-    .btn:active {
-      transform: translateY(0.6px) scale(0.985);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65);
-    }
-
-    .btn-small {
-      font-size: 12px;
-      padding: 4px 9px;
-      border-radius: 9px;
-      font-weight: 700;
-    }
-
-    .btn-secondary { background: radial-gradient(circle at top, #27375f 0, #141d39 70%); }
-    .btn-ghost { background: rgba(18, 30, 66, 0.8); border-color: rgba(255, 255, 255, 0.18); }
-    .btn-danger { background: linear-gradient(180deg, #c53946, #8c2530); border-color: rgba(255, 175, 184, 0.5); }
-    .btn-full { width: 100%; }
-    .btn-subtle {
-      background: rgba(9, 15, 33, 0.95);
-      border-color: rgba(255, 255, 255, 0.18);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .input-label { font-size: 12px; color: var(--text-muted); margin-bottom: 3px; }
-
-    .input {
-      width: 100%;
-      background: rgba(10, 17, 37, 0.9);
-      border-radius: 10px;
-      border: 1px solid rgba(92, 141, 255, 0.8);
-      padding: 7px 9px;
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 700;
-      outline: none;
-      margin-bottom: 6px;
-    }
-
+    .input:focus {
+      border-color: rgba(142,197,255,0.95);
+      box-shadow: 0 0 0 3px rgba(95,169,255,0.12);
+      transform: translateY(-0.5px);
     .input::placeholder {
       color: rgba(154, 163, 181, 0.82);
       font-weight: 600;
-    }
+}
 
-    input[type="date"].input {
-      -webkit-appearance: none;
-      appearance: none;
-      padding: 7px 9px;
-      background-color: rgba(10, 17, 37, 0.9);
-      border-radius: 10px;
-    }
+    .input::placeholder { color: rgba(154, 163, 181, 0.82); font-weight: 600; }
 
-    select.input {
-      padding-right: 28px;
+input[type="date"].input {
+-webkit-appearance: none;
+appearance: none;
+@@ -234,11 +224,7 @@
+
+select.input {
+padding-right: 28px;
+      background-image: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.06),
+        rgba(255, 255, 255, 0)
+      );
       background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0));
+}
+
+.inputs-row {
+@@ -260,12 +246,6 @@
+padding: 8px 9px;
+border: 1px solid rgba(255, 255, 255, 0.06);
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      transition: transform 0.12s var(--easeOut), box-shadow 0.12s var(--easeOut);
     }
 
-    .inputs-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
+    .dashboard-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.65);
+}
+
+.dashboard-label { font-size: 11px; color: var(--text-soft); }
+@@ -302,12 +282,6 @@
+align-items: center;
+}
+
+    @keyframes donutPulse {
+      0% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.012); filter: brightness(1.03); }
+      100% { transform: scale(1); filter: brightness(1); }
     }
 
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      margin-top: 6px;
+.donut-wrapper {
+flex: 0 0 150px;
+display: flex;
+@@ -318,11 +292,10 @@
+.donut-wrapper canvas {
+cursor: pointer;
+border-radius: 999px;
+      animation: donutPulse 3.4s ease-in-out infinite;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.55);
+}
+
+.donut-legend { flex: 1; font-size: 11px; color: var(--text-soft); }
+
+.donut-legend-row {
+display: flex;
+align-items: center;
+@@ -356,17 +329,12 @@
+justify-content: space-between;
+gap: 8px;
+box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+      animation: fadeUp 180ms var(--easeOut) both;
+      transition: transform 0.12s var(--easeOut), box-shadow 0.12s var(--easeOut);
     }
 
-    .dashboard-card {
-      background: rgba(13, 21, 45, 0.95);
-      border-radius: 13px;
-      padding: 8px 9px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    }
+    .list-item:hover {
+      transform: translateY(-0.8px);
+      box-shadow: 0 16px 34px rgba(0,0,0,0.7);
+}
 
-    .dashboard-label { font-size: 11px; color: var(--text-soft); }
-    .dashboard-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-    .dashboard-value { font-size: 14px; font-weight: 800; margin-top: 4px; }
+.list-main { flex: 1; min-width: 0; }
 
-    .status-row {
-      margin-top: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+.list-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--green-soft);
-      box-shadow: 0 0 0 2px rgba(64, 227, 138, 0.25);
-    }
+.list-sub {
+font-size: 11px;
+color: var(--text-muted);
+@@ -376,18 +344,32 @@
+}
 
-    .status-dot-red {
-      background: var(--red-soft);
-      box-shadow: 0 0 0 2px rgba(255, 106, 120, 0.3);
-    }
-
-    .status-text-main { font-size: 13px; font-weight: 700; }
-    .status-text-sub { font-size: 11px; color: var(--text-soft); }
-
-    .donut-row {
-      display: flex;
-      margin-top: 8px;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .donut-wrapper {
-      flex: 0 0 150px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .donut-wrapper canvas {
-      cursor: pointer;
-      border-radius: 999px;
-    }
-
-    .donut-legend { flex: 1; font-size: 11px; color: var(--text-soft); }
-
-    .donut-legend-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 4px;
-      gap: 6px;
-    }
-
-    .donut-legend-label { display: flex; align-items: center; gap: 5px; }
-
-    .legend-swatch { width: 10px; height: 10px; border-radius: 3px; background: var(--green-soft); }
-    .legend-swatch-red { background: var(--red-soft); }
-    .legend-swatch-carry { background: var(--blue-soft); }
-
-    .list-container {
-      max-height: 340px;
-      overflow-y: auto;
-      margin-top: 6px;
-      padding-right: 2px;
-    }
-
-    .list-empty { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-
-    .list-item {
-      background: rgba(9, 15, 33, 0.96);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 8px 9px;
-      margin-bottom: 6px;
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
-    }
-
-    .list-main { flex: 1; min-width: 0; }
-
-    .list-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-
-    .list-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .list-right { display: flex; align-items: center; gap: 6px; }
+.list-right { display: flex; align-items: center; gap: 6px; }
+    .list-amount { font-size: 14px; font-weight: 800; text-align: right; white-space: nowrap; }
 
     .list-amount {
       font-size: 14px;
@@ -352,10 +139,11 @@
       white-space: nowrap;
     }
 
-    .dd-paused .list-title { color: var(--red-soft); }
-    .dd-paused .list-sub { color: #ff9fab; }
+.dd-paused .list-title { color: var(--red-soft); }
+.dd-paused .list-sub { color: #ff9fab; }
 
-    .summary-rows { margin-top: 4px; font-size: 12px; }
+.summary-rows { margin-top: 4px; font-size: 12px; }
+    .summary-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
 
     .summary-row {
       display: flex;
@@ -364,125 +152,186 @@
       margin-bottom: 2px;
     }
 
-    .summary-row-label { color: var(--text-soft); }
-    .summary-row-value { font-weight: 600; }
+.summary-row-label { color: var(--text-soft); }
+.summary-row-value { font-weight: 600; }
 
-    .summary-row-strong { font-weight: 700; margin-top: 3px; }
-    .summary-row-strong .summary-row-label { color: var(--text); }
+.summary-row-strong { font-weight: 700; margin-top: 3px; }
+.summary-row-strong .summary-row-label { color: var(--text); }
+    .summary-row-strong .summary-row-value { font-weight: 900; }
     .summary-row-strong .summary-row-value { font-weight: 800; }
 
-    .summary-card-inner {
+.summary-card-inner {
+background: rgba(9, 15, 33, 0.96);
+@@ -399,12 +381,7 @@
+
+.subtle-divider {
+height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.18),
+        transparent
+      );
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+margin: 4px 0;
+}
+
+@@ -417,99 +394,19 @@
+box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+}
+
+    .line-graph-label { font-size: 11px; color: var(--text-soft); margin-bottom: 4px; }
+    .line-graph-canvas { width: 100%; height: 70px; display: block; border-radius: 10px; }
+
+    .slider-row { margin-top: 8px; font-size: 11px; color: var(--text-soft); }
+    .slider-row-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slider-reset-btn {
+    .line-graph-label {
+font-size: 11px;
+      background: rgba(9, 15, 33, 0.9);
+      border-radius: 999px;
+      padding: 3px 7px;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      cursor: pointer;
+color: var(--text-soft);
+      font-weight: 800;
+      transition: transform 0.08s ease, filter 0.12s ease;
+    }
+
+    .slider-reset-btn:hover { filter: brightness(1.1); transform: translateY(-0.5px); }
+    .slider-reset-btn:active { transform: translateY(0.5px) scale(0.98); }
+
+    .slider { width: 100%; accent-color: var(--blue-soft); }
+
+    /* --- Trend section --- */
+    .trend-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .trend-card {
       background: rgba(9, 15, 33, 0.96);
       border-radius: 14px;
       padding: 8px 9px;
       border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+      transition: transform 0.12s var(--easeOut), box-shadow 0.12s var(--easeOut);
     }
 
-    .subtle-divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
-      margin: 4px 0;
-    }
+    .trend-card:hover { transform: translateY(-1px); box-shadow: 0 16px 36px rgba(0,0,0,0.78); }
 
-    .line-graph-container {
-      margin-top: 8px;
-      background: rgba(9, 15, 33, 0.98);
-      border-radius: 12px;
+    .trend-label { font-size: 11px; color: var(--text-soft); }
+    .trend-value { font-size: 14px; font-weight: 900; margin-top: 3px; }
+    .trend-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    .delta {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 900;
+    }
+    .delta.up { color: var(--green-soft); }
+    .delta.down { color: var(--red-soft); }
+    .delta.flat { color: var(--text); opacity: 0.85; }
+
+    .spark-wrap {
+      grid-column: 1 / 3;
+      background: rgba(9, 15, 33, 0.96);
+      border-radius: 14px;
+      padding: 8px 9px;
       border: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 8px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+      margin-top: 2px;
     }
 
-    .line-graph-label {
-      font-size: 11px;
-      color: var(--text-soft);
-      margin-bottom: 4px;
-    }
-
-    .line-graph-canvas {
-      width: 100%;
-      height: 70px;
-      display: block;
-      border-radius: 10px;
-    }
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(1, 2, 8, 0.65);
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      z-index: 20;
-    }
-
-    .modal-sheet {
-      width: 100%;
-      max-width: 520px;
-      background: radial-gradient(circle at top, #191f3e 0, #050713 65%);
-      border-radius: 20px 20px 0 0;
-      border-top: 1px solid rgba(255, 255, 255, 0.16);
-      padding: 14px 14px 18px;
-      box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.9);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-
-    .modal-title { font-size: 15px; font-weight: 700; }
-    .modal-row { margin-top: 6px; }
-
-    .modal-actions {
-      display: flex;
-      justify-content: space-between;
-      gap: 6px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .toggle-row {
-      display: flex;
-      align-items: center;
+    .spark-head {
+      display:flex;
+      align-items: baseline;
       justify-content: space-between;
       gap: 8px;
-      margin-top: 8px;
+      margin-bottom: 6px;
+      margin-bottom: 4px;
+}
+
+    .spark-title { font-size: 12px; font-weight: 800; color: var(--text); }
+    .spark-sub { font-size: 11px; color: var(--text-muted); }
+
+    .spark-canvas {
+    .line-graph-canvas {
+width: 100%;
+      height: 64px;
+      display:block;
+      height: 70px;
+      display: block;
+border-radius: 10px;
+      background: rgba(5, 8, 18, 0.35);
+      border: 1px solid rgba(255,255,255,0.05);
+}
+
+    /* --- Modals --- */
+.modal-overlay {
+position: fixed;
+inset: 0;
+@@ -520,11 +417,6 @@
+z-index: 20;
+}
+
+    @keyframes sheetUp {
+      from { transform: translateY(18px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
 
+.modal-sheet {
+width: 100%;
+max-width: 520px;
+@@ -533,7 +425,6 @@
+border-top: 1px solid rgba(255, 255, 255, 0.16);
+padding: 14px 14px 18px;
+box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.9);
+      animation: sheetUp 180ms var(--easeOut) both;
+}
+
+.modal-header {
+@@ -543,14 +434,15 @@
+margin-bottom: 6px;
+}
+
+    .modal-title { font-size: 15px; font-weight: 800; }
+    .modal-title { font-size: 15px; font-weight: 700; }
+.modal-row { margin-top: 6px; }
+
+.modal-actions {
+display: flex;
+justify-content: space-between;
+gap: 6px;
+margin-top: 10px;
+      flex-wrap: wrap;
+}
+
+.toggle-row {
+@@ -561,7 +453,7 @@
+margin-top: 8px;
+}
+
+    .toggle-label { font-size: 12px; color: var(--text-soft); font-weight: 700; }
     .toggle-label { font-size: 12px; color: var(--text-soft); }
 
-    .toggle-pill {
-      width: 44px;
-      height: 24px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.08);
-      position: relative;
-      cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      transition: background 0.12s ease, border-color 0.12s ease;
-    }
+.toggle-pill {
+width: 44px;
+@@ -591,9 +483,41 @@
+border-color: rgba(159, 255, 205, 0.9);
+}
 
-    .toggle-thumb {
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #ffffff;
-      transition: transform 0.12s ease;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
-
-    .toggle-pill.on {
-      background: linear-gradient(140deg, var(--green), var(--green-soft));
-      border-color: rgba(159, 255, 205, 0.9);
-    }
-
+    .toggle-pill.on .toggle-thumb { transform: translateX(18px); }
     .toggle-pill.on .toggle-thumb {
       transform: translateX(18px);
     }
@@ -518,364 +367,249 @@
       box-shadow: 0 14px 32px rgba(0,0,0,0.5);
     }
 
-    #donutBreakdown {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(circle at top, #191f3e 0, #050713 70%),
-        radial-gradient(circle at bottom, #050713 0, #000000 55%);
-      z-index: 15;
-      overflow-y: auto;
-      padding: 12px 10px 24px;
-      color: var(--text);
-    }
+    /* --- Donut breakdown screen --- */
+#donutBreakdown {
+display: none;
+position: fixed;
+@@ -607,7 +531,12 @@
+color: var(--text);
+}
 
+    .bd-inner { width: 100%; max-width: 520px; margin: 0 auto; }
     .bd-inner {
       width: 100%;
       max-width: 520px;
       margin: 0 auto;
     }
 
-    .bd-back-row { margin-bottom: 8px; }
+.bd-back-row { margin-bottom: 8px; }
 
-    .bd-card {
-      background: var(--card-soft);
-      border-radius: 20px;
-      border: 1px solid var(--border-strong);
-      padding: 14px;
-      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.86);
-    }
+.bd-card {
+@@ -616,7 +545,6 @@
+border: 1px solid var(--border-strong);
+padding: 14px;
+box-shadow: 0 22px 70px rgba(0, 0, 0, 0.86);
+      animation: fadeUp 220ms var(--easeOut) both;
+}
 
-    .bd-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 10px;
-    }
+.bd-grid {
+@@ -635,7 +563,7 @@
+}
 
-    .bd-mini {
-      background: rgba(9, 15, 33, 0.96);
-      border-radius: 14px;
-      padding: 8px 9px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
-    }
-
-    .bd-label { font-size: 11px; color: var(--text-soft); }
+.bd-label { font-size: 11px; color: var(--text-soft); }
+    .bd-value { font-size: 14px; font-weight: 900; margin-top: 3px; }
     .bd-value { font-size: 14px; font-weight: 800; margin-top: 3px; }
 
-    .bd-donut-wrap {
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
-      margin-bottom: 6px;
-    }
+.bd-donut-wrap {
+display: flex;
+@@ -644,10 +572,7 @@
+margin-bottom: 6px;
+}
 
+    .bd-donut-wrap canvas {
+      border-radius: 999px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.75);
+    }
     .bd-donut-wrap canvas { border-radius: 999px; }
 
-    .bd-subtext { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
+.bd-subtext { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
 
-    .compare-card {
-      background: rgba(9, 15, 33, 0.96);
-      border-radius: 16px;
-      padding: 8px 9px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      margin-top: 10px;
-      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7);
-      font-size: 12px;
-    }
+@@ -661,9 +586,14 @@
+font-size: 12px;
+}
 
+    .compare-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
     .compare-row {
       display: flex;
       justify-content: space-between;
       margin-bottom: 3px;
     }
 
-    .compare-label { color: var(--text-soft); }
+.compare-label { color: var(--text-soft); }
+    .compare-value { font-weight: 800; }
     .compare-value { font-weight: 700; }
-  </style>
+</style>
 </head>
 
-<body>
-  <div class="app-shell">
-    <div class="app-container">
-
-      <div class="section">
-        <div class="header-top">
-          <div>
-            <div class="header-title">Monthly Budget</div>
-            <div class="header-subtitle">22 Bishop Road</div>
-          </div>
-          <img src="icon-192.png" alt="App Icon" class="header-icon" />
-        </div>
-
-        <div class="header-month-row">
-          <span class="header-month-label">Month:</span>
-          <span id="monthLabel" class="header-month-value">Jan 26</span>
-
-          <div style="margin-left:auto;display:flex;gap:6px;">
-            <button class="btn btn-small btn-secondary" id="prevMonthBtn">‹</button>
-            <button class="btn btn-small btn-secondary" id="nextMonthBtn">›</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <div class="section-title">Dashboard Snapshot</div>
-            <div class="section-subtitle">High-level view of this month's money.</div>
-          </div>
-        </div>
-
-        <div class="dashboard-grid">
-          <div class="dashboard-card">
-            <div class="dashboard-label">Monthly income</div>
-            <div class="dashboard-sub">Sum of all income transactions</div>
-            <div id="incomeValue" class="dashboard-value">£0.00</div>
-          </div>
-          <div class="dashboard-card">
-            <div class="dashboard-label">Direct Debits & Bills</div>
-            <div class="dashboard-sub">Mortgage, utilities, tax</div>
-            <div id="ddValue" class="dashboard-value" style="color:#ffffff;">£0.00</div>
-          </div>
-          <div class="dashboard-card">
-            <div class="dashboard-label">Other spending</div>
-            <div class="dashboard-sub">Food, fuel, nights out</div>
-            <div id="spendValue" class="dashboard-value">£0.00</div>
-          </div>
-          <div id="leftCard" class="dashboard-card">
-            <div class="dashboard-label">Left after spending</div>
-            <div class="dashboard-sub">After DDs and other spend</div>
-            <div id="leftValue" class="dashboard-value">£0.00</div>
-          </div>
-        </div>
-
-        <div class="status-row">
-          <div id="statusDot" class="status-dot"></div>
-          <div>
-            <div id="statusMain" class="status-text-main">Waiting for income</div>
-            <div id="statusSub" class="status-text-sub">
-              Add your salary to see how much is left after direct debits and spending.
-            </div>
-          </div>
-        </div>
-
-        <div class="donut-row">
-          <div class="donut-wrapper">
-            <canvas id="donutCanvas" width="150" height="150"></canvas>
-          </div>
-          <div class="donut-legend">
-            <div class="donut-legend-row">
-              <div class="donut-legend-label">
-                <div class="legend-swatch legend-swatch-carry"></div>
-                <span>Opening balance + income</span>
-              </div>
+@@ -742,110 +672,33 @@
+<div class="legend-swatch legend-swatch-carry"></div>
+<span>Opening balance + income</span>
+</div>
+              <span id="legendIncome" style="font-weight:800;">£0.00</span>
               <span id="legendIncome" style="font-weight:700;">£0.00</span>
-            </div>
-            <div class="donut-legend-row">
-              <div class="donut-legend-label">
-                <div class="legend-swatch legend-swatch-red"></div>
-                <span>DDs & spending</span>
-              </div>
+</div>
+<div class="donut-legend-row">
+<div class="donut-legend-label">
+<div class="legend-swatch legend-swatch-red"></div>
+<span>DDs & spending</span>
+</div>
+              <span id="legendOut" style="font-weight:800;">£0.00</span>
               <span id="legendOut" style="font-weight:700;">£0.00</span>
-            </div>
-            <div class="donut-legend-row">
-              <div class="donut-legend-label">
-                <div class="legend-swatch"></div>
-                <span>Left after everything</span>
-              </div>
+</div>
+<div class="donut-legend-row">
+<div class="donut-legend-label">
+<div class="legend-swatch"></div>
+<span>Left after everything</span>
+</div>
+              <span id="legendLeft" style="font-weight:800;">£0.00</span>
               <span id="legendLeft" style="font-weight:700;">£0.00</span>
-            </div>
+</div>
 
+            <button
+              id="seeMoreDonut"
+              class="btn btn-subtle"
+              style="margin-top:6px;width:100%;justify-content:center;"
+            >
             <button id="seeMoreDonut" class="btn btn-subtle" style="margin-top:6px;width:100%;justify-content:center;">
-              View detailed donut breakdown
-            </button>
-          </div>
-        </div>
+View detailed donut breakdown
+</button>
+</div>
+</div>
 
-        <div class="line-graph-container">
+<div class="line-graph-container">
+          <div class="line-graph-label">
+            Balance curve across the month (with opening balance applied)
+          </div>
           <div class="line-graph-label">Balance curve across the month (with opening balance applied)</div>
-          <canvas id="balanceCanvas" class="line-graph-canvas"></canvas>
+<canvas id="balanceCanvas" class="line-graph-canvas"></canvas>
+</div>
+
+        <div class="slider-row">
+          <div class="slider-row-top">
+            <span>What if this month changed by…</span>
+            <button id="resetWhatIf" class="slider-reset-btn">Reset</button>
+          </div>
+          <input id="whatIfSlider" class="slider" type="range" min="-2000" max="2000" step="10" value="0" />
+          <div style="display:flex;justify-content:space-between;margin-top:2px;">
+            <span id="whatIfChange">Change: £0.00</span>
+            <span id="whatIfAfter">After change: £0.00</span>
+          </div>
         </div>
       </div>
 
+      <!-- NEW: Trend Intelligence -->
       <div class="section">
         <div class="section-header">
           <div>
-            <div class="section-title">Add transaction (one-off)</div>
-            <div class="section-subtitle">Income or spending just for this month.</div>
+            <div class="section-title">Trend intelligence</div>
+            <div class="section-subtitle">Deltas, averages, and a run-rate projection.</div>
           </div>
         </div>
 
-        <div class="inputs-row">
-          <div>
-            <div class="input-label">Date</div>
-            <input id="txDate" type="date" class="input" />
+        <div class="trend-grid">
+          <div class="trend-card">
+            <div class="trend-label">Left vs last month</div>
+            <div id="trendAfterDelta" class="trend-value">–</div>
+            <div id="trendAfterDeltaSub" class="trend-sub">Compares “Left after everything”.</div>
           </div>
-          <div>
-            <div class="input-label">Type</div>
-            <select id="txType" class="input">
-              <option value="income">Income</option>
-              <option value="spend">Spending</option>
-            </select>
-          </div>
-        </div>
 
-        <div class="inputs-row">
-          <div>
-            <div class="input-label">Description</div>
-            <input id="txDesc" class="input" placeholder="e.g. RN salary, Tesco shop" />
+          <div class="trend-card">
+            <div class="trend-label">Income vs last month</div>
+            <div id="trendIncomeDelta" class="trend-value">–</div>
+            <div class="trend-sub">Opening + income movement.</div>
           </div>
-          <div>
-            <div class="input-label">Amount</div>
-            <input id="txAmt" class="input" placeholder="0.00" inputmode="decimal" />
+
+          <div class="trend-card">
+            <div class="trend-label">Outgoing vs last month</div>
+            <div id="trendOutDelta" class="trend-value">–</div>
+            <div class="trend-sub">DDs + spending.</div>
+          </div>
+
+          <div class="trend-card">
+            <div class="trend-label">Projected end-of-month left</div>
+            <div id="trendProjection" class="trend-value">–</div>
+            <div id="trendProjectionSub" class="trend-sub">Based on current pace this month.</div>
+          </div>
+
+          <div class="trend-card">
+            <div class="trend-label">3-month average left</div>
+            <div id="trendAvgAfter" class="trend-value">–</div>
+            <div class="trend-sub">Smoother picture than one month.</div>
+          </div>
+
+          <div class="trend-card">
+            <div class="trend-label">3-month average outgoing</div>
+            <div id="trendAvgOut" class="trend-value">–</div>
+            <div class="trend-sub">Bills + spending average.</div>
+          </div>
+
+          <div class="spark-wrap">
+            <div class="spark-head">
+              <div>
+                <div class="spark-title">Last 6 months, left after everything</div>
+                <div class="spark-sub">Quick signal if you’re trending up or bleeding cash.</div>
+              </div>
+              <div id="sparkHint" class="spark-sub">–</div>
+            </div>
+            <canvas id="afterSpark" class="spark-canvas"></canvas>
           </div>
         </div>
+</div>
+
+<div class="section">
+@@ -881,10 +734,7 @@
+</div>
+</div>
+
+        <button id="addTxBtn" class="btn btn-full" style="margin-top:4px;">
+          Add transaction
+        </button>
 
         <button id="addTxBtn" class="btn btn-full" style="margin-top:4px;">Add transaction</button>
-        <div id="txList" class="list-container"></div>
-      </div>
+<div id="txList" class="list-container"></div>
+</div>
 
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <div class="section-title">Direct debits & regular bills</div>
-            <div class="section-subtitle">Per-month commitments, auto-carrying to future months.</div>
-          </div>
-        </div>
+@@ -918,10 +768,7 @@
+</div>
+</div>
 
-        <div class="inputs-row">
-          <div>
-            <div class="input-label">Name</div>
-            <input id="ddName" class="input" placeholder="e.g. Mortgage, Council tax" />
-          </div>
-          <div>
-            <div class="input-label">Amount</div>
-            <input id="ddAmt" class="input" placeholder="0.00" inputmode="decimal" />
-          </div>
-        </div>
-
-        <div class="inputs-row">
-          <div>
-            <div class="input-label">Day of month</div>
-            <input id="ddDay" class="input" placeholder="1–31" inputmode="numeric" />
-          </div>
-          <div>
-            <div class="input-label">Category (optional)</div>
-            <input id="ddCat" class="input" placeholder="e.g. Utilities, Housing" />
-          </div>
-        </div>
+        <button id="addDdBtn" class="btn btn-full" style="margin-top:4px;">
+          Add direct debit
+        </button>
 
         <button id="addDdBtn" class="btn btn-full" style="margin-top:4px;">Add direct debit</button>
-        <div id="ddList" class="list-container"></div>
-      </div>
+<div id="ddList" class="list-container"></div>
+</div>
 
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <div class="section-title">Month summary</div>
-            <div class="section-subtitle">Where this month ends up overall.</div>
-          </div>
-        </div>
+@@ -956,15 +803,10 @@
+</div>
 
-        <div class="summary-card-inner">
-          <div class="summary-rows">
-            <div class="summary-row">
-              <span class="summary-row-label">Started with (opening + income)</span>
-              <span id="summaryStart" class="summary-row-value">£0.00</span>
-            </div>
-            <div class="summary-row">
-              <span class="summary-row-label">Committed to direct debits</span>
-              <span id="summaryDd" class="summary-row-value">£0.00</span>
-            </div>
-            <div class="summary-row">
-              <span class="summary-row-label">Spent this month</span>
-              <span id="summarySpend" class="summary-row-value">£0.00</span>
-            </div>
-            <div class="subtle-divider"></div>
-            <div class="summary-row summary-row-strong">
-              <span class="summary-row-label">Left after everything</span>
-              <span id="summaryAfter" class="summary-row-value">£0.00</span>
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-top:8px;display:flex;gap:6px;justify-content:space-between;">
+<div style="margin-top:8px;display:flex;gap:6px;justify-content:space-between;">
+          <button id="exportCsvBtn" class="btn btn-small btn-secondary" style="flex:1;">
+            Export all data (CSV)
+          </button>
+          <button id="resetAppBtn" class="btn btn-small btn-ghost" style="flex:1;">
+            Reset app
+          </button>
           <button id="exportCsvBtn" class="btn btn-small btn-secondary" style="flex:1;">Export all data (CSV)</button>
           <button id="resetAppBtn" class="btn btn-small btn-ghost" style="flex:1;">Reset app</button>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
+</div>
 
-  <!-- TRANSACTION EDIT MODAL -->
-  <div id="txModal" class="modal-overlay">
-    <div class="modal-sheet">
-      <div class="modal-header">
-        <div class="modal-title">Edit transaction</div>
-        <button class="btn btn-small btn-ghost" id="txModalDone">Done</button>
-      </div>
+</div>
+</div>
 
-      <div class="modal-row">
-        <div class="input-label">Date</div>
-        <input id="editTxDate" type="date" class="input" />
-      </div>
-      <div class="modal-row">
-        <div class="input-label">Type</div>
-        <select id="editTxType" class="input">
-          <option value="income">Income</option>
-          <option value="spend">Spending</option>
-        </select>
-      </div>
-      <div class="modal-row">
-        <div class="input-label">Description</div>
-        <input id="editTxDesc" class="input" />
-      </div>
-      <div class="modal-row">
-        <div class="input-label">Amount</div>
-        <input id="editTxAmt" class="input" inputmode="decimal" />
-      </div>
+@@ -998,9 +840,7 @@
 
-      <div class="modal-actions">
-        <button id="deleteTxBtn" class="btn btn-danger">Delete</button>
+<div class="modal-actions">
+<button id="deleteTxBtn" class="btn btn-danger">Delete</button>
+        <button id="saveTxBtn" class="btn btn-secondary" style="flex:1;">
+          Save changes
+        </button>
         <button id="saveTxBtn" class="btn btn-secondary" style="flex:1;">Save changes</button>
-      </div>
-    </div>
-  </div>
+</div>
+</div>
+</div>
+@@ -1031,17 +871,24 @@
+</div>
 
-  <!-- DIRECT DEBIT EDIT MODAL -->
-  <div id="ddModal" class="modal-overlay">
-    <div class="modal-sheet">
-      <div class="modal-header">
-        <div class="modal-title">Edit direct debit</div>
-        <button class="btn btn-small btn-ghost" id="ddModalDone">Done</button>
-      </div>
-
-      <div class="modal-row">
-        <div class="input-label">Name</div>
-        <input id="editDdName" class="input" />
-      </div>
-      <div class="modal-row">
-        <div class="input-label">Amount</div>
-        <input id="editDdAmt" class="input" inputmode="decimal" />
-      </div>
-      <div class="modal-row">
-        <div class="input-label">Day of month</div>
-        <input id="editDdDay" class="input" inputmode="numeric" />
-      </div>
-      <div class="modal-row">
-        <div class="input-label">Category</div>
-        <input id="editDdCat" class="input" />
-      </div>
-
-      <div class="toggle-row">
+<div class="toggle-row">
+        <span class="toggle-label">Paused for this month</span>
         <span class="toggle-label">Paused</span>
-        <div id="ddPausedToggle" class="toggle-pill">
-          <div class="toggle-thumb"></div>
-        </div>
-      </div>
+<div id="ddPausedToggle" class="toggle-pill">
+<div class="toggle-thumb"></div>
+</div>
+</div>
 
       <div class="modal-row">
         <div class="input-label">Apply changes</div>
@@ -885,124 +619,42 @@
         </div>
       </div>
 
-      <div class="modal-actions">
+<div class="modal-actions">
+        <button id="deleteDdBtn" class="btn btn-danger">Delete this month</button>
+        <button id="saveDdBtn" class="btn btn-secondary" style="flex:1;">
+          Save changes
+        </button>
         <button id="deleteDdThisMonthBtn" class="btn btn-danger">Delete this month</button>
         <button id="deleteDdFutureBtn" class="btn btn-danger">Delete month + future</button>
         <button id="saveDdBtn" class="btn btn-secondary" style="flex:1;">Save changes</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- DONUT BREAKDOWN SCREEN -->
-  <div id="donutBreakdown">
-    <div class="bd-inner">
-      <div class="bd-back-row">
+</div>
+</div>
+</div>
+@@ -1050,9 +897,7 @@
+<div id="donutBreakdown">
+<div class="bd-inner">
+<div class="bd-back-row">
+        <button class="btn btn-small btn-ghost" id="closeDonutBreakdown">
+          ← Back to month
+        </button>
         <button class="btn btn-small btn-ghost" id="closeDonutBreakdown">← Back to month</button>
-      </div>
+</div>
 
-      <div class="bd-card">
-        <div class="section-header" style="margin-bottom:4px;">
-          <div>
-            <div class="section-title">Detailed donut breakdown</div>
-            <div class="section-subtitle">
-              Income, DDs and spending for the selected month, with carry from the previous months.
-            </div>
-          </div>
-        </div>
+<div class="bd-card">
+@@ -1147,9 +992,7 @@
+return "id-" + Math.random().toString(16).slice(2);
+}
 
-        <div class="bd-donut-wrap">
-          <canvas id="donutBig" width="260" height="260"></canvas>
-        </div>
-
-        <div class="bd-subtext">
-          The donut shows: opening balance + income vs DDs + spending, with what’s left after everything.
-        </div>
-
-        <div class="bd-grid">
-          <div class="bd-mini">
-            <div class="bd-label">Income this month</div>
-            <div id="bdIncome" class="bd-value">£0.00</div>
-          </div>
-          <div class="bd-mini">
-            <div class="bd-label">Direct debits & bills</div>
-            <div id="bdDd" class="bd-value">£0.00</div>
-          </div>
-          <div class="bd-mini">
-            <div class="bd-label">Other spending</div>
-            <div id="bdSpend" class="bd-value">£0.00</div>
-          </div>
-          <div class="bd-mini">
-            <div class="bd-label">Opening balance from last month</div>
-            <div id="bdCarry" class="bd-value">£0.00</div>
-          </div>
-          <div class="bd-mini" style="grid-column:1/3;">
-            <div class="bd-label">Left after everything</div>
-            <div id="bdAfter" class="bd-value">£0.00</div>
-          </div>
-        </div>
-
-        <div class="compare-card">
-          <div class="compare-row">
-            <span class="compare-label">This month left vs last month left</span>
-            <span id="compareAfter" class="compare-value">–</span>
-          </div>
-          <div class="compare-row">
-            <span class="compare-label">Income change since last month</span>
-            <span id="compareIncome" class="compare-value">–</span>
-          </div>
-          <div class="compare-row">
-            <span class="compare-label">Spending change since last month</span>
-            <span id="compareSpend" class="compare-value">–</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // ------------ DATA & HELPERS ------------
-
-    let transactions = [];
-    let directDebits = [];
-    let ddOverrides = [];
-
-    function loadFromStorage() {
-      try {
-        const txRaw = localStorage.getItem("bb_tx");
-        const ddRaw = localStorage.getItem("bb_dd");
-        const ovRaw = localStorage.getItem("bb_dd_overrides");
-        transactions = txRaw ? JSON.parse(txRaw) : [];
-        directDebits = ddRaw ? JSON.parse(ddRaw) : [];
-        ddOverrides = ovRaw ? JSON.parse(ovRaw) : [];
-      } catch (e) {
-        transactions = [];
-        directDebits = [];
-        ddOverrides = [];
-      }
+    function firstOfMonth(d) {
+      return new Date(d.getFullYear(), d.getMonth(), 1);
     }
-
-    function saveToStorage() {
-      localStorage.setItem("bb_tx", JSON.stringify(transactions));
-      localStorage.setItem("bb_dd", JSON.stringify(directDebits));
-      localStorage.setItem("bb_dd_overrides", JSON.stringify(ddOverrides));
-    }
-
-    function uuid() {
-      if (crypto.randomUUID) return crypto.randomUUID();
-      return "id-" + Math.random().toString(16).slice(2);
-    }
-
     function firstOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
 
-    function monthKey(d) {
-      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
-    }
-
-    function parseMonthKey(mk) {
-      const [y, m] = mk.split("-").map(Number);
-      if (!y || !m) return null;
-      return new Date(y, m - 1, 1);
-    }
+function monthKey(d) {
+return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+@@ -1161,6 +1004,29 @@
+return new Date(y, m - 1, 1);
+}
 
     function compareMonthKey(a, b) {
       const da = parseMonthKey(a);
@@ -1027,189 +679,271 @@
       return true;
     }
 
-    function monthLabel(d) {
-      return d.toLocaleDateString("en-GB", { month: "short", year: "2-digit" });
+function monthLabel(d) {
+return d.toLocaleDateString("en-GB", { month: "short", year: "2-digit" });
+}
+@@ -1181,52 +1047,7 @@
+}
+
+function isAutoOpening(tx) {
+      return (
+        tx.type === "income" &&
+        tx.description === "Opening balance (auto)"
+      );
     }
 
-    function formatMoney(v) {
-      if (!isFinite(v)) v = 0;
-      return "£" + v.toFixed(2);
+    function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
+
+    function deltaLabel(value) {
+      if (!isFinite(value) || value === null) return { text: "–", cls: "flat" };
+      if (value > 0) return { text: `+${formatMoney(value)}`, cls: "up" };
+      if (value < 0) return { text: `−${formatMoney(Math.abs(value))}`, cls: "down" };
+      return { text: "±£0.00", cls: "flat" };
     }
 
-    function formatDisplayDate(iso) {
-      if (!iso) return "";
-      const d = new Date(iso);
-      if (Number.isNaN(d.getTime())) return iso;
-      const day = String(d.getDate()).padStart(2, "0");
-      const mmm = d.toLocaleDateString("en-GB", { month: "short" });
-      const yy = String(d.getFullYear()).slice(-2);
-      return `${day}-${mmm}-${yy}`;
-    }
+    // Count-up numbers (subtle)
+    const numberAnimState = new Map();
+    function animateMoney(el, nextValue) {
+      if (!el) return;
+      if (!isFinite(nextValue)) nextValue = 0;
 
-    function isAutoOpening(tx) {
+      const key = el.id || el;
+      const prev = numberAnimState.has(key) ? numberAnimState.get(key) : null;
+
+      // First render, no drama
+      if (prev === null) {
+        numberAnimState.set(key, nextValue);
+        el.textContent = formatMoney(nextValue);
+        return;
+      }
+
+      const start = prev;
+      const end = nextValue;
+      const duration = 220;
+      const t0 = performance.now();
+
+      function frame(t) {
+        const p = clamp((t - t0) / duration, 0, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const v = start + (end - start) * eased;
+        el.textContent = formatMoney(v);
+        if (p < 1) requestAnimationFrame(frame);
+        else numberAnimState.set(key, end);
+      }
+
+      requestAnimationFrame(frame);
       return (tx.type === "income" && tx.description === "Opening balance (auto)");
-    }
+}
 
-    // ------------ DONUT & GRAPH DRAWING ------------
+// ------------ DONUT & GRAPH DRAWING ------------
+@@ -1242,7 +1063,6 @@
+const radius = Math.min(cx, cy) - 12;
+const ringWidth = 18;
 
-    function drawDonut(canvas, openingPlusIncome, outgoing) {
-      const ctx = canvas.getContext("2d");
-      const w = canvas.width;
-      const h = canvas.height;
-      ctx.clearRect(0, 0, w, h);
+      // Base ring
+ctx.beginPath();
+ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+const baseGrad = ctx.createLinearGradient(cx - radius, cy, cx + radius, cy);
+@@ -1263,7 +1083,6 @@
+const leftAngle = (left / total) * Math.PI * 2;
+const startAngle = -Math.PI / 2;
 
-      const cx = w / 2;
-      const cy = h / 2;
-      const radius = Math.min(cx, cy) - 12;
-      const ringWidth = 18;
+      // Outgoing segment
+if (outgoing > 0) {
+ctx.beginPath();
+ctx.arc(cx, cy, radius, startAngle, startAngle + outAngle);
+@@ -1276,14 +1095,9 @@
+ctx.stroke();
+}
 
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      const baseGrad = ctx.createLinearGradient(cx - radius, cy, cx + radius, cy);
-      baseGrad.addColorStop(0, "#1b2748");
-      baseGrad.addColorStop(1, "#11182f");
-      ctx.strokeStyle = baseGrad;
-      ctx.lineWidth = ringWidth;
-      ctx.stroke();
-
-      const total = Math.max(openingPlusIncome, outgoing, 1);
-      const rawLeft = openingPlusIncome - outgoing;
-      const left = Math.max(0, rawLeft);
-      const percentLeft = openingPlusIncome > 0
-        ? Math.max(0, Math.min(100, (left / openingPlusIncome) * 100))
-        : 0;
-
-      const outAngle = (outgoing / total) * Math.PI * 2;
-      const leftAngle = (left / total) * Math.PI * 2;
-      const startAngle = -Math.PI / 2;
-
-      if (outgoing > 0) {
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius, startAngle, startAngle + outAngle);
-        const gradRed = ctx.createLinearGradient(cx, cy - radius, cx, cy + radius);
-        gradRed.addColorStop(0, "#ff9fab");
-        gradRed.addColorStop(1, "#ff6a78");
-        ctx.strokeStyle = gradRed;
-        ctx.lineWidth = ringWidth;
-        ctx.lineCap = "round";
-        ctx.stroke();
-      }
-
-      if (left > 0) {
-        ctx.beginPath();
+      // Left segment
+if (left > 0) {
+ctx.beginPath();
+        ctx.arc(
+          cx, cy, radius,
+          startAngle + outAngle,
+          startAngle + outAngle + leftAngle
+        );
         ctx.arc(cx, cy, radius, startAngle + outAngle, startAngle + outAngle + leftAngle);
-        const gradGreen = ctx.createLinearGradient(cx - radius, cy, cx + radius, cy);
-        gradGreen.addColorStop(0, "#9af7c7");
-        gradGreen.addColorStop(1, "#40e38a");
-        ctx.strokeStyle = gradGreen;
-        ctx.lineWidth = ringWidth;
-        ctx.lineCap = "round";
-        ctx.stroke();
-      }
+const gradGreen = ctx.createLinearGradient(cx - radius, cy, cx + radius, cy);
+gradGreen.addColorStop(0, "#9af7c7");
+gradGreen.addColorStop(1, "#40e38a");
+@@ -1293,60 +1107,48 @@
+ctx.stroke();
+}
 
-      ctx.fillStyle = "#e8edf8";
+      // Centre text
+ctx.fillStyle = "#e8edf8";
+      ctx.font = "800 22px -apple-system, system-ui, sans-serif";
       ctx.font = "700 22px -apple-system, system-ui, sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(`${Math.round(percentLeft)}%`, cx, cy - 5);
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+ctx.fillText(`${Math.round(percentLeft)}%`, cx, cy - 5);
 
-      ctx.fillStyle = "#9aa3b1";
+ctx.fillStyle = "#9aa3b1";
+      ctx.font = "12px -apple-system, system-ui, sans-serif";
       ctx.font = "11px -apple-system, system-ui, sans-serif";
-      ctx.fillText("income left", cx, cy + 12);
-    }
+ctx.fillText("income left", cx, cy + 12);
+}
 
-    function drawBalanceLine(canvas, dailyBalances) {
-      const ctx = canvas.getContext("2d");
+function drawBalanceLine(canvas, dailyBalances) {
+const ctx = canvas.getContext("2d");
+
+      // Ensure actual pixel buffer matches CSS size for sharpness
+      const cssW = canvas.clientWidth || 300;
+      const cssH = canvas.clientHeight || 70;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(cssW * dpr);
+      canvas.height = Math.floor(cssH * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const w = cssW;
+      const h = cssH;
+
       const w = canvas.width;
       const h = canvas.height;
-      ctx.clearRect(0, 0, w, h);
+ctx.clearRect(0, 0, w, h);
 
-      if (!dailyBalances || dailyBalances.length === 0) return;
+if (!dailyBalances || dailyBalances.length === 0) return;
 
-      const maxVal = Math.max(...dailyBalances, 0);
-      const minVal = Math.min(...dailyBalances, 0);
-      const range = maxVal - minVal || 1;
+const maxVal = Math.max(...dailyBalances, 0);
+const minVal = Math.min(...dailyBalances, 0);
+const range = maxVal - minVal || 1;
 
+      const leftPadding = 6;
+      const rightPadding = 6;
+      const topPadding = 6;
+      const bottomPadding = 6;
       const leftPadding = 4;
       const rightPadding = 4;
       const topPadding = 4;
       const bottomPadding = 4;
-      const usableWidth = w - leftPadding - rightPadding;
-      const usableHeight = h - topPadding - bottomPadding;
+const usableWidth = w - leftPadding - rightPadding;
+const usableHeight = h - topPadding - bottomPadding;
 
-      const count = dailyBalances.length;
-      const stepX = count > 1 ? usableWidth / (count - 1) : 0;
+const count = dailyBalances.length;
+const stepX = count > 1 ? usableWidth / (count - 1) : 0;
 
-      const zeroY = topPadding + usableHeight - ((0 - minVal) / range) * usableHeight;
+      // x-axis baseline at 0
+const zeroY = topPadding + usableHeight - ((0 - minVal) / range) * usableHeight;
 
+      ctx.strokeStyle = "rgba(255,255,255,0.18)";
+      ctx.strokeStyle = "rgba(255,255,255,0.16)";
+ctx.lineWidth = 1;
+ctx.beginPath();
+ctx.moveTo(leftPadding, zeroY);
+ctx.lineTo(w - rightPadding, zeroY);
+ctx.stroke();
+
+      // Line
+ctx.beginPath();
+dailyBalances.forEach((val, idx) => {
+const x = leftPadding + idx * stepX;
+@@ -1367,69 +1169,6 @@
+ctx.stroke();
+}
+
+    function drawAfterSpark(canvas, values) {
+      const ctx = canvas.getContext("2d");
+      const cssW = canvas.clientWidth || 300;
+      const cssH = canvas.clientHeight || 64;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(cssW * dpr);
+      canvas.height = Math.floor(cssH * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const w = cssW;
+      const h = cssH;
+      ctx.clearRect(0, 0, w, h);
+
+      if (!values || values.length < 2) return;
+
+      const maxVal = Math.max(...values, 0);
+      const minVal = Math.min(...values, 0);
+      const range = maxVal - minVal || 1;
+
+      const pad = 8;
+      const uw = w - pad * 2;
+      const uh = h - pad * 2;
+      const stepX = uw / (values.length - 1);
+
+      // 0 line
+      const zeroY = pad + uh - ((0 - minVal) / range) * uh;
       ctx.strokeStyle = "rgba(255,255,255,0.16)";
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(leftPadding, zeroY);
-      ctx.lineTo(w - rightPadding, zeroY);
+      ctx.moveTo(pad, zeroY);
+      ctx.lineTo(w - pad, zeroY);
       ctx.stroke();
 
+      // line
       ctx.beginPath();
-      dailyBalances.forEach((val, idx) => {
-        const x = leftPadding + idx * stepX;
-        const norm = (val - minVal) / range;
-        const y = topPadding + usableHeight - norm * usableHeight;
-        if (idx === 0) ctx.moveTo(x, y);
+      values.forEach((v, i) => {
+        const x = pad + i * stepX;
+        const y = pad + uh - ((v - minVal) / range) * uh;
+        if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
 
-      const grad = ctx.createLinearGradient(leftPadding, 0, w - rightPadding, 0);
-      grad.addColorStop(0, "#5fa9ff");
+      const grad = ctx.createLinearGradient(pad, 0, w - pad, 0);
+      grad.addColorStop(0, "#8ec5ff");
       grad.addColorStop(0.5, "#9af7c7");
-      grad.addColorStop(1, "#ffb24a");
+      grad.addColorStop(1, "#ff8a94");
       ctx.strokeStyle = grad;
       ctx.lineWidth = 2;
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
       ctx.stroke();
+
+      // dots
+      values.forEach((v, i) => {
+        const x = pad + i * stepX;
+        const y = pad + uh - ((v - minVal) / range) * uh;
+        ctx.beginPath();
+        ctx.arc(x, y, 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,255,255,0.7)";
+        ctx.fill();
+      });
     }
 
-    // ------------ MONTH CALC WITH CARRY ------------
+// ------------ MONTH CALC WITH CARRY ------------
 
-    function getAllMonthKeysIncluding(targetMonth) {
-      const set = new Set();
-      const targetMK = monthKey(targetMonth);
+function getAllMonthKeysIncluding(targetMonth) {
+@@ -1445,6 +1184,7 @@
 
-      for (const tx of transactions) {
-        if (isAutoOpening(tx)) continue;
-        const d = new Date(tx.date);
-        if (Number.isNaN(d.getTime())) continue;
-        set.add(monthKey(d));
-      }
-
-      for (const dd of directDebits) {
-        if (dd.month) set.add(dd.month);
+for (const dd of directDebits) {
+if (dd.month) set.add(dd.month);
         if (dd.endMonth) set.add(dd.endMonth);
-      }
+}
 
-      for (const ov of ddOverrides) {
-        if (ov.month) set.add(ov.month);
-      }
+for (const ov of ddOverrides) {
+@@ -1465,33 +1205,59 @@
+return monthKey(d) === mk;
+});
 
-      set.add(targetMK);
-      return Array.from(set).sort();
-    }
-
-    function computeRawMonthTotals(monthDate, carryIn) {
-      const mk = monthKey(monthDate);
-
-      const monthTx = transactions.filter((t) => {
-        if (isAutoOpening(t)) return false;
-        const d = new Date(t.date);
-        if (Number.isNaN(d.getTime())) return false;
-        return monthKey(d) === mk;
-      });
-
-      const monthBaseDDs = directDebits.filter((dd) => {
-        if (!dd.month) return false;
+      // DD series: any DD with start month <= this month repeats
+const monthBaseDDs = directDebits.filter((dd) => {
+if (!dd.month) return false;
+        const baseDate = parseMonthKey(dd.month);
+        if (!baseDate) return false;
+        return baseDate <= monthDate;
         return isMonthInRange(mk, dd.month, dd.endMonth);
-      });
+});
 
+      const actualDDs = monthBaseDDs.map((dd) => {
+        const override = ddOverrides.find((ov) => ov.baseId === dd.id && ov.month === mk);
+        if (!override || override.type === "none") {
+          const active = override ? override.active : dd.active;
+          return { baseId: dd.id, name: dd.name, amount: dd.amount, day: dd.day, category: dd.category, active: active !== false };
+        }
+        if (override.type === "modified") {
+          return { baseId: dd.id, name: override.name, amount: override.amount, day: override.day, category: override.category, active: override.active !== false };
+        }
+        if (override.type === "skipped") {
+          return { baseId: dd.id, name: dd.name, amount: dd.amount, day: dd.day, category: dd.category, active: false };
+        }
+        return { baseId: dd.id, name: dd.name, amount: dd.amount, day: dd.day, category: dd.category, active: dd.active };
+      });
       const actualDDs = monthBaseDDs
         .map((dd) => {
           const override = ddOverrides.find((ov) => ov.baseId === dd.id && ov.month === mk);
@@ -1253,43 +987,45 @@
         })
         .filter(Boolean);
 
-      const activeDDs = actualDDs.filter((d) => d.active);
+const activeDDs = actualDDs.filter((d) => d.active);
 
-      const income = monthTx.filter((t) => t.type === "income").reduce((sum, t) => sum + (t.amount || 0), 0);
-      const spend  = monthTx.filter((t) => t.type === "spend").reduce((sum, t) => sum + (t.amount || 0), 0);
+const income = monthTx.filter((t) => t.type === "income").reduce((sum, t) => sum + (t.amount || 0), 0);
+const spend  = monthTx.filter((t) => t.type === "spend").reduce((sum, t) => sum + (t.amount || 0), 0);
 
-      const ddTotal = activeDDs.reduce((sum, d) => sum + (d.amount || 0), 0);
+const ddTotal = activeDDs.reduce((sum, d) => sum + (d.amount || 0), 0);
 
-      const daysInMonth = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate();
-      const dailyBalances = [];
+const daysInMonth = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate();
+@@ -1501,33 +1267,51 @@
+const ddUpToDay = activeDDs.filter((d) => d.day <= day).reduce((sum, d) => sum + (d.amount || 0), 0);
 
-      for (let day = 1; day <= daysInMonth; day++) {
-        const ddUpToDay = activeDDs.filter((d) => d.day <= day).reduce((sum, d) => sum + (d.amount || 0), 0);
-
-        const spendUpToDay = monthTx
+const spendUpToDay = monthTx
+          .filter((t) => t.type === "spend" && new Date(t.date).getDate() <= day)
           .filter((t) => {
             if (t.type !== "spend") return false;
             const d = new Date(t.date);
             if (Number.isNaN(d.getTime())) return false;
             return d.getDate() <= day;
           })
-          .reduce((sum, t) => sum + (t.amount || 0), 0);
+.reduce((sum, t) => sum + (t.amount || 0), 0);
 
-        const incomeUpToDay = monthTx
+const incomeUpToDay = monthTx
+          .filter((t) => t.type === "income" && new Date(t.date).getDate() <= day)
           .filter((t) => {
             if (t.type !== "income") return false;
             const d = new Date(t.date);
             if (Number.isNaN(d.getTime())) return false;
             return d.getDate() <= day;
           })
-          .reduce((sum, t) => sum + (t.amount || 0), 0);
+.reduce((sum, t) => sum + (t.amount || 0), 0);
 
+        dailyBalances.push(carryIn + incomeUpToDay - ddUpToDay - spendUpToDay);
         const bal = carryIn + incomeUpToDay - ddUpToDay - spendUpToDay;
         dailyBalances.push(bal);
-      }
+}
 
-      const afterAll = carryIn + income - ddTotal - spend;
+const afterAll = carryIn + income - ddTotal - spend;
 
+      return { carryIn, income, spend, ddTotal, afterAll, dailyBalances, activeDDs, rawTransactions: monthTx };
       return {
         carryIn,
         income,
@@ -1299,196 +1035,242 @@
         dailyBalances,
         rawTransactions: monthTx
       };
-    }
+}
 
-    function computeMonthWithCarry(targetMonth) {
-      const targetMK = monthKey(targetMonth);
-      const allMKs = getAllMonthKeysIncluding(targetMonth);
-      let carry = 0;
-      let result = null;
+function computeMonthWithCarry(targetMonth) {
+const targetMK = monthKey(targetMonth);
+const allMKs = getAllMonthKeysIncluding(targetMonth);
 
-      for (const mk of allMKs) {
-        const mDate = parseMonthKey(mk);
-        if (!mDate) continue;
+let carry = 0;
+let result = null;
+
+for (const mk of allMKs) {
+const mDate = parseMonthKey(mk);
+if (!mDate) continue;
+        const raw = computeRawMonthTotals(mDate, carry);
 
         const raw = computeRawMonthTotals(mDate, carry);
-        if (mk === targetMK) {
-          result = raw;
-          break;
-        } else {
-          carry = raw.afterAll;
-        }
-      }
+if (mk === targetMK) {
+result = raw;
+break;
+@@ -1536,111 +1320,17 @@
+}
+}
 
-      if (!result) return computeRawMonthTotals(targetMonth, 0);
-      return result;
+      return result || computeRawMonthTotals(targetMonth, 0);
     }
 
-    // ------------ UI RENDERING ------------
+    function monthMinus(d, n) {
+      return new Date(d.getFullYear(), d.getMonth() - n, 1);
+    }
 
-    let selectedMonth = firstOfMonth(new Date());
-    let currentEditingTxId = null;
-    let currentEditingDdBaseId = null;
-    let currentEditingDdMonthKey = null;
+    function monthPlus(d, n) {
+      return new Date(d.getFullYear(), d.getMonth() + n, 1);
+      if (!result) return computeRawMonthTotals(targetMonth, 0);
+      return result;
+}
+
+// ------------ UI RENDERING ------------
+
+let selectedMonth = firstOfMonth(new Date());
+    let whatIfOffset = 0;
+
+let currentEditingTxId = null;
+let currentEditingDdBaseId = null;
+let currentEditingDdMonthKey = null;
+
+    function refreshTrendIntelligence() {
+      const tAfterEl = document.getElementById("trendAfterDelta");
+      const tAfterSubEl = document.getElementById("trendAfterDeltaSub");
+      const tIncomeEl = document.getElementById("trendIncomeDelta");
+      const tOutEl = document.getElementById("trendOutDelta");
+      const tProjEl = document.getElementById("trendProjection");
+      const tProjSubEl = document.getElementById("trendProjectionSub");
+      const tAvgAfterEl = document.getElementById("trendAvgAfter");
+      const tAvgOutEl = document.getElementById("trendAvgOut");
+      const spark = document.getElementById("afterSpark");
+      const sparkHint = document.getElementById("sparkHint");
+
+      const thisTotals = computeMonthWithCarry(selectedMonth);
+      const prevTotals = computeMonthWithCarry(monthMinus(selectedMonth, 1));
+
+      const thisOpeningPlusIncome = thisTotals.carryIn + thisTotals.income;
+      const prevOpeningPlusIncome = prevTotals.carryIn + prevTotals.income;
+
+      const thisOut = thisTotals.ddTotal + thisTotals.spend;
+      const prevOut = prevTotals.ddTotal + prevTotals.spend;
+
+      const dAfter = thisTotals.afterAll - prevTotals.afterAll;
+      const dIncome = thisOpeningPlusIncome - prevOpeningPlusIncome;
+      const dOut = thisOut - prevOut;
+
+      const a = deltaLabel(dAfter);
+      tAfterEl.innerHTML = `<span class="delta ${a.cls}">${a.text}</span>`;
+      tAfterSubEl.textContent = `Last month: ${formatMoney(prevTotals.afterAll)} · This month: ${formatMoney(thisTotals.afterAll)}`;
+
+      const i = deltaLabel(dIncome);
+      tIncomeEl.innerHTML = `<span class="delta ${i.cls}">${i.text}</span>`;
+
+      const o = deltaLabel(dOut);
+      tOutEl.innerHTML = `<span class="delta ${o.cls}">${o.text}</span>`;
+
+      // 3-month averages (this month + previous 2)
+      const m0 = computeMonthWithCarry(selectedMonth);
+      const m1 = computeMonthWithCarry(monthMinus(selectedMonth, 1));
+      const m2 = computeMonthWithCarry(monthMinus(selectedMonth, 2));
+
+      const avgAfter = (m0.afterAll + m1.afterAll + m2.afterAll) / 3;
+      const avgOut = ((m0.ddTotal + m0.spend) + (m1.ddTotal + m1.spend) + (m2.ddTotal + m2.spend)) / 3;
+
+      animateMoney(tAvgAfterEl, avgAfter);
+      animateMoney(tAvgOutEl, avgOut);
+
+      // Projection: simple run-rate using current day balance vs end-of-month
+      // If viewing current real month: use today's day index. Otherwise use mid-month (15) to avoid nonsense.
+      const now = new Date();
+      const sameRealMonth = (now.getFullYear() === selectedMonth.getFullYear() && now.getMonth() === selectedMonth.getMonth());
+      const daysInMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0).getDate();
+      const dayIndex = sameRealMonth ? clamp(now.getDate(), 1, daysInMonth) : 15;
+
+      const balToday = thisTotals.dailyBalances[dayIndex - 1] ?? thisTotals.afterAll;
+      const balEnd = thisTotals.afterAll;
+
+      // Estimate slope from start-of-month balance to today, then project to end
+      const balStart = thisTotals.dailyBalances[0] ?? (thisTotals.carryIn);
+      const daysPassed = Math.max(1, dayIndex - 1);
+      const dailyChange = (balToday - balStart) / daysPassed;
+      const daysRemaining = Math.max(0, daysInMonth - dayIndex);
+      const projectedEnd = balToday + dailyChange * daysRemaining;
+
+      animateMoney(tProjEl, projectedEnd);
+      const projDiff = projectedEnd - balEnd;
+      const projDelta = deltaLabel(projDiff);
+      tProjSubEl.innerHTML = `Model: pace-based · vs current “Left”: <span class="delta ${projDelta.cls}">${projDelta.text}</span>`;
+
+      // 6-month sparkline for afterAll
+      const series = [];
+      const labels = [];
+      for (let i6 = 5; i6 >= 0; i6--) {
+        const d = monthMinus(selectedMonth, i6);
+        const tot = computeMonthWithCarry(d);
+        series.push(tot.afterAll);
+        labels.push(monthLabel(d));
+      }
+
+      drawAfterSpark(spark, series);
+
+      const slope = series[series.length - 1] - series[0];
+      if (slope > 0) sparkHint.textContent = "Trend: improving";
+      else if (slope < 0) sparkHint.textContent = "Trend: declining";
+      else sparkHint.textContent = "Trend: flat";
+    }
     let ddEditScope = "month"; // "month" | "future"
 
-    function refreshUI() {
-      const monthLabelEl = document.getElementById("monthLabel");
-      const incomeValueEl = document.getElementById("incomeValue");
-      const ddValueEl = document.getElementById("ddValue");
-      const spendValueEl = document.getElementById("spendValue");
-      const leftValueEl = document.getElementById("leftValue");
-      const leftCardEl = document.getElementById("leftCard");
-      const donutCanvas = document.getElementById("donutCanvas");
-      const balanceCanvas = document.getElementById("balanceCanvas");
+function refreshUI() {
+const monthLabelEl = document.getElementById("monthLabel");
+@@ -1649,9 +1339,6 @@
+const spendValueEl = document.getElementById("spendValue");
+const leftValueEl = document.getElementById("leftValue");
+const leftCardEl = document.getElementById("leftCard");
+      const whatIfSlider = document.getElementById("whatIfSlider");
+      const whatIfChangeEl = document.getElementById("whatIfChange");
+      const whatIfAfterEl = document.getElementById("whatIfAfter");
+const donutCanvas = document.getElementById("donutCanvas");
+const balanceCanvas = document.getElementById("balanceCanvas");
 
-      const summaryStartEl = document.getElementById("summaryStart");
-      const summaryDdEl = document.getElementById("summaryDd");
-      const summarySpendEl = document.getElementById("summarySpend");
-      const summaryAfterEl = document.getElementById("summaryAfter");
+@@ -1680,20 +1367,19 @@
+const openingPlusIncome = carryIn + income;
+const totalOut = ddTotal + spend;
 
-      const legendIncomeEl = document.getElementById("legendIncome");
-      const legendOutEl = document.getElementById("legendOut");
-      const legendLeftEl = document.getElementById("legendLeft");
-
-      const statusDotEl = document.getElementById("statusDot");
-      const statusMainEl = document.getElementById("statusMain");
-      const statusSubEl = document.getElementById("statusSub");
-
-      monthLabelEl.textContent = monthLabel(selectedMonth);
-
-      const totals = computeMonthWithCarry(selectedMonth);
-      const income = totals.income;
-      const spend = totals.spend;
-      const ddTotal = totals.ddTotal;
-      const carryIn = totals.carryIn;
-      const baseAfterAll = totals.afterAll;
-
-      const openingPlusIncome = carryIn + income;
-      const totalOut = ddTotal + spend;
-
+      // animate main values
+      animateMoney(incomeValueEl, income);
+      animateMoney(ddValueEl, ddTotal);
+      animateMoney(spendValueEl, spend);
+      animateMoney(leftValueEl, baseAfterAll);
       incomeValueEl.textContent = formatMoney(income);
       ddValueEl.textContent = formatMoney(ddTotal);
       spendValueEl.textContent = formatMoney(spend);
       leftValueEl.textContent = formatMoney(baseAfterAll);
 
+      animateMoney(legendIncomeEl, openingPlusIncome);
+      animateMoney(legendOutEl, totalOut);
+      animateMoney(legendLeftEl, baseAfterAll);
       legendIncomeEl.textContent = formatMoney(openingPlusIncome);
       legendOutEl.textContent = formatMoney(totalOut);
       legendLeftEl.textContent = formatMoney(baseAfterAll);
 
+      animateMoney(summaryStartEl, openingPlusIncome);
+      animateMoney(summaryDdEl, ddTotal);
+      animateMoney(summarySpendEl, spend);
+      animateMoney(summaryAfterEl, baseAfterAll);
       summaryStartEl.textContent = formatMoney(openingPlusIncome);
       summaryDdEl.textContent = formatMoney(ddTotal);
       summarySpendEl.textContent = formatMoney(spend);
       summaryAfterEl.textContent = formatMoney(baseAfterAll);
 
-      if (baseAfterAll > 0) {
-        leftCardEl.style.borderColor = "rgba(64,227,138,0.5)";
-        leftCardEl.style.boxShadow = "0 12px 30px rgba(64,227,138,0.35)";
-        leftValueEl.style.color = "var(--green-soft)";
+if (baseAfterAll > 0) {
+leftCardEl.style.borderColor = "rgba(64,227,138,0.5)";
+@@ -1727,33 +1413,11 @@
+statusSubEl.textContent = "You’ve used 100% of this month’s opening + income.";
+}
 
-        statusDotEl.classList.remove("status-dot-red");
-        statusDotEl.classList.add("status-dot");
-        statusMainEl.textContent = "You’re in the green";
-        statusMainEl.style.color = "var(--green-soft)";
-        statusSubEl.textContent = `${formatMoney(baseAfterAll)} left after this month’s direct debits and spending.`;
-      } else if (baseAfterAll < 0) {
-        leftCardEl.style.borderColor = "rgba(255,106,120,0.55)";
-        leftCardEl.style.boxShadow = "0 12px 30px rgba(255,106,120,0.4)";
-        leftValueEl.style.color = "var(--red-soft)";
+      const maxSlider = Math.max(2000, Math.round(openingPlusIncome) || 0);
+      whatIfSlider.min = -maxSlider;
+      whatIfSlider.max = maxSlider;
+      whatIfSlider.value = whatIfOffset;
 
-        statusDotEl.classList.remove("status-dot");
-        statusDotEl.classList.add("status-dot-red");
-        statusMainEl.textContent = "Spending over income";
-        statusMainEl.style.color = "var(--red-soft)";
-        statusSubEl.textContent = `Over by ${formatMoney(Math.abs(baseAfterAll))} this month.`;
-      } else {
-        leftCardEl.style.borderColor = "rgba(255,255,255,0.12)";
-        leftCardEl.style.boxShadow = "0 12px 30px rgba(0,0,0,0.7)";
-        leftValueEl.style.color = "var(--text)";
+      const absChange = Math.abs(whatIfOffset);
+      const sign = whatIfOffset === 0 ? "" : whatIfOffset > 0 ? "+" : "−";
+      const afterChange = baseAfterAll - whatIfOffset;
 
-        statusDotEl.classList.remove("status-dot-red");
-        statusDotEl.classList.add("status-dot");
-        statusMainEl.textContent = "Every pound is allocated";
-        statusMainEl.style.color = "var(--text)";
-        statusSubEl.textContent = "You’ve used 100% of this month’s opening + income.";
-      }
+      whatIfChangeEl.textContent = `Change: ${sign}${formatMoney(absChange).replace("£", "")}`;
+      whatIfAfterEl.textContent = `After change: ${formatMoney(afterChange)}`;
 
+      const adjustedBalances = totals.dailyBalances.map((v, idx, arr) => {
+        if (whatIfOffset === 0 || arr.length === 0) return v;
+        const factor = (idx + 1) / arr.length;
+        return v - whatIfOffset * factor;
+      });
+
+      drawBalanceLine(balanceCanvas, adjustedBalances);
+
+      const adjustedOpeningPlusIncome = openingPlusIncome - whatIfOffset;
+      drawDonut(donutCanvas, adjustedOpeningPlusIncome, totalOut);
       drawBalanceLine(balanceCanvas, totals.dailyBalances);
       drawDonut(donutCanvas, openingPlusIncome, totalOut);
 
-      renderTransactionList();
-      renderDirectDebitList();
-    }
+renderTransactionList();
+renderDirectDebitList();
 
-    function renderTransactionList() {
-      const mk = monthKey(selectedMonth);
-      const txList = document.getElementById("txList");
-      txList.innerHTML = "";
+      refreshTrendIntelligence();
+}
 
-      const filtered = transactions.filter((t) => {
-        if (isAutoOpening(t)) return false;
-        const d = new Date(t.date);
-        if (Number.isNaN(d.getTime())) return false;
-        return monthKey(d) === mk;
+function renderTransactionList() {
+@@ -1825,27 +1489,40 @@
+const ddList = document.getElementById("ddList");
+ddList.innerHTML = "";
+
+      const monthBaseDDs = directDebits.filter((dd) => {
+        if (!dd.month) return false;
+        const baseDate = parseMonthKey(dd.month);
+        if (!baseDate) return false;
+        return baseDate <= selectedMonth;
       });
 
-      if (filtered.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "list-empty";
-        empty.textContent = "No transactions yet. Add income and spending above.";
-        txList.appendChild(empty);
-        return;
-      }
-
-      const sorted = filtered.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      for (const tx of sorted) {
-        const row = document.createElement("div");
-        row.className = "list-item";
-
-        const main = document.createElement("div");
-        main.className = "list-main";
-
-        const title = document.createElement("div");
-        title.className = "list-title";
-        title.textContent = tx.description;
-
-        const sub = document.createElement("div");
-        sub.className = "list-sub";
-        sub.textContent = `${formatDisplayDate(tx.date)} · ${tx.type === "income" ? "Income" : "Spending"}`;
-
-        main.appendChild(title);
-        main.appendChild(sub);
-
-        const right = document.createElement("div");
-        right.className = "list-right";
-
-        const amt = document.createElement("div");
-        amt.className = "list-amount";
-        amt.style.color = tx.type === "income" ? "var(--green-soft)" : "var(--red-soft)";
-        amt.textContent = formatMoney(tx.amount);
-
-        const editBtn = document.createElement("button");
-        editBtn.className = "btn btn-small btn-ghost";
-        editBtn.textContent = "Edit";
-        editBtn.style.marginTop = "-2px";
-        editBtn.addEventListener("click", () => openTransactionEditModal(tx));
-
-        right.appendChild(amt);
-        right.appendChild(editBtn);
-
-        row.appendChild(main);
-        row.appendChild(right);
-
-        txList.appendChild(row);
-      }
-    }
-
-    function renderDirectDebitList() {
-      const mk = monthKey(selectedMonth);
-      const ddList = document.getElementById("ddList");
-      ddList.innerHTML = "";
-
+      const actualDDs = monthBaseDDs.map((dd) => {
+        const override = ddOverrides.find((ov) => ov.baseId === dd.id && ov.month === mk);
+        if (!override || override.type === "none") {
+          const active = override ? override.active : dd.active;
+          return { baseId: dd.id, name: dd.name, amount: dd.amount, day: dd.day, category: dd.category, active: active !== false };
+        }
+        if (override.type === "modified") {
+          return { baseId: dd.id, name: override.name, amount: override.amount, day: override.day, category: override.category, active: override.active !== false };
+        }
+        if (override.type === "skipped") {
+          return { baseId: dd.id, name: dd.name, amount: dd.amount, day: dd.day, category: dd.category, active: false };
+        }
+        return { baseId: dd.id, name: dd.name, amount: dd.amount, day: dd.day, category: dd.category, active: dd.active };
+      });
       const monthBaseDDs = directDebits.filter((dd) => isMonthInRange(mk, dd.month, dd.endMonth));
 
       const actualDDs = monthBaseDDs
@@ -1524,145 +1306,28 @@
         })
         .filter(Boolean);
 
-      if (actualDDs.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "list-empty";
-        empty.textContent = "No direct debits yet. Start with mortgage, council tax and utilities.";
-        ddList.appendChild(empty);
-        return;
-      }
-
-      const sorted = actualDDs.slice().sort((a, b) => a.day - b.day || a.name.localeCompare(b.name));
-
-      for (const dd of sorted) {
-        const row = document.createElement("div");
-        row.className = "list-item";
-        if (!dd.active) row.classList.add("dd-paused");
-
-        const main = document.createElement("div");
-        main.className = "list-main";
-
-        const title = document.createElement("div");
-        title.className = "list-title";
-        title.textContent = dd.name;
-
-        const sub = document.createElement("div");
-        sub.className = "list-sub";
-        sub.textContent = `${formatMoney(dd.amount)} · day ${dd.day}${dd.category ? " · " + dd.category : ""}`;
-
-        main.appendChild(title);
-        main.appendChild(sub);
-
-        const editBtn = document.createElement("button");
-        editBtn.className = "btn btn-small btn-ghost";
-        editBtn.textContent = "Edit";
-        editBtn.addEventListener("click", () => openDirectDebitEditModal(dd.baseId));
-
-        row.appendChild(main);
-        row.appendChild(editBtn);
-
-        ddList.appendChild(row);
-      }
-    }
-
-    // ------------ ADD / EDIT / DELETE ------------
-
-    function addTransaction() {
-      const dateVal = document.getElementById("txDate").value;
-      const typeVal = document.getElementById("txType").value;
-      const descVal = document.getElementById("txDesc").value.trim();
-      const amtStr = document.getElementById("txAmt").value.replace(",", ".");
-      const amt = parseFloat(amtStr);
-
-      if (!dateVal || !descVal || !isFinite(amt)) return;
-
-      transactions.push({ id: uuid(), date: dateVal, type: typeVal, description: descVal, amount: amt });
-
-      saveToStorage();
-      document.getElementById("txDesc").value = "";
-      document.getElementById("txAmt").value = "";
-      document.getElementById("txType").value = "income";
-      document.getElementById("txDate").value = "";
-
-      if (document.activeElement) document.activeElement.blur();
-      refreshUI();
-    }
-
-    function addDirectDebit() {
-      const nameVal = document.getElementById("ddName").value.trim();
-      const amtStr = document.getElementById("ddAmt").value.replace(",", ".");
-      const amt = parseFloat(amtStr);
-      const dayVal = parseInt(document.getElementById("ddDay").value, 10);
-      const catVal = document.getElementById("ddCat").value.trim();
-
-      if (!nameVal || !isFinite(amt) || !isFinite(dayVal)) return;
-      if (dayVal < 1 || dayVal > 31) return;
-
-      directDebits.push({
-        id: uuid(),
-        month: monthKey(selectedMonth),
+if (actualDDs.length === 0) {
+const empty = document.createElement("div");
+@@ -1924,6 +1601,7 @@
+directDebits.push({
+id: uuid(),
+month: monthKey(selectedMonth),
         endMonth: null,
-        name: nameVal,
-        amount: amt,
-        day: dayVal,
-        category: catVal,
-        active: true
-      });
-
-      saveToStorage();
-      document.getElementById("ddName").value = "";
-      document.getElementById("ddAmt").value = "";
-      document.getElementById("ddDay").value = "";
-      document.getElementById("ddCat").value = "";
-
-      if (document.activeElement) document.activeElement.blur();
-      refreshUI();
-    }
-
-    function openTransactionEditModal(tx) {
-      currentEditingTxId = tx.id;
-      document.getElementById("editTxDate").value = tx.date;
-      document.getElementById("editTxType").value = tx.type;
-      document.getElementById("editTxDesc").value = tx.description;
+name: nameVal,
+amount: amt,
+day: dayVal,
+@@ -1946,7 +1624,7 @@
+document.getElementById("editTxDate").value = tx.date;
+document.getElementById("editTxType").value = tx.type;
+document.getElementById("editTxDesc").value = tx.description;
+      document.getElementById("editTxAmt").value = (tx.amount || 0).toFixed(2);
       document.getElementById("editTxAmt").value = tx.amount.toFixed(2);
-      document.getElementById("txModal").style.display = "flex";
-    }
+document.getElementById("txModal").style.display = "flex";
+}
 
-    function closeTransactionEditModal() {
-      document.getElementById("txModal").style.display = "none";
-      currentEditingTxId = null;
-    }
-
-    function saveTransactionEdit() {
-      if (!currentEditingTxId) return;
-      const tx = transactions.find((t) => t.id === currentEditingTxId);
-      if (!tx) return;
-
-      const dateVal = document.getElementById("editTxDate").value;
-      const typeVal = document.getElementById("editTxType").value;
-      const descVal = document.getElementById("editTxDesc").value.trim();
-      const amtStr = document.getElementById("editTxAmt").value.replace(",", ".");
-      const amt = parseFloat(amtStr);
-
-      if (!dateVal || !descVal || !isFinite(amt)) return;
-
-      tx.date = dateVal;
-      tx.type = typeVal;
-      tx.description = descVal;
-      tx.amount = amt;
-
-      saveToStorage();
-      refreshUI();
-      closeTransactionEditModal();
-    }
-
-    function deleteTransaction() {
-      if (!currentEditingTxId) return;
-      transactions = transactions.filter((t) => t.id !== currentEditingTxId);
-      saveToStorage();
-      refreshUI();
-      closeTransactionEditModal();
-    }
+@@ -1986,46 +1664,66 @@
+closeTransactionEditModal();
+}
 
     function setScope(scope) {
       ddEditScope = scope;
@@ -1670,16 +1335,25 @@
       document.getElementById("scopeFutureBtn").classList.toggle("active", scope === "future");
     }
 
-    function openDirectDebitEditModal(baseId) {
-      currentEditingDdBaseId = baseId;
-      currentEditingDdMonthKey = monthKey(selectedMonth);
+function openDirectDebitEditModal(baseId) {
+currentEditingDdBaseId = baseId;
+currentEditingDdMonthKey = monthKey(selectedMonth);
 
-      const base = directDebits.find((d) => d.id === baseId);
-      if (!base) return;
+const base = directDebits.find((d) => d.id === baseId);
+if (!base) return;
 
+      const mk = monthKey(selectedMonth);
       const mk = currentEditingDdMonthKey;
-      const override = ddOverrides.find((ov) => ov.baseId === baseId && ov.month === mk);
+const override = ddOverrides.find((ov) => ov.baseId === baseId && ov.month === mk);
 
+      let effective = { name: base.name, amount: base.amount, day: base.day, category: base.category, active: base.active };
+
+      if (override) {
+        if (override.type === "modified") {
+          effective = { name: override.name, amount: override.amount, day: override.day, category: override.category, active: override.active };
+        } else if (override.type === "skipped") {
+          effective.active = false;
+        }
       let effective = {
         name: base.name,
         amount: base.amount,
@@ -1696,57 +1370,57 @@
           category: override.category,
           active: override.active !== false
         };
-      }
+}
 
       // If it's deleted for this month, don't open editor (it's not shown anyway)
       if (override && override.type === "skipped") return;
 
-      document.getElementById("editDdName").value = effective.name;
+document.getElementById("editDdName").value = effective.name;
+      document.getElementById("editDdAmt").value = (effective.amount || 0).toFixed(2);
       document.getElementById("editDdAmt").value = effective.amount.toFixed(2);
-      document.getElementById("editDdDay").value = effective.day;
-      document.getElementById("editDdCat").value = effective.category || "";
+document.getElementById("editDdDay").value = effective.day;
+document.getElementById("editDdCat").value = effective.category || "";
 
-      const pausedToggle = document.getElementById("ddPausedToggle");
-      pausedToggle.classList.toggle("on", !effective.active);
+const pausedToggle = document.getElementById("ddPausedToggle");
+pausedToggle.classList.toggle("on", !effective.active);
 
       // default scope
       setScope("month");
 
-      document.getElementById("ddModal").style.display = "flex";
-    }
+document.getElementById("ddModal").style.display = "flex";
+}
 
-    function closeDirectDebitEditModal() {
-      document.getElementById("ddModal").style.display = "none";
-      currentEditingDdBaseId = null;
-      currentEditingDdMonthKey = null;
+function closeDirectDebitEditModal() {
+document.getElementById("ddModal").style.display = "none";
+currentEditingDdBaseId = null;
+currentEditingDdMonthKey = null;
       setScope("month");
-    }
+}
 
-    function toggleDdPaused() {
+function toggleDdPaused() {
+      const toggle = document.getElementById("ddPausedToggle");
+      toggle.classList.toggle("on");
       document.getElementById("ddPausedToggle").classList.toggle("on");
-    }
+}
 
-    function saveDirectDebitEdit() {
-      if (!currentEditingDdBaseId || !currentEditingDdMonthKey) return;
-
-      const base = directDebits.find((d) => d.id === currentEditingDdBaseId);
-      if (!base) return;
-
-      const nameVal = document.getElementById("editDdName").value.trim();
-      const amtStr = document.getElementById("editDdAmt").value.replace(",", ".");
-      const amt = parseFloat(amtStr);
-      const dayVal = parseInt(document.getElementById("editDdDay").value, 10);
-      const catVal = document.getElementById("editDdCat").value.trim();
-      const paused = document.getElementById("ddPausedToggle").classList.contains("on");
+function saveDirectDebitEdit() {
+@@ -2040,47 +1738,104 @@
+const dayVal = parseInt(document.getElementById("editDdDay").value, 10);
+const catVal = document.getElementById("editDdCat").value.trim();
+const paused = document.getElementById("ddPausedToggle").classList.contains("on");
       const selectedMK = currentEditingDdMonthKey;
 
-      if (!nameVal || !isFinite(amt) || !isFinite(dayVal)) return;
-      if (dayVal < 1 || dayVal > 31) return;
+if (!nameVal || !isFinite(amt) || !isFinite(dayVal)) return;
+if (dayVal < 1 || dayVal > 31) return;
 
+      let override = ddOverrides.find((ov) => ov.baseId === currentEditingDdBaseId && ov.month === currentEditingDdMonthKey);
       // THIS MONTH ONLY -> override
       if (ddEditScope === "month") {
         let override = ddOverrides.find((ov) => ov.baseId === currentEditingDdBaseId && ov.month === selectedMK);
 
+      if (!override) {
+        override = { baseId: currentEditingDdBaseId, month: currentEditingDdMonthKey, type: "none", active: base.active };
+        ddOverrides.push(override);
         if (!override) {
           override = { baseId: currentEditingDdBaseId, month: selectedMK, type: "none", active: base.active !== false };
           ddOverrides.push(override);
@@ -1793,8 +1467,24 @@
         closeDirectDebitEditModal();
         refreshUI();
         return;
-      }
+}
 
+      override.type = "modified";
+      override.name = nameVal;
+      override.amount = amt;
+      override.day = dayVal;
+      override.category = catVal;
+      override.active = !paused;
+
+      // If identical to base, drop override
+      if (
+        override.name === base.name &&
+        override.amount === base.amount &&
+        override.day === base.day &&
+        (override.category || "") === (base.category || "") &&
+        override.active === base.active
+      ) {
+        ddOverrides = ddOverrides.filter((ov) => !(ov.baseId === currentEditingDdBaseId && ov.month === currentEditingDdMonthKey));
       // Otherwise split the series:
       // 1) end the existing series the month before selected
       // 2) create a new series starting selected month with new details
@@ -1804,7 +1494,7 @@
       // If the old series already ended before selected, do nothing (shouldn't happen if visible)
       if (compareMonthKey(base.endMonth, base.month) < 0) {
         base.endMonth = base.month;
-      }
+}
 
       const newId = uuid();
       const newDd = {
@@ -1822,30 +1512,29 @@
       // Remove overrides on old base from selected month onwards (they belong to future)
       ddOverrides = ddOverrides.filter((ov) => !(ov.baseId === base.id && compareMonthKey(ov.month, selectedMK) >= 0));
 
-      saveToStorage();
-      closeDirectDebitEditModal();
-      refreshUI();
-    }
+saveToStorage();
+closeDirectDebitEditModal();
+refreshUI();
+}
 
+    function deleteDirectDebitForMonth() {
     function deleteDirectDebitThisMonth() {
-      if (!currentEditingDdBaseId || !currentEditingDdMonthKey) return;
+if (!currentEditingDdBaseId || !currentEditingDdMonthKey) return;
 
+      let override = ddOverrides.find((ov) => ov.baseId === currentEditingDdBaseId && ov.month === currentEditingDdMonthKey);
       // Create a "skipped" override so it truly disappears for the month (not red)
       const mk = currentEditingDdMonthKey;
 
       let override = ddOverrides.find((ov) => ov.baseId === currentEditingDdBaseId && ov.month === mk);
-      if (!override) {
+if (!override) {
+        override = { baseId: currentEditingDdBaseId, month: currentEditingDdMonthKey, type: "skipped", active: false };
         override = { baseId: currentEditingDdBaseId, month: mk, type: "skipped", active: false };
-        ddOverrides.push(override);
-      } else {
-        override.type = "skipped";
-        override.active = false;
-      }
-
-      saveToStorage();
-      closeDirectDebitEditModal();
-      refreshUI();
-    }
+ddOverrides.push(override);
+} else {
+override.type = "skipped";
+@@ -2092,6 +1847,35 @@
+refreshUI();
+}
 
     function deleteDirectDebitMonthAndFuture() {
       if (!currentEditingDdBaseId || !currentEditingDdMonthKey) return;
@@ -1876,184 +1565,141 @@
       refreshUI();
     }
 
-    // ------------ DONUT BREAKDOWN ------------
+// ------------ DONUT BREAKDOWN ------------
 
-    function openDonutBreakdown() {
-      const thisTotals = computeMonthWithCarry(selectedMonth);
-      const carryIn = thisTotals.carryIn;
-      const thisIncome = thisTotals.income;
-      const thisSpend = thisTotals.spend;
-      const thisDd = thisTotals.ddTotal;
-      const thisAfter = thisTotals.afterAll;
+function openDonutBreakdown() {
+@@ -2102,9 +1886,8 @@
+const thisDd = thisTotals.ddTotal;
+const thisAfter = thisTotals.afterAll;
 
+      const prevMonth = monthMinus(selectedMonth, 1);
       const prevMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1);
-      const prevTotals = computeMonthWithCarry(prevMonth);
-      const lastMonthAfter = prevTotals.afterAll;
-      const lastMonthIncomeTotal = prevTotals.income + prevTotals.carryIn;
+const prevTotals = computeMonthWithCarry(prevMonth);
 
-      document.getElementById("bdIncome").textContent = formatMoney(thisIncome);
-      document.getElementById("bdDd").textContent = formatMoney(thisDd);
-      document.getElementById("bdSpend").textContent = formatMoney(thisSpend);
-      document.getElementById("bdCarry").textContent = formatMoney(carryIn);
-      document.getElementById("bdAfter").textContent = formatMoney(thisAfter);
+const lastMonthAfter = prevTotals.afterAll;
+const lastMonthIncomeTotal = prevTotals.income + prevTotals.carryIn;
 
-      const diffAfter = thisAfter - lastMonthAfter;
-      const diffIncome = (thisIncome + carryIn) - lastMonthIncomeTotal;
-      const diffSpend = thisSpend - prevTotals.spend;
+@@ -2119,11 +1902,17 @@
+const diffSpend = thisSpend - prevTotals.spend;
 
-      const afterLabel =
+const afterLabel =
+        !isFinite(lastMonthAfter) ? "–" : `${diffAfter >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffAfter)).replace("£", "")}`;
         !isFinite(lastMonthAfter) || lastMonthAfter === 0
           ? "–"
           : `${diffAfter >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffAfter)).replace("£", "")}`;
-      const incomeLabel =
+const incomeLabel =
+        !isFinite(lastMonthIncomeTotal) ? "–" : `${diffIncome >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffIncome)).replace("£", "")}`;
         !isFinite(lastMonthIncomeTotal) || lastMonthIncomeTotal === 0
           ? "–"
           : `${diffIncome >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffIncome)).replace("£", "")}`;
-      const spendLabel =
+const spendLabel =
+        !isFinite(prevTotals.spend) ? "–" : `${diffSpend >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffSpend)).replace("£", "")}`;
         !isFinite(prevTotals.spend) || prevTotals.spend === 0
           ? "–"
           : `${diffSpend >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffSpend)).replace("£", "")}`;
 
-      document.getElementById("compareAfter").textContent = afterLabel;
-      document.getElementById("compareIncome").textContent = incomeLabel;
-      document.getElementById("compareSpend").textContent = spendLabel;
-
-      const donutBig = document.getElementById("donutBig");
-      const effectiveIncome = carryIn + thisIncome;
-      const totalOut = thisDd + thisSpend;
-      drawDonut(donutBig, effectiveIncome, totalOut);
-
-      document.getElementById("donutBreakdown").style.display = "block";
-    }
-
-    function closeDonutBreakdown() {
-      document.getElementById("donutBreakdown").style.display = "none";
-    }
-
-    // ------------ EXPORT & RESET ------------
-
-    function exportAllData() {
-      function esc(str) {
-        if (str == null) str = "";
-        str = String(str).replace(/"/g, '""');
-        return `"${str}"`;
-      }
-
-      const lines = [];
-      lines.push([
-        "RowType","MonthKey","Date","TxType","Description","TxAmount",
-        "DDName","DDAmount","DDDay","DDCategory","DDActive",
-        "OverrideMonth","OverrideType","OverrideAmount","OverrideDay","OverrideCategory","OverrideActive"
-      ].join(","));
-
-      for (const t of transactions) {
-        if (isAutoOpening(t)) continue;
-        const d = new Date(t.date);
-        const mk = Number.isNaN(d.getTime()) ? "" : monthKey(d);
-        lines.push([
+document.getElementById("compareAfter").textContent = afterLabel;
+document.getElementById("compareIncome").textContent = incomeLabel;
+@@ -2162,39 +1951,29 @@
+const d = new Date(t.date);
+const mk = Number.isNaN(d.getTime()) ? "" : monthKey(d);
+lines.push([
+          "TRANSACTION",
+          mk,
+          t.date || "",
+          t.type || "",
+          esc(t.description || ""),
           "TRANSACTION", mk, t.date || "", t.type || "", esc(t.description || ""),
-          t.amount != null ? t.amount.toFixed(2) : "",
+t.amount != null ? t.amount.toFixed(2) : "",
+          "","","","","",
+          "","","","","",""
           "","","","","", "", "", "", "", "", ""
-        ].join(","));
-      }
+].join(","));
+}
 
-      for (const dd of directDebits) {
-        lines.push([
+for (const dd of directDebits) {
+lines.push([
+          "DIRECT_DEBIT",
+          dd.month || "",
+          "","","","",
           "DIRECT_DEBIT", dd.month || "", "", "", "", "",
-          esc(dd.name || ""),
-          dd.amount != null ? dd.amount.toFixed(2) : "",
-          dd.day != null ? String(dd.day) : "",
-          esc(dd.category || ""),
+esc(dd.name || ""),
+dd.amount != null ? dd.amount.toFixed(2) : "",
+dd.day != null ? String(dd.day) : "",
+esc(dd.category || ""),
+          dd.active ? "Yes" : "No",
+          "","","","","",""
           (dd.active !== false) ? "Yes" : "No",
           "", "", "", "", "", ""
-        ].join(","));
-      }
+].join(","));
+}
 
-      for (const ov of ddOverrides) {
-        lines.push([
+for (const ov of ddOverrides) {
+lines.push([
+          "DD_OVERRIDE",
+          ov.month || "",
+          "","","","",
+          "","","","","",
+          ov.month || "",
+          ov.type || "",
           "DD_OVERRIDE", ov.month || "", "", "", "", "",
           "", "", "", "", "",
           ov.month || "", ov.type || "",
-          ov.amount != null ? ov.amount.toFixed(2) : "",
-          ov.day != null ? String(ov.day) : "",
-          esc(ov.category || ""),
-          ov.active === false ? "No" : "Yes"
-        ].join(","));
-      }
+ov.amount != null ? ov.amount.toFixed(2) : "",
+ov.day != null ? String(ov.day) : "",
+esc(ov.category || ""),
+@@ -2224,7 +2003,6 @@
+transactions = [];
+directDebits = [];
+ddOverrides = [];
+      whatIfOffset = 0;
+selectedMonth = firstOfMonth(new Date());
+refreshUI();
+}
+@@ -2239,14 +2017,12 @@
+document.getElementById("txDate").value = today.toISOString().slice(0, 10);
 
-      const csv = lines.join("\n");
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "BishopBudget-AllData.csv";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    function resetApp() {
-      const ok = confirm("This will delete ALL transactions, direct debits and overrides.\n\nAre you sure?");
-      if (!ok) return;
-
-      localStorage.removeItem("bb_tx");
-      localStorage.removeItem("bb_dd");
-      localStorage.removeItem("bb_dd_overrides");
-      transactions = [];
-      directDebits = [];
-      ddOverrides = [];
-      selectedMonth = firstOfMonth(new Date());
-      refreshUI();
-    }
-
-    // ------------ INIT ------------
-
-    function init() {
-      loadFromStorage();
-      selectedMonth = firstOfMonth(new Date());
-
-      const today = new Date();
-      document.getElementById("txDate").value = today.toISOString().slice(0, 10);
-
-      document.getElementById("prevMonthBtn").addEventListener("click", () => {
+document.getElementById("prevMonthBtn").addEventListener("click", () => {
+        selectedMonth = monthMinus(selectedMonth, 1);
+        whatIfOffset = 0;
         selectedMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1);
-        refreshUI();
-      });
+refreshUI();
+});
 
-      document.getElementById("nextMonthBtn").addEventListener("click", () => {
+document.getElementById("nextMonthBtn").addEventListener("click", () => {
+        selectedMonth = monthPlus(selectedMonth, 1);
+        whatIfOffset = 0;
         selectedMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 1);
+refreshUI();
+});
+
+@@ -2264,26 +2040,16 @@
+document.getElementById("ddModalDone").addEventListener("click", closeDirectDebitEditModal);
+document.getElementById("ddPausedToggle").addEventListener("click", toggleDdPaused);
+document.getElementById("saveDdBtn").addEventListener("click", saveDirectDebitEdit);
+      document.getElementById("deleteDdBtn").addEventListener("click", deleteDirectDebitForMonth);
+
+      const whatIfSlider = document.getElementById("whatIfSlider");
+      whatIfSlider.addEventListener("input", (e) => {
+        whatIfOffset = parseFloat(e.target.value) || 0;
         refreshUI();
       });
-
-      document.getElementById("addTxBtn").addEventListener("click", addTransaction);
-      document.getElementById("addDdBtn").addEventListener("click", addDirectDebit);
-
-      document.getElementById("donutCanvas").addEventListener("click", openDonutBreakdown);
-      document.getElementById("seeMoreDonut").addEventListener("click", openDonutBreakdown);
-      document.getElementById("closeDonutBreakdown").addEventListener("click", closeDonutBreakdown);
-
-      document.getElementById("txModalDone").addEventListener("click", closeTransactionEditModal);
-      document.getElementById("saveTxBtn").addEventListener("click", saveTransactionEdit);
-      document.getElementById("deleteTxBtn").addEventListener("click", deleteTransaction);
-
-      document.getElementById("ddModalDone").addEventListener("click", closeDirectDebitEditModal);
-      document.getElementById("ddPausedToggle").addEventListener("click", toggleDdPaused);
-      document.getElementById("saveDdBtn").addEventListener("click", saveDirectDebitEdit);
-
       document.getElementById("scopeMonthBtn").addEventListener("click", () => setScope("month"));
       document.getElementById("scopeFutureBtn").addEventListener("click", () => setScope("future"));
 
+      document.getElementById("resetWhatIf").addEventListener("click", () => {
+        whatIfOffset = 0;
+        document.getElementById("whatIfSlider").value = "0";
+        refreshUI();
+      });
       document.getElementById("deleteDdThisMonthBtn").addEventListener("click", deleteDirectDebitThisMonth);
       document.getElementById("deleteDdFutureBtn").addEventListener("click", deleteDirectDebitMonthAndFuture);
 
-      document.getElementById("exportCsvBtn").addEventListener("click", exportAllData);
-      document.getElementById("resetAppBtn").addEventListener("click", resetApp);
+document.getElementById("exportCsvBtn").addEventListener("click", exportAllData);
+document.getElementById("resetAppBtn").addEventListener("click", resetApp);
 
-      refreshUI();
-    }
+      // Keep canvases crisp on resize
+      window.addEventListener("resize", () => refreshUI());
 
-    document.addEventListener("DOMContentLoaded", init);
-  </script>
-</body>
-</html>
+refreshUI();
+}
