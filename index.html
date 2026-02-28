@@ -259,11 +259,7 @@
 
     .donut-wrapper canvas { cursor: pointer; border-radius: 999px; }
 
-    .donut-legend {
-      flex: 1;
-      font-size: 11px;
-      color: var(--text-soft);
-    }
+    .donut-legend { flex: 1; font-size: 11px; color: var(--text-soft); }
 
     .donut-legend-row {
       display: flex;
@@ -562,20 +558,6 @@
             <div class="dashboard-label">Left after spending</div>
             <div class="dashboard-sub">After DDs and other spend</div>
             <div id="leftValue" class="dashboard-value">£0.00</div>
-          </div>
-        </div>
-
-        <!-- Spending pace + runway -->
-        <div class="dashboard-grid" style="margin-top:6px;">
-          <div class="dashboard-card">
-            <div class="dashboard-label">Spending pace</div>
-            <div id="paceSub" class="dashboard-sub">Average outflow so far</div>
-            <div id="paceValue" class="dashboard-value">–</div>
-          </div>
-          <div class="dashboard-card">
-            <div class="dashboard-label">Runway</div>
-            <div id="runwaySub" class="dashboard-sub">Days until £0</div>
-            <div id="runwayValue" class="dashboard-value">–</div>
           </div>
         </div>
 
@@ -963,9 +945,172 @@
       return `${day}-${mmm}-${yy}`;
     }
 
-    // Ignore old auto-opening incomes from previous versions
     function isAutoOpening(tx) {
       return (tx.type === "income" && tx.description === "Opening balance (auto)");
+    }
+
+    function toNumberSafe(v, fallback = 0) {
+      const n = typeof v === "string" ? parseFloat(v.replace(",", ".")) : Number(v);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function toIntSafe(v, fallback = 0) {
+      const n = parseInt(v, 10);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    // ------------ ONE-TIME DATA REPAIR (DEDUPES OVERRIDES) ------------
+
+    function repairDataIfNeeded() {
+      // Only run once per device to avoid churn.
+      const key = "bb_repair_v1_done";
+      if (localStorage.getItem(key) === "yes") return;
+
+      let changed = false;
+
+      // 1) Normalise transactions
+      if (Array.isArray(transactions)) {
+        const cleanedTx = [];
+        const seenIds = new Set();
+        for (const t of transactions) {
+          if (!t || typeof t !== "object") { changed = true; continue; }
+          if (!t.id) { t.id = uuid(); changed = true; }
+          if (seenIds.has(t.id)) { t.id = uuid(); changed = true; }
+          seenIds.add(t.id);
+
+          if (!t.date || Number.isNaN(new Date(t.date).getTime())) {
+            // drop invalid dated rows to prevent month calc madness
+            changed = true;
+            continue;
+          }
+
+          const type = t.type === "income" || t.type === "spend" ? t.type : "spend";
+          if (type !== t.type) changed = true;
+
+          const desc = (t.description ?? "").toString();
+          const amt = toNumberSafe(t.amount, 0);
+
+          cleanedTx.push({
+            id: t.id,
+            date: t.date,
+            type,
+            description: desc,
+            amount: amt
+          });
+        }
+        if (cleanedTx.length !== transactions.length) changed = true;
+        transactions = cleanedTx;
+      } else {
+        transactions = [];
+        changed = true;
+      }
+
+      // 2) Normalise direct debits
+      if (Array.isArray(directDebits)) {
+        const cleanedDD = [];
+        const seenDdIds = new Set();
+        for (const d of directDebits) {
+          if (!d || typeof d !== "object") { changed = true; continue; }
+          if (!d.id) { d.id = uuid(); changed = true; }
+          if (seenDdIds.has(d.id)) { d.id = uuid(); changed = true; }
+          seenDdIds.add(d.id);
+
+          const mk = (d.month ?? "").toString();
+          if (!mk || !parseMonthKey(mk)) { changed = true; continue; }
+
+          const name = (d.name ?? "").toString().trim();
+          const amount = toNumberSafe(d.amount, 0);
+          const day = toIntSafe(d.day, 1);
+          const category = (d.category ?? "").toString();
+          const active = d.active !== false;
+
+          if (!name) { changed = true; continue; }
+
+          cleanedDD.push({
+            id: d.id,
+            month: mk,
+            name,
+            amount,
+            day: Math.min(31, Math.max(1, day)),
+            category,
+            active
+          });
+        }
+        if (cleanedDD.length !== directDebits.length) changed = true;
+        directDebits = cleanedDD;
+      } else {
+        directDebits = [];
+        changed = true;
+      }
+
+      // 3) Deduplicate overrides (this is the big one)
+      if (Array.isArray(ddOverrides)) {
+        const map = new Map(); // key: baseId|month -> override (keep last)
+        for (const ov of ddOverrides) {
+          if (!ov || typeof ov !== "object") { changed = true; continue; }
+
+          const baseId = (ov.baseId ?? "").toString();
+          const mk = (ov.month ?? "").toString();
+          if (!baseId || !mk || !parseMonthKey(mk)) { changed = true; continue; }
+
+          const type = (ov.type ?? "none").toString();
+          const cleaned = {
+            baseId,
+            month: mk,
+            type: (type === "modified" || type === "skipped" || type === "none") ? type : "none",
+            name: (ov.name ?? "").toString(),
+            amount: (ov.amount != null ? toNumberSafe(ov.amount, 0) : undefined),
+            day: (ov.day != null ? Math.min(31, Math.max(1, toIntSafe(ov.day, 1))) : undefined),
+            category: (ov.category ?? "").toString(),
+            active: ov.active !== false
+          };
+
+          map.set(`${baseId}|${mk}`, cleaned);
+        }
+
+        const deduped = Array.from(map.values());
+
+        // 4) Remove overrides that match base exactly (prevents “amendment stuck”)
+        const baseById = new Map(directDebits.map(d => [d.id, d]));
+        const finalOv = [];
+        for (const ov of deduped) {
+          const base = baseById.get(ov.baseId);
+          if (!base) {
+            // base no longer exists, drop orphan override
+            changed = true;
+            continue;
+          }
+
+          if (ov.type === "modified") {
+            const name = ov.name || base.name;
+            const amount = ov.amount != null ? ov.amount : base.amount;
+            const day = ov.day != null ? ov.day : base.day;
+            const category = (ov.category ?? "") || (base.category ?? "");
+            const active = ov.active !== false;
+
+            const matches =
+              name === base.name &&
+              amount === base.amount &&
+              day === base.day &&
+              (category || "") === (base.category || "") &&
+              active === (base.active !== false);
+
+            if (matches) { changed = true; continue; }
+          }
+
+          finalOv.push(ov);
+        }
+
+        if (finalOv.length !== ddOverrides.length) changed = true;
+        ddOverrides = finalOv;
+      } else {
+        ddOverrides = [];
+        changed = true;
+      }
+
+      // Write once and mark done
+      if (changed) saveToStorage();
+      localStorage.setItem(key, "yes");
     }
 
     // ------------ DONUT & GRAPH DRAWING ------------
@@ -981,7 +1126,6 @@
       const radius = Math.min(cx, cy) - 12;
       const ringWidth = 18;
 
-      // Base ring
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       const baseGrad = ctx.createLinearGradient(cx - radius, cy, cx + radius, cy);
@@ -1002,7 +1146,6 @@
       const leftAngle = (left / total) * Math.PI * 2;
       const startAngle = -Math.PI / 2;
 
-      // Outgoing segment
       if (outgoing > 0) {
         ctx.beginPath();
         ctx.arc(cx, cy, radius, startAngle, startAngle + outAngle);
@@ -1015,7 +1158,6 @@
         ctx.stroke();
       }
 
-      // Left segment
       if (left > 0) {
         ctx.beginPath();
         ctx.arc(cx, cy, radius, startAngle + outAngle, startAngle + outAngle + leftAngle);
@@ -1028,7 +1170,6 @@
         ctx.stroke();
       }
 
-      // Centre text
       ctx.fillStyle = "#e8edf8";
       ctx.font = "600 22px -apple-system, system-ui, sans-serif";
       ctx.textAlign = "center";
@@ -1126,7 +1267,6 @@
         return monthKey(d) === mk;
       });
 
-      // DD repeats from its start month onward
       const monthBaseDDs = directDebits.filter((dd) => {
         if (!dd.month) return false;
         const baseDate = parseMonthKey(dd.month);
@@ -1157,8 +1297,8 @@
       const ddTotal = activeDDs.reduce((sum, d) => sum + (d.amount || 0), 0);
 
       const daysInMonth = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate();
-
       const dailyBalances = [];
+
       for (let day = 1; day <= daysInMonth; day++) {
         const ddUpToDay = activeDDs.filter((d) => d.day <= day).reduce((sum, d) => sum + (d.amount || 0), 0);
 
@@ -1183,7 +1323,6 @@
       }
 
       const afterAll = carryIn + income - ddTotal - spend;
-
       return { carryIn, income, spend, ddTotal, afterAll, dailyBalances, activeDDs, rawTransactions: monthTx };
     }
 
@@ -1220,8 +1359,6 @@
       const spendValueEl = document.getElementById("spendValue");
       const leftValueEl = document.getElementById("leftValue");
       const leftCardEl = document.getElementById("leftCard");
-      const donutCanvas = document.getElementById("donutCanvas");
-      const balanceCanvas = document.getElementById("balanceCanvas");
 
       const summaryStartEl = document.getElementById("summaryStart");
       const summaryDdEl = document.getElementById("summaryDd");
@@ -1235,6 +1372,9 @@
       const statusDotEl = document.getElementById("statusDot");
       const statusMainEl = document.getElementById("statusMain");
       const statusSubEl = document.getElementById("statusSub");
+
+      const donutCanvas = document.getElementById("donutCanvas");
+      const balanceCanvas = document.getElementById("balanceCanvas");
 
       monthLabelEl.textContent = monthLabel(selectedMonth);
 
@@ -1256,74 +1396,6 @@
       legendIncomeEl.textContent = formatMoney(openingPlusIncome);
       legendOutEl.textContent = formatMoney(totalOut);
       legendLeftEl.textContent = formatMoney(baseAfterAll);
-
-      // Spending pace + runway
-      const paceValueEl = document.getElementById('paceValue');
-      const paceSubEl = document.getElementById('paceSub');
-      const runwayValueEl = document.getElementById('runwayValue');
-      const runwaySubEl = document.getElementById('runwaySub');
-
-      const today = new Date();
-      const thisMonthStart = firstOfMonth(today);
-      const selMK = monthKey(selectedMonth);
-      const todayMK = monthKey(thisMonthStart);
-      const daysInMonth = totals.dailyBalances.length || new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0).getDate();
-
-      let elapsedDays = 0;
-      if (selMK === todayMK) {
-        elapsedDays = Math.min(today.getDate(), daysInMonth);
-      } else if (selectedMonth < thisMonthStart) {
-        elapsedDays = daysInMonth;
-      } else {
-        elapsedDays = 0;
-      }
-
-      if (!elapsedDays) {
-        paceValueEl.textContent = '–';
-        paceSubEl.textContent = 'Select a current or past month';
-        runwayValueEl.textContent = '–';
-        runwaySubEl.textContent = 'Select a current or past month';
-      } else {
-        const ddSoFar = totals.activeDDs
-          .filter(d => (d.day || 0) <= elapsedDays)
-          .reduce((s, d) => s + (d.amount || 0), 0);
-
-        const spendSoFar = totals.rawTransactions
-          .filter(t => t.type === 'spend')
-          .filter(t => {
-            const d = new Date(t.date);
-            return !Number.isNaN(d.getTime()) && d.getDate() <= elapsedDays;
-          })
-          .reduce((s, t) => s + (t.amount || 0), 0);
-
-        const outSoFar = ddSoFar + spendSoFar;
-        const avgOut = outSoFar / Math.max(elapsedDays, 1);
-
-        const projectedOut = avgOut * daysInMonth;
-        const projectedLeft = openingPlusIncome - projectedOut;
-
-        paceValueEl.textContent = `${formatMoney(avgOut)}/day`;
-        paceSubEl.textContent = `Projected left at month end: ${formatMoney(projectedLeft)}`;
-        paceSubEl.style.color = projectedLeft >= 0 ? 'var(--text-soft)' : 'var(--red-soft)';
-        paceValueEl.style.color = avgOut > 0 ? 'var(--blue-soft)' : 'var(--text)';
-
-        const currentBalance = totals.dailyBalances[Math.max(0, elapsedDays - 1)] ?? baseAfterAll;
-
-        if (avgOut <= 0) {
-          runwayValueEl.textContent = '–';
-          runwaySubEl.textContent = 'No outflow yet';
-          runwayValueEl.style.color = 'var(--text)';
-        } else if (currentBalance <= 0) {
-          runwayValueEl.textContent = '0 days';
-          runwaySubEl.textContent = 'Already at or below £0';
-          runwayValueEl.style.color = 'var(--red-soft)';
-        } else {
-          const days = Math.floor(currentBalance / avgOut);
-          runwayValueEl.textContent = `${days} day${days === 1 ? '' : 's'}`;
-          runwaySubEl.textContent = `At current outflow rate (balance now: ${formatMoney(currentBalance)})`;
-          runwayValueEl.style.color = days <= 7 ? 'var(--amber)' : 'var(--green-soft)';
-        }
-      }
 
       summaryStartEl.textContent = formatMoney(openingPlusIncome);
       summaryDdEl.textContent = formatMoney(ddTotal);
@@ -1447,6 +1519,7 @@
 
       const actualDDs = monthBaseDDs.map((dd) => {
         const override = ddOverrides.find((ov) => ov.baseId === dd.id && ov.month === mk);
+
         if (!override || override.type === "none") {
           const active = override ? override.active : dd.active;
           return { baseId: dd.id, name: dd.name, amount: dd.amount, day: dd.day, category: dd.category, active: active !== false };
@@ -1500,8 +1573,6 @@
         ddList.appendChild(row);
       }
     }
-
-    // ------------ ADD / EDIT / DELETE ------------
 
     function addTransaction() {
       const dateVal = document.getElementById("txDate").value;
@@ -1621,7 +1692,7 @@
       }
 
       document.getElementById("editDdName").value = effective.name;
-      document.getElementById("editDdAmt").value = effective.amount.toFixed(2);
+      document.getElementById("editDdAmt").value = Number(effective.amount || 0).toFixed(2);
       document.getElementById("editDdDay").value = effective.day;
       document.getElementById("editDdCat").value = effective.category || "";
 
@@ -1704,8 +1775,6 @@
       refreshUI();
     }
 
-    // ------------ DONUT BREAKDOWN ------------
-
     function openDonutBreakdown() {
       const thisTotals = computeMonthWithCarry(selectedMonth);
       const carryIn = thisTotals.carryIn;
@@ -1758,8 +1827,6 @@
       document.getElementById("donutBreakdown").style.display = "none";
     }
 
-    // ------------ EXPORT & RESET ------------
-
     function exportAllData() {
       function esc(str) {
         if (str == null) str = "";
@@ -1780,7 +1847,7 @@
         const mk = Number.isNaN(d.getTime()) ? "" : monthKey(d);
         lines.push([
           "TRANSACTION", mk, t.date || "", t.type || "", esc(t.description || ""),
-          t.amount != null ? t.amount.toFixed(2) : "",
+          t.amount != null ? Number(t.amount).toFixed(2) : "",
           "","","","","","","","","","",""
         ].join(","));
       }
@@ -1789,7 +1856,7 @@
         lines.push([
           "DIRECT_DEBIT", dd.month || "", "","","","",
           esc(dd.name || ""),
-          dd.amount != null ? dd.amount.toFixed(2) : "",
+          dd.amount != null ? Number(dd.amount).toFixed(2) : "",
           dd.day != null ? String(dd.day) : "",
           esc(dd.category || ""),
           dd.active ? "Yes" : "No",
@@ -1803,7 +1870,7 @@
           "","","","","",
           ov.month || "",
           ov.type || "",
-          ov.amount != null ? ov.amount.toFixed(2) : "",
+          ov.amount != null ? Number(ov.amount).toFixed(2) : "",
           ov.day != null ? String(ov.day) : "",
           esc(ov.category || ""),
           ov.active === false ? "No" : "Yes"
@@ -1829,6 +1896,8 @@
       localStorage.removeItem("bb_tx");
       localStorage.removeItem("bb_dd");
       localStorage.removeItem("bb_dd_overrides");
+      localStorage.removeItem("bb_repair_v1_done");
+
       transactions = [];
       directDebits = [];
       ddOverrides = [];
@@ -1836,10 +1905,10 @@
       refreshUI();
     }
 
-    // ------------ INIT ------------
-
     function init() {
       loadFromStorage();
+      repairDataIfNeeded(); // <-- this is the fix
+
       selectedMonth = firstOfMonth(new Date());
 
       const today = new Date();
